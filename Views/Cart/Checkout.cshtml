@@ -1,0 +1,118 @@
+﻿@using Menova.Models.ViewModels
+
+@{
+    ViewData["Title"] = "Thanh toán";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/checkout.css" />
+}
+
+<div class="checkout-page">
+    <div class="container">
+        <h1 class="page-title">Thanh toán</h1>
+
+        <div class="checkout-content">
+            <div class="checkout-form">
+                <h2>Thông tin giao hàng</h2>
+
+                <form asp-controller="Order" asp-action="Create" method="post">
+                    <div class="form-group">
+                        <label for="shippingAddress">Địa chỉ giao hàng *</label>
+                        <input type="text" id="shippingAddress" name="shippingAddress" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">Số điện thoại *</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phương thức thanh toán *</label>
+                        <div class="payment-methods">
+                            <div class="payment-method">
+                                <input type="radio" id="cod" name="paymentMethod" value="COD" checked>
+                                <label for="cod">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    Thanh toán khi nhận hàng (COD)
+                                </label>
+                            </div>
+                            <div class="payment-method">
+                                <input type="radio" id="bank-transfer" name="paymentMethod" value="BankTransfer">
+                                <label for="bank-transfer">
+                                    <i class="fas fa-university"></i>
+                                    Chuyển khoản ngân hàng
+                                </label>
+                            </div>
+                            <div class="payment-method">
+                                <input type="radio" id="credit-card" name="paymentMethod" value="CreditCard">
+                                <label for="credit-card">
+                                    <i class="fas fa-credit-card"></i>
+                                    Thẻ tín dụng / Ghi nợ
+                                </label>
+                            </div>
+                            <div class="payment-method">
+                                <input type="radio" id="momo" name="paymentMethod" value="Momo">
+                                <label for="momo">
+                                    <i class="fas fa-wallet"></i>
+                                    Ví MoMo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Ghi chú</label>
+                        <textarea id="notes" name="notes" rows="3"></textarea>
+                    </div>
+
+                    <div class="checkout-actions">
+                        <a asp-controller="Cart" asp-action="Index" class="back-to-cart-btn">
+                            <i class="fas fa-arrow-left"></i> Quay lại giỏ hàng
+                        </a>
+                        <button type="submit" class="place-order-btn">Đặt hàng</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="order-summary">
+                <h2>Đơn hàng của bạn</h2>
+
+                <div class="order-items">
+                    @foreach (var item in (ViewBag.Cart as CartViewModel)?.Items ?? new List<CartItemViewModel>())
+                    {
+                        <div class="order-item">
+                            <div class="item-image">
+                                <img src="@item.ProductImage" alt="@item.ProductName">
+                                <span class="item-quantity">@item.Quantity</span>
+                            </div>
+                            <div class="item-details">
+                                <h3>@item.ProductName</h3>
+                                <div class="item-variant">
+                                    <span>Size: @item.SizeName</span>
+                                    <span>Màu: @item.ColorName</span>
+                                </div>
+                            </div>
+                            <div class="item-price">@String.Format("{0:N0}₫", item.Subtotal)</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="order-totals">
+                    <div class="total-row">
+                        <span>Tạm tính:</span>
+                        <span>@String.Format("{0:N0}₫", (ViewBag.Cart as CartViewModel)?.Subtotal ?? 0)</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Phí vận chuyển:</span>
+                        <span>@String.Format("{0:N0}₫", (ViewBag.Cart as CartViewModel)?.ShippingFee ?? 0)</span>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>Tổng cộng:</span>
+                        <span>@String.Format("{0:N0}₫", (ViewBag.Cart as CartViewModel)?.Total ?? 0)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

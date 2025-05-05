@@ -1,0 +1,109 @@
+﻿
+@using Menova.Models.ViewModels
+@model CartViewModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/cart.css" />
+}
+
+<div class="cart-page">
+    <div class="container">
+        <h1 class="page-title">Giỏ hàng của bạn</h1>
+
+        @if (Model.Items == null || !Model.Items.Any())
+        {
+            <div class="empty-cart">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <p>Giỏ hàng của bạn đang trống</p>
+                <a asp-controller="Product" asp-action="Index" class="continue-shopping-btn">Tiếp tục mua sắm</a>
+            </div>
+        }
+        else
+        {
+            <div class="cart-content">
+                <div class="cart-items">
+                    <div class="cart-header">
+                        <div class="cart-product">Sản phẩm</div>
+                        <div class="cart-price">Đơn giá</div>
+                        <div class="cart-quantity">Số lượng</div>
+                        <div class="cart-subtotal">Thành tiền</div>
+                        <div class="cart-action"></div>
+                    </div>
+
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="cart-item">
+                            <div class="cart-product">
+                                <div class="product-image">
+                                    <img src="@item.ProductImage" alt="@item.ProductName">
+                                </div>
+                                <div class="product-details">
+                                    <h3>@item.ProductName</h3>
+                                    <div class="product-variant">
+                                        <span class="variant-size">Size: @item.SizeName</span>
+                                        <span class="variant-color">
+                                            Màu:
+                                            <span class="color-dot" style="background-color: @item.ColorCode;"></span>
+                                            @item.ColorName
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cart-price">
+                                @String.Format("{0:N0}₫", item.UnitPrice)
+                            </div>
+                            <div class="cart-quantity">
+                                <form asp-controller="Cart" asp-action="UpdateCart" method="post" class="quantity-form">
+                                    <input type="hidden" name="cartItemId" value="@item.CartItemId">
+                                    <div class="quantity-selector">
+                                        <button type="button" class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                                        <input type="number" name="quantity" value="@item.Quantity" min="1" max="10" onchange="this.form.submit()">
+                                        <button type="button" class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="cart-subtotal">
+                                @String.Format("{0:N0}₫", item.Subtotal)
+                            </div>
+                            <div class="cart-action">
+                                <form asp-controller="Cart" asp-action="RemoveItem" method="post">
+                                    <input type="hidden" name="cartItemId" value="@item.CartItemId">
+                                    <button type="submit" class="remove-item-btn">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="cart-summary">
+                    <h2 class="summary-title">Tổng đơn hàng</h2>
+                    <div class="summary-row">
+                        <span>Tạm tính:</span>
+                        <span>@String.Format("{0:N0}₫", Model.Subtotal)</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí vận chuyển:</span>
+                        <span>@String.Format("{0:N0}₫", Model.ShippingFee)</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Tổng cộng:</span>
+                        <span>@String.Format("{0:N0}₫", Model.Total)</span>
+                    </div>
+                    <a asp-controller="Cart" asp-action="Checkout" class="checkout-btn">Tiến hành đặt hàng</a>
+                    <a asp-controller="Product" asp-action="Index" class="continue-shopping-btn">Tiếp tục mua sắm</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/cart.js"></script>
+}

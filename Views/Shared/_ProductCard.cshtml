@@ -1,0 +1,53 @@
+﻿@model Product
+<div class="product-item">
+    @if (DateTime.Now.Subtract(Model.CreatedAt).TotalDays < 7)
+    {
+        <div class="product-tag">Mới nhập kho</div>
+    }
+    <div class="product-image">
+        <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.ProductId">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" alt="@Model.Name">
+            }
+            else if (Model.Images != null && Model.Images.Any(i => i.IsPrimary))
+            {
+                <img src="@Model.Images.FirstOrDefault(i => i.IsPrimary)?.ImageUrl" alt="@Model.Name">
+            }
+            else
+            {
+                <img src="/images/placeholder.png" alt="@Model.Name">
+            }
+        </a>
+    </div>
+    <div class="product-info">
+        <h3 class="product-name">
+            <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.ProductId">@Model.Name</a>
+        </h3>
+        <p class="product-price">
+            <i class="fas fa-tag"></i>
+            @if (Model.DiscountPrice != 0)
+            {
+                <span class="original-price">@String.Format("{0:N0}₫", Model.Price)</span>
+                <span>@String.Format("{0:N0}₫", Model.DiscountPrice)</span>
+            }
+            else
+            {
+                <span>@String.Format("{0:N0}₫", Model.Price)</span>
+            }
+        </p>
+        @if (Model.ProductVariants != null && Model.ProductVariants.Any())
+        {
+            var colors = Model.ProductVariants.Select(v => v.Color).Distinct().Take(4);
+            if (colors.Any())
+            {
+                <div class="product-colors">
+                    @foreach (var color in colors)
+                    {
+                        <span class="color-option" style="background-color: @color.ColorCode;" title="@color.Name"></span>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>

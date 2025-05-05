@@ -1,0 +1,152 @@
+﻿@using Menova.Models.ViewModels
+@model ProductViewModel
+@{
+    ViewData["Title"] = Model.Product.Name;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/product-detail.css" />
+}
+
+<div class="product-detail">
+    <div class="container">
+        <div class="breadcrumb">
+            <a asp-controller="Home" asp-action="Index">Trang chủ</a> &gt;
+            <a asp-controller="Product" asp-action="Category" asp-route-id="@Model.Product.CategoryId">@Model.Product.Category.Name</a> &gt;
+            <span>@Model.Product.Name</span>
+        </div>
+
+        <div class="product-container">
+            <div class="product-images">
+                <div class="main-image">
+                    @{
+                        string mainImageUrl = Model.Product.Images != null && Model.Product.Images.Any(i => i.IsPrimary)
+                        ? Model.Product.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl
+                        : Model.Product.ImageUrl ?? "/images/placeholder.png";
+                    }
+                    <img src="@mainImageUrl" alt="@Model.Product.Name" id="main-product-image">
+                </div>
+                @if (Model.Product.Images != null && Model.Product.Images.Count > 1)
+                {
+                    <div class="image-thumbnails">
+                        @foreach (var image in Model.Product.Images.OrderBy(i => i.DisplayOrder))
+                        {
+                            <div class="thumbnail @(image.IsPrimary ? "active" : "")" onclick="changeImage('@image.ImageUrl')">
+                                <img src="@image.ImageUrl" alt="@Model.Product.Name">
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="product-info">
+                <h1 class="product-title">@Model.Product.Name</h1>
+                <div class="product-price">
+                    @if (Model.Product.DiscountPrice != 0)
+                    {
+                        <span class="original-price">@String.Format("{0:N0}₫", Model.Product.Price)</span>
+                        <span class="discount-price">@String.Format("{0:N0}₫", Model.Product.DiscountPrice)</span>
+                    }
+                    else
+                    {
+                        <span>@String.Format("{0:N0}₫", Model.Product.Price)</span>
+                    }
+                </div>
+
+                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="product-form">
+                    <input type="hidden" name="productId" value="@Model.Product.ProductId">
+
+                    @if (Model.AvailableSizes.Any())
+                    {
+                        <div class="product-sizes">
+                            <label>Kích cỡ:</label>
+                            <div class="size-options">
+                                @foreach (var size in Model.AvailableSizes.OrderBy(s => s.SortOrder))
+                                {
+                                    <div class="size-option" data-size-id="@size.SizeId">@size.Name</div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.AvailableColors.Any())
+                    {
+                        <div class="product-colors">
+                            <label>Màu sắc:</label>
+                            <div class="color-options">
+                                @foreach (var color in Model.AvailableColors)
+                                {
+                                    <div class="color-option" data-color-id="@color.ColorId" style="background-color: @color.ColorCode;" title="@color.Name"></div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <input type="hidden" id="selected-variant-id" name="variantId" value="">
+
+                    <div class="product-quantity">
+                        <label>Số lượng:</label>
+                        <div class="quantity-selector">
+                            <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="10">
+                            <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="add-to-cart-btn">Thêm vào giỏ hàng</button>
+                </form>
+
+                <div class="product-description">
+                    <h3>Mô tả sản phẩm</h3>
+                    <div class="description-content">
+                        @Html.Raw(Model.Product.Description)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.RelatedProducts.Any())
+        {
+            <div class="related-products">
+                <h2 class="section-title">Sản phẩm liên quan</h2>
+                <div class="products-container">
+                    @foreach (var product in Model.RelatedProducts)
+                    {
+                        <partial name="_ProductCard" model="product" />
+                    }
+                </div>
+            </div>
+        }
+
+        @if (Model.Reviews.Any())
+        {
+            <div class="product-reviews">
+                <h2 class="section-title">Đánh giá sản phẩm (@Model.Reviews.Count)</h2>
+                <div class="reviews-container">
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-name">@review.User.FullName</div>
+                                <div class="review-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="@(i <= review.Rating ? "fas" : "far") fa-star"></i>
+                                    }
+                                </div>
+                                <div class="review-date">@review.CreatedAt.ToString("dd/MM/yyyy")</div>
+                            </div>
+                            <div class="review-content">
+                                @review.Comment
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/product-detail.js"></script>
+}

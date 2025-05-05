@@ -1,0 +1,92 @@
+﻿@using Menova.Models.ViewModels
+@model CategoryViewModel
+@{
+    ViewData["Title"] = Model.CurrentCategory != null ? Model.CurrentCategory.Name : "Sản phẩm";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/product.css" />
+}
+
+<div class="product-page">
+    <div class="container">
+        <div class="breadcrumb">
+            <a asp-controller="Home" asp-action="Index">Trang chủ</a> &gt;
+            @if (Model.CurrentCategory != null)
+            {
+                <span>@Model.CurrentCategory.Name</span>
+            }
+            else
+            {
+                <span>Tất cả sản phẩm</span>
+            }
+        </div>
+
+        <div class="product-header">
+            <h1 class="category-title">
+                @(Model.CurrentCategory != null ? Model.CurrentCategory.Name : "Tất cả sản phẩm")
+            </h1>
+            <div class="product-sorting">
+                <label for="sort-by">Sắp xếp theo:</label>
+                <select id="sort-by" class="sort-select" onchange="updateSorting(this.value)">
+                    <option value="">Mới nhất</option>
+                    <option value="price_asc">Giá: Thấp đến cao</option>
+                    <option value="price_desc">Giá: Cao đến thấp</option>
+                    <option value="name_asc">Tên: A-Z</option>
+                    <option value="name_desc">Tên: Z-A</option>
+                </select>
+            </div>
+        </div>
+
+        @if (Model.SubCategories != null && Model.SubCategories.Any())
+        {
+            <div class="subcategories">
+                <h3>Danh mục con</h3>
+                <div class="categories-container">
+                    @foreach (var subCategory in Model.SubCategories)
+                    {
+                        <partial name="_CategoryCard" model="subCategory" />
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="products-grid">
+            @foreach (var product in Model.Products)
+            {
+                <partial name="_ProductCard" model="product" />
+            }
+        </div>
+
+        @if (Model.Pagination.TotalPages > 1)
+        {
+            <div class="pagination">
+                @if (Model.Pagination.CurrentPage > 1)
+                {
+                    <a href="@Url.Action("Index", new { categoryId = Model.CurrentCategory?.CategoryId, page = Model.Pagination.CurrentPage - 1, sortOrder = ViewData["SortOrder"] })" class="page-link">&laquo; Trước</a>
+                }
+
+                @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                {
+                    if (i == Model.Pagination.CurrentPage)
+                    {
+                        <span class="page-link active">@i</span>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Index", new { categoryId = Model.CurrentCategory?.CategoryId, page = i, sortOrder = ViewData["SortOrder"] })" class="page-link">@i</a>
+                    }
+                }
+
+                @if (Model.Pagination.CurrentPage < Model.Pagination.TotalPages)
+                {
+                    <a href="@Url.Action("Index", new { categoryId = Model.CurrentCategory?.CategoryId, page = Model.Pagination.CurrentPage + 1, sortOrder = ViewData["SortOrder"] })" class="page-link">Sau &raquo;</a>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/product.js"></script>
+}

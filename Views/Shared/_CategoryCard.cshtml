@@ -1,0 +1,10 @@
+﻿@model Category
+
+<div class="category-item">
+    <div class="category-image">
+        <a asp-controller="Product" asp-action="Category" asp-route-id="@Model.CategoryId">
+            <img src="/images/categories/@(Model.CategoryId).jpg" alt="@Model.Name">
+            <div class="category-name">@Model.Name</div>
+        </a>
+    </div>
+</div>

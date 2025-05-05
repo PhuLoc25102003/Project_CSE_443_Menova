@@ -1,0 +1,244 @@
+﻿/* wwwroot/css/product-detail.css */
+.product-detail {
+    padding: 30px 0;
+}
+
+.product-container {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 50px;
+}
+
+.product-images {
+    width: 50%;
+}
+
+.main-image {
+    width: 100%;
+    height: 500px;
+    margin-bottom: 15px;
+    border: 1px solid #f0f0f0;
+}
+
+    .main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.image-thumbnails {
+    display: flex;
+    gap: 10px;
+}
+
+.thumbnail {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+    .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .thumbnail.active, .thumbnail:hover {
+        opacity: 1;
+        border-color: #0a2463;
+    }
+
+.product-info {
+    width: 50%;
+}
+
+.product-title {
+    font-size: 30px;
+    margin-bottom: 15px;
+}
+
+.product-price {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0a2463;
+    margin-bottom: 20px;
+}
+
+.product-form {
+    margin-bottom: 30px;
+}
+
+.product-sizes, .product-colors {
+    margin-bottom: 20px;
+}
+
+    .product-sizes label, .product-colors label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+.size-options, .color-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.size-option {
+    min-width: 40px;
+    height: 40px;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .size-option:hover, .size-option.active {
+        border-color: #0a2463;
+        background-color: #0a2463;
+        color: white;
+    }
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .color-option:hover, .color-option.active {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 2px #0a2463;
+    }
+
+.product-quantity {
+    margin-bottom: 20px;
+}
+
+    .product-quantity label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    max-width: 120px;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.quantity-selector input {
+    width: 60px;
+    height: 30px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 14px;
+    -moz-appearance: textfield;
+}
+
+    .quantity-selector input::-webkit-outer-spin-button,
+    .quantity-selector input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 12px 0;
+    background-color: #0a2463;
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .add-to-cart-btn:hover {
+        background-color: #083370;
+    }
+
+.product-description {
+    margin-top: 30px;
+}
+
+    .product-description h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+.description-content {
+    line-height: 1.6;
+    color: #555;
+}
+
+.related-products {
+    margin-top: 50px;
+}
+
+.product-reviews {
+    margin-top: 50px;
+}
+
+.reviews-container {
+    margin-top: 20px;
+}
+
+.review-item {
+    border-bottom: 1px solid #eee;
+    padding: 20px 0;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.review-rating i {
+    color: #FFD700;
+    margin-right: 2px;
+}
+
+.review-date {
+    font-size: 14px;
+    color: #777;
+}
+
+.review-content {
+    line-height: 1.6;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .product-container {
+        flex-direction: column;
+    }
+
+    .product-images, .product-info {
+        width: 100%;
+    }
+
+    .main-image {
+        height: 350px;
+    }
+}
