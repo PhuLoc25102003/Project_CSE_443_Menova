@@ -1,0 +1,151 @@
+﻿<!-- Views/Product/Index.cshtml -->
+@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var currentFilter = ViewData["CurrentFilter"] as string;
+    var currentCategory = ViewData["CurrentCategory"] as int?;
+    var currentSort = ViewData["CurrentSort"] as string;
+}
+
+<div class="product-management">
+    <div class="page-header">
+        <h1>Quản lý sản phẩm</h1>
+        <a href="@Url.Action("Create", "Product", new { area = "Admin" })" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Thêm sản phẩm mới
+        </a>
+    </div>
+
+    <!-- Filter & Search -->
+    <div class="filter-section">
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <label for="categoryId">Danh mục:</label>
+                <select name="categoryId" id="categoryId" class="form-control" onchange="this.form.submit()">
+                    <option value="">Tất cả danh mục</option>
+                    @foreach (var item in ViewBag.Categories)
+                    {
+                        <option value="@item.Value" selected="@(currentCategory.ToString() == item.Value)">@item.Text</option>
+                    }
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="sortOrder">Sắp xếp:</label>
+                <select name="sortOrder" id="sortOrder" class="form-control" onchange="this.form.submit()">
+                    <option value="">Mới nhất</option>
+                    <option value="name_asc" selected="@(currentSort == "name_asc")">Tên: A-Z</option>
+                    <option value="name_desc" selected="@(currentSort == "name_desc")">Tên: Z-A</option>
+                    <option value="price_asc" selected="@(currentSort == "price_asc")">Giá: Thấp đến cao</option>
+                    <option value="price_desc" selected="@(currentSort == "price_desc")">Giá: Cao đến thấp</option>
+                </select>
+            </div>
+            
+            <div class="search-group">
+                <input type="text" name="searchString" value="@currentFilter" placeholder="Tìm kiếm sản phẩm..." class="form-control">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Products Table -->
+    <div class="data-table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Hình ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá</th>
+                    <th>Kho hàng</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td class="product-image-cell">
+                            @{
+                                string imageUrl = !string.IsNullOrEmpty(product.ImageUrl) 
+                                    ? product.ImageUrl 
+                                    : (product.Images != null && product.Images.Any(i => i.IsPrimary) 
+                                        ? product.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl 
+                                        : "/images/placeholder.png");
+                            }
+                            <img src="@imageUrl" alt="@product.Name">
+                        </td>
+                        <td>@product.Name</td>
+                        <td>@product.Category?.Name</td>
+                        <td>
+                            @if (product.DiscountPrice != 0)
+                            {
+                                <span class="original-price">@String.Format("{0:N0}₫", product.Price)</span>
+                                <span class="discount-price">@String.Format("{0:N0}₫", product.DiscountPrice)</span>
+                            }
+                            else
+                            {
+                                <span>@String.Format("{0:N0}₫", product.Price)</span>
+                            }
+                        </td>
+                        <td>
+                            @{
+                                int totalStock = product.ProductVariants?.Sum(v => v.StockQuantity) ?? 0;
+                                string stockClass = totalStock <= 5 ? "text-danger" : (totalStock <= 10 ? "text-warning" : "");
+                            }
+                            <span class="@stockClass">@totalStock</span>
+                        </td>
+                        <td>
+                            @if (product.IsActive)
+                            {
+                                <span class="status-badge bg-success">Đang bán</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge bg-secondary">Ngừng bán</span>
+                            }
+                        </td>
+                        <td class="actions-cell">
+                            <div class="actions-dropdown">
+                                <button class="btn-icon actions-toggle">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="actions-menu">
+                                    <a href="@Url.Action("Edit", "Product", new { area = "Admin", id = product.ProductId })" class="action-item">
+                                        <i class="fas fa-edit"></i> Sửa
+                                    </a>
+                                    <a href="@Url.Action("Details", "Product", new { area = "Admin", id = product.ProductId })" class="action-item">
+                                        <i class="fas fa-eye"></i> Chi tiết
+                                    </a>
+                                    <a href="@Url.Action("Variants", "Product", new { area = "Admin", id = product.ProductId })" class="action-item">
+                                        <i class="fas fa-cubes"></i> Biến thể
+                                    </a>
+                                    <a href="@Url.Action("Delete", "Product", new { area = "Admin", id = product.ProductId })" class="action-item text-danger">
+                                        <i class="fas fa-trash-alt"></i> Xóa
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="pagination-container">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { searchString = currentFilter, categoryId = currentCategory, sortOrder = currentSort, page = i })">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

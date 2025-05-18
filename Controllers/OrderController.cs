@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Menova.Data;
+using Menova.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,46 +8,63 @@ namespace Menova.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IOrderService _orderService;
 
-        public OrderController(ApplicationDbContext context)
+        public OrderController(IOrderService orderService)
         {
-            _context = context;
+            _orderService = orderService;
         }
-    
+
         public async Task<IActionResult> Index()
         {
-            int userId = 1;
-            var orders = await _context.Orders
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
+            // For demonstration purposes - normally would use user authentication
+            int userId = 1; // Placeholder for actual user ID from auth
 
-
+            var orders = await _orderService.GetUserOrdersAsync(userId);
             return View(orders);
         }
 
         public async Task<IActionResult> Detail(int id)
         {
-            int userId = 1;
+            // For demonstration purposes - normally would use user authentication
+            int userId = 1; // Placeholder for actual user ID from auth
 
-            var order = await _context.Orders
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.Product)
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.ProductVariant)
-                        .ThenInclude(v => v.Size)
-                 .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.ProductVariant)
-                        .ThenInclude(v => v.Size)
-                 .FirstOrDefaultAsync(o => o.OrderId == id && o.UserId == userId);
+            var order = await _orderService.GetOrderDetailsAsync(id, userId);
 
-            if(order == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
             return View(order);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(string shippingAddress, string phoneNumber, string paymentMethod, string notes)
+        {
+            // For demonstration purposes - normally would use user authentication
+            int userId = 1; // Placeholder for actual user ID from auth
+
+            try
+            {
+                var order = await _orderService.CreateOrderAsync(userId, shippingAddress, phoneNumber, paymentMethod, notes);
+                return RedirectToAction("Detail", new { id = order.OrderId });
+            }
+            catch (System.Exception ex)
+            {
+                // Log the error
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction("Checkout", "Cart");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(int id, string status)
+        {
+            // This would typically be an admin function
+            await _orderService.UpdateOrderStatusAsync(id, status);
+            return RedirectToAction("Detail", new { id });
+        }
+
     }
 }

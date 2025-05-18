@@ -1,4 +1,5 @@
 ﻿using Menova.Data;
+using Menova.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,36 +7,32 @@ namespace Menova.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryService _categoryService;
 
-        public CategoryController(ApplicationDbContext context)
+        public CategoryController(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
-        public IActionResult Index()
-        {
-            var categories = _context.Categories
-                .Where(c => c.IsActive && (c.ParentCategory == null || c.ParentCategoryId == 0))
-                .OrderBy(c => c.Name)
-                .ToListAsync();
 
+        public async Task<IActionResult> Index()
+        {
+            var categories = await _categoryService.GetTopLevelCategoriesAsync();
             return View(categories);
         }
 
         public async Task<IActionResult> Detail(int id)
         {
-            var category = await _context.Categories
-                .Include(c => c.ChildCategories.Where(cs => cs.IsActive))
-                .FirstOrDefaultAsync(c => c.CategoryId == id && c.IsActive);
-                
+            var category = await _categoryService.GetCategoryWithChildrenAsync(id);
 
-                if(category == null)
+            if (category == null)
             {
                 return NotFound();
             }
 
             return View(category);
         }
+
+
 
 
 

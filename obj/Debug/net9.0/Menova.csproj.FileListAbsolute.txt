@@ -232,7 +232,14 @@ C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed
 C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\3djzcr07zt-lfhbe6oftl.gz
 C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\z0x8kgvkeo-4994tme1uc.gz
 C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\ypabwttgb9-jctxywnwis.gz
-C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\qj6mu5bc5e-7eetbxb2wk.gz
 C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\lpny4xjkrq-z6xqg8s3ke.gz
 C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\1yx084758e-0jpazckf0y.gz
 C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\0xqwk68wq0-pl5tyyaz7v.gz
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\Menova.sourcelink.json
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\76a0qovh9e-1juccpfomo.gz
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\agz41qu03r-1dgvv55g9f.gz
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\enpuivlg57-umvmacitl9.gz
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\2h2qiuihq5-8i8y938u8n.gz
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\o9mors0583-ayz9nwx409.gz
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\6096c7r4e7-dzv6sp9yqh.gz
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\qj6mu5bc5e-xr50puaqjd.gz

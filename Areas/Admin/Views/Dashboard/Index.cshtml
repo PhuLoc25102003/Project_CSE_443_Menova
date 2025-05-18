@@ -1,0 +1,279 @@
+﻿@model Menova.Areas.Admin.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-dashboard">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Dashboard</h1>
+        <div class="date-selector">
+            <span>Hiển thị dữ liệu: </span>
+            <select id="date-range">
+                <option value="today">Hôm nay</option>
+                <option value="week" selected>Tuần này</option>
+                <option value="month">Tháng này</option>
+                <option value="year">Năm nay</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stat-cards">
+        <div class="stat-card">
+            <div class="stat-card-icon bg-primary">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="stat-card-info">
+                <h3>Sản phẩm</h3>
+                <p class="stat-number">@Model.TotalProducts</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-icon bg-success">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-card-info">
+                <h3>Đơn hàng</h3>
+                <p class="stat-number">@Model.TotalOrders</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-icon bg-info">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-card-info">
+                <h3>Khách hàng</h3>
+                <p class="stat-number">@Model.TotalUsers</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-icon bg-warning">
+                <i class="fas fa-money-bill"></i>
+            </div>
+            <div class="stat-card-info">
+                <h3>Doanh thu</h3>
+                <p class="stat-number">@String.Format("{0:N0}₫", Model.TotalRevenue)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Chart -->
+    <div class="chart-container">
+        <div class="chart-card">
+            <div class="card-header">
+                <h3>Doanh số bán hàng</h3>
+                <div class="card-actions">
+                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                    <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders and Top Products -->
+    <div class="dashboard-tables">
+        <div class="table-card">
+            <div class="card-header">
+                <h3>Đơn hàng gần đây</h3>
+                <a href="@Url.Action("Index", "Order", new { area = "Admin" })" class="view-all">Xem tất cả</a>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.RecentOrders)
+                        {
+                            <tr>
+                                <td>#@order.OrderId</td>
+                                <td>@order.User.FullName</td>
+                                <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                                <td>@String.Format("{0:N0}₫", order.TotalAmount)</td>
+                                <td>
+                                    <span class="status-badge @GetStatusClass(order.OrderStatus)">
+                                        @order.OrderStatus
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Detail", "Order", new { area = "Admin", id = order.OrderId })" class="btn-icon">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="card-header">
+                <h3>Sản phẩm bán chạy</h3>
+                <a href="@Url.Action("Index", "Product", new { area = "Admin" })" class="view-all">Xem tất cả</a>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Đã bán</th>
+                            <th>Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.TopSellingProducts)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="@product.Product.ImageUrl" alt="@product.Product.Name" />
+                                        <span>@product.Product.Name</span>
+                                    </div>
+                                </td>
+                                <td>@product.TotalSales</td>
+                                <td>@String.Format("{0:N0}₫", product.Revenue)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Alert -->
+    <div class="low-stock-alert">
+        <div class="card-header">
+            <h3>Cảnh báo hết hàng</h3>
+            <a href="@Url.Action("LowStock", "Product", new { area = "Admin" })" class="view-all">Xem tất cả</a>
+        </div>
+        <div class="card-body">
+            <div class="low-stock-items">
+                @foreach (var product in Model.LowStockProducts)
+                {
+                    <div class="low-stock-item">
+                        <img src="@product.ImageUrl" alt="@product.Name" />
+                        <div class="item-info">
+                            <h4>@product.Name</h4>
+                            <div class="stock-status">
+                                @{
+                                    int totalStock = product.ProductVariants.Sum(v => v.StockQuantity);
+                                    string colorClass = totalStock < 5 ? "danger" : "warning";
+                                }
+                                <span class="stock-@colorClass">@totalStock sản phẩm còn lại</span>
+                            </div>
+                        </div>
+                        <a href="@Url.Action("Edit", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-primary">
+                            Cập nhật
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up sales chart
+            const ctx = document.getElementById('salesChart').getContext('2d');
+
+            const salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.SalesChartData.Labels)),
+                    datasets: [
+                        {
+                            label: 'Doanh thu',
+                            data: @Html.Raw(Json.Serialize(Model.SalesChartData.Sales)),
+                            borderColor: '#4e73df',
+                            backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Đơn hàng',
+                            data: @Html.Raw(Json.Serialize(Model.SalesChartData.Orders)),
+                            borderColor: '#1cc88a',
+                            backgroundColor: 'rgba(28, 200, 138, 0.05)',
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('vi-VN') + '₫';
+                                }
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            grid: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+
+            // Date range selector
+            document.getElementById('date-range').addEventListener('change', function() {
+                // Implement date range change functionality
+                // This would typically make an AJAX call to update the data
+            });
+        });
+    </script>
+}
+
+@functions {
+    public string GetStatusClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "pending" => "bg-warning",
+            "processing" => "bg-info",
+            "shipped" => "bg-primary",
+            "delivered" => "bg-success",
+            "cancelled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

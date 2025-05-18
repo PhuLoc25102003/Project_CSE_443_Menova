@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/admin/admin-layout.css" />
+    <link rel="stylesheet" href="~/css/admin/admin-dashboard.css" />
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <span class="logo">POLOMANOR</span>
+                    <span class="admin-label">Admin</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <img src="/images/admin/avatar.jpg" alt="Admin Avatar">
+                </div>
+                <div class="user-info">
+                    <h3>Admin User</h3>
+                    <p>Administrator</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Product" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Product", new { area = "Admin" })">
+                            <i class="fas fa-box"></i>
+                            <span>Sản phẩm</span>
+                        </a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Category" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Category", new { area = "Admin" })">
+                            <i class="fas fa-tags"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Order" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Order", new { area = "Admin" })">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Đơn hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "User" ? "active" : "")">
+                        <a href="@Url.Action("Index", "User", new { area = "Admin" })">
+                            <i class="fas fa-users"></i>
+                            <span>Khách hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Settings" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Settings", new { area = "Admin" })">
+                            <i class="fas fa-cog"></i>
+                            <span>Cài đặt</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="@Url.Action("Logout", "Account", new { area = "" })">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Đăng xuất</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Navbar -->
+            <div class="top-navbar">
+                <div class="navbar-left">
+                    <button class="sidebar-toggle-mobile" id="sidebar-toggle-mobile">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="search-form">
+                        <input type="text" placeholder="Tìm kiếm...">
+                        <button type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="navbar-right">
+                    <div class="navbar-item">
+                        <a href="#" class="notification-bell">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge">5</span>
+                        </a>
+                    </div>
+                    <div class="navbar-item">
+                        <a href="@Url.Action("Index", "Home", new { area = "" })" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Xem trang web</span>
+                        </a>
+                    </div>
+                    <div class="navbar-item dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <img src="/images/admin/avatar.jpg" alt="User Avatar" class="avatar-small">
+                            <span>Admin</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="@Url.Action("Profile", "Account", new { area = "Admin" })">
+                                <i class="fas fa-user"></i>
+                                <span>Hồ sơ</span>
+                            </a>
+                            <a href="@Url.Action("Settings", "Account", new { area = "Admin" })">
+                                <i class="fas fa-cog"></i>
+                                <span>Cài đặt</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="@Url.Action("Logout", "Account", new { area = "" })">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Đăng xuất</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                @RenderBody()
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>&copy; @DateTime.Now.Year - Polomanor Admin Panel</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="~/js/admin/admin-layout.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

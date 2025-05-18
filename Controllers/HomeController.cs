@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Menova.Data;
+using Menova.Data.Services;
 using Menova.Models;
 using Menova.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +12,13 @@ namespace Menova.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context;
-
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
+        public HomeController(ILogger<HomeController> logger, IProductService productService, ICategoryService categoryService)
         {
             _logger = logger;
-            _context = context;
+            _productService = productService;
+            _categoryService = categoryService;
 
         }
 
@@ -24,18 +26,11 @@ namespace Menova.Controllers
         {
             var viewModel = new HomeViewModel
             {
-                FeturedProducts = await _context.Products
-                .Where(p => p.IsActive)
-                .OrderByDescending(p => p.CreatedAt)
-                .Take(8)
-                .Include(p => p.Images)
-                .ToListAsync(),
+                FeturedProducts = (List<Product>) await _productService.GetFeaturedProductsAsync(8),
 
-                Categories = await _context.Categories
-                .Where(c => c.ParentCategory == null || c.ParentCategoryId == 0)
-                .OrderBy(c => c.Name)
-                .ToListAsync(),
 
+                Categories = (List<Category>) await _categoryService.GetTopLevelCategoriesAsync(),
+                
                 Slides = new List<SlideModel>
                 {
                     new SlideModel
