@@ -1,0 +1,328 @@
+@model Menova.Models.Product
+@{
+    ViewData["Title"] = "Quản lý biến thể sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    
+    var sizes = ViewBag.Sizes as List<Menova.Models.Size>;
+    var colors = ViewBag.Colors as List<Menova.Models.Color>;
+}
+
+@section Styles {
+    <style>
+        .color-option {
+            width: 25px;
+            height: 25px;
+            display: inline-block;
+            margin-right: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        
+        .color-select-option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .size-option {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0 5px 5px 0;
+            display: inline-block;
+            cursor: pointer;
+        }
+        
+        .size-option.selected {
+            background-color: #4e73df;
+            color: white;
+            border-color: #3a5ccc;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">Quản lý biến thể: @Model.Name</h5>
+                        <p class="text-muted mb-0">Quản lý các biến thể về kích thước, màu sắc và số lượng tồn kho</p>
+                    </div>
+                    <div>
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Product Summary -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded shadow-sm" style="max-height: 150px;">
+                            }
+                            else if (Model.Images != null && Model.Images.Any())
+                            {
+                                <img src="@Model.Images.FirstOrDefault()?.ImageUrl" alt="@Model.Name" class="img-fluid rounded shadow-sm" style="max-height: 150px;">
+                            }
+                            else
+                            {
+                                <div class="bg-light rounded p-4 text-center">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-9">
+                            <h4>@Model.Name</h4>
+                            <p class="text-muted">@Model.SKU</p>
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-primary me-2">@Model.Category?.Name</span>
+                                <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
+                                    @(Model.IsActive ? "Đang hiển thị" : "Đã ẩn")
+                                </span>
+                            </div>
+                            <div class="d-flex">
+                                <div class="me-4">
+                                    <strong>Giá:</strong> @Model.Price.ToString("N0") đ
+                                </div>
+                                @if (Model.DiscountPrice > 0)
+                                {
+                                    <div>
+                                        <strong>Giá KM:</strong> @Model.DiscountPrice.ToString("N0") đ
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Add New Variant Form -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Thêm biến thể mới</h6>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.ProductVariants != null && Model.ProductVariants.Any())
+                                    {
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <div class="alert alert-info">
+                                                    <h6 class="mb-2">Biến thể đã tồn tại</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <p class="mb-1">Kích thước đã có:</p>
+                                                            <div class="d-flex flex-wrap">
+                                                                @{
+                                                                    var existingSizes = Model.ProductVariants.Select(v => v.Size).Where(s => s != null).DistinctBy(s => s.SizeId).ToList();
+                                                                }
+                                                                @foreach (var size in existingSizes)
+                                                                {
+                                                                    <span class="badge bg-primary me-1 mb-1 py-1 px-2">@size.Name</span>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <p class="mb-1">Màu sắc đã có:</p>
+                                                            <div class="d-flex flex-wrap align-items-center">
+                                                                @{
+                                                                    var existingColors = Model.ProductVariants.Select(v => v.Color).Where(c => c != null).DistinctBy(c => c.ColorId).ToList();
+                                                                }
+                                                                @foreach (var color in existingColors)
+                                                                {
+                                                                    <div class="d-inline-flex align-items-center me-2 mb-1">
+                                                                        <div class="color-option me-1" style="background-color: @color.ColorCode;"></div>
+                                                                        <span>@color.Name</span>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    
+                                    <form id="addVariantForm" method="post" asp-action="AddVariant" class="needs-validation" novalidate>
+                                        <input type="hidden" name="ProductId" value="@Model.ProductId" />
+                                        
+                                        <div class="row">
+                                            <div class="col-md-3 mb-3">
+                                                <label class="form-label">Kích thước <span class="text-danger">*</span></label>
+                                                <select name="SizeId" class="form-select" required>
+                                                    <option value="">-- Chọn kích thước --</option>
+                                                    @if (sizes != null)
+                                                    {
+                                                        foreach (var size in sizes)
+                                                        {
+                                                            <option value="@size.SizeId">@size.Name</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label class="form-label">Màu sắc <span class="text-danger">*</span></label>
+                                                <select id="colorSelect" name="ColorId" class="form-select" required>
+                                                    <option value="">-- Chọn màu sắc --</option>
+                                                    @if (colors != null)
+                                                    {
+                                                        foreach (var color in colors)
+                                                        {
+                                                            <option value="@color.ColorId" data-color="@color.ColorCode">@color.Name</option>
+                                                        }
+                                                    }
+                                                </select>
+                                <div id="colorPreview" class="mt-2" style="display: none;">
+                                    <span>Màu đã chọn:</span>
+                                    <div class="d-inline-block ms-2" style="width: 25px; height: 25px; border-radius: 4px; border: 1px solid #ddd;"></div>
+                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                                <input type="number" name="StockQuantity" class="form-control" min="0" required />
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label class="form-label">Trạng thái</label>
+                                                <div class="form-check form-switch mt-2">
+                                                    <input name="IsActive" class="form-check-input" type="checkbox" checked>
+                                                    <label class="form-check-label">Hiển thị biến thể</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-plus-circle me-1"></i> Thêm biến thể
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Existing Variants -->
+                    <h5 class="mb-3">Danh sách biến thể (@(Model.ProductVariants?.Count ?? 0))</h5>
+                    
+                    @if (Model.ProductVariants == null || !Model.ProductVariants.Any())
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Sản phẩm này chưa có biến thể nào. Vui lòng thêm biến thể sử dụng mẫu phía trên.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" style="width: 50px">ID</th>
+                                        <th style="width: 150px">Kích thước</th>
+                                        <th style="width: 200px">Màu sắc</th>
+                                        <th style="width: 150px">Tồn kho</th>
+                                        <th style="width: 150px">Trạng thái</th>
+                                        <th style="width: 150px">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var variant in Model.ProductVariants.OrderBy(v => v.Size?.Name).ThenBy(v => v.Color?.Name))
+                                    {
+                                        <tr>
+                                            <td class="text-center">@variant.ProductVariantId</td>
+                                            <td>
+                                                <span class="badge bg-info px-3 py-2 fs-6 w-100">@variant.Size?.Name</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if (!string.IsNullOrEmpty(variant.Color?.ColorCode))
+                                                    {
+                                                        <div class="color-option me-2" style="background-color: @variant.Color.ColorCode;"></div>
+                                                    }
+                                                    @variant.Color?.Name
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <form method="post" asp-action="UpdateVariantStock" class="d-flex align-items-center">
+                                                    <input type="hidden" name="ProductVariantId" value="@variant.ProductVariantId" />
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" name="StockQuantity" value="@variant.StockQuantity" 
+                                                               class="form-control" min="0" />
+                                                        <button type="submit" class="btn btn-outline-primary" title="Cập nhật tồn kho">
+                                                            <i class="fas fa-save"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <form method="post" asp-action="ToggleVariantStatus">
+                                                    <input type="hidden" name="ProductVariantId" value="@variant.ProductVariantId" />
+                                                    <button type="submit" class="btn btn-sm @(variant.IsActive ? "btn-success" : "btn-secondary") w-100" 
+                                                            title="@(variant.IsActive ? "Ẩn biến thể" : "Hiển thị biến thể")">
+                                                        <i class="fas @(variant.IsActive ? "fa-eye" : "fa-eye-slash") me-1"></i>
+                                                        @(variant.IsActive ? "Đang hiển thị" : "Đã ẩn")
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <form method="post" asp-action="DeleteVariant" onsubmit="return confirm('Bạn có chắc chắn muốn xóa biến thể này?');">
+                                                    <input type="hidden" name="ProductVariantId" value="@variant.ProductVariantId" />
+                                                    <button type="submit" class="btn btn-danger btn-sm w-100">
+                                                        <i class="fas fa-trash-alt me-1"></i> Xóa
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle color selection
+            const colorSelect = document.getElementById('colorSelect');
+            const colorPreview = document.getElementById('colorPreview');
+            const colorPreviewBox = colorPreview.querySelector('div');
+            
+            if (colorSelect && colorPreview) {
+                colorSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const colorCode = selectedOption.getAttribute('data-color');
+                    
+                    if (colorCode) {
+                        colorPreviewBox.style.backgroundColor = colorCode;
+                        colorPreview.style.display = 'block';
+                    } else {
+                        colorPreview.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Enhance form validation
+            const addVariantForm = document.getElementById('addVariantForm');
+            if (addVariantForm) {
+                addVariantForm.addEventListener('submit', function(event) {
+                    if (!this.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    this.classList.add('was-validated');
+                });
+            }
+        });
+    </script>
+} 

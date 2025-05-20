@@ -25,7 +25,10 @@ namespace Menova.Data.Services
         Task<bool> AddProductAsync(Product product);
         Task<bool> UpdateProductAsync(Product product);
         Task<bool> DeleteProductAsync(int id);
+        Task<bool> SoftDeleteProductAsync(int id);
+        Task<bool> ToggleProductStatusAsync(int id);
         Task<bool> ProductExistsAsync(int id);
         Task<IEnumerable<Product>> GetFilteredProductsAsync(string searchString, int? categoryId, string sortOrder, int page, int pageSize);
+        Task<IEnumerable<Product>> GetAllProductsIncludingInactiveAsync();
     }
 }

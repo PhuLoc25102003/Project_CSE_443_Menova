@@ -1,4 +1,5 @@
 ﻿using Menova.Models;
+using System.Linq.Expressions;
 
 namespace Menova.Data.Repositories
 {
@@ -12,5 +13,6 @@ namespace Menova.Data.Repositories
         Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm, int page, int pageSize);
         Task<int> GetSearchProductsCountAsync(string searchTerm);
         Task<IEnumerable<Product>> GetProductsWithSortingAsync(int? categoryId, string sortOrder, int page, int pageSize);
+        Task<IEnumerable<Product>> GetAllWithIncludeAsync(params Expression<Func<Product, object>>[] includeProperties);
     }
 }

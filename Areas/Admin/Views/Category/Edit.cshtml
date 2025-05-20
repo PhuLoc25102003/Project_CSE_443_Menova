@@ -1,0 +1,129 @@
+@model Menova.Models.Category
+@{
+    ViewData["Title"] = "Sửa danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/category-management.css" />
+}
+
+<div class="category-management category-form-page">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3"><i class="fas fa-edit me-2"></i>Sửa danh mục</h1>
+            <p class="text-muted mb-0">Chỉnh sửa thông tin cho danh mục "@Model.Name"</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-12">
+            <div class="card category-form-card">
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" class="category-form needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4 border-start border-danger border-4 ps-3 py-2 bg-light"></div>
+                        
+                        <input type="hidden" asp-for="CategoryId" />
+                        
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label required">Tên danh mục</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input asp-for="Name" class="form-control" placeholder="Ví dụ: Quần áo nam, Đồ điện tử..." required />
+                            </div>
+                            <span asp-validation-for="Name" class="text-danger d-block mt-1"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label">Mô tả</label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="align-self: flex-start;"><i class="fas fa-align-left"></i></span>
+                                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả chi tiết về danh mục (không bắt buộc)"></textarea>
+                            </div>
+                            <span asp-validation-for="Description" class="text-danger d-block mt-1"></span>
+                            <small class="form-text text-muted">Mô tả giúp khách hàng hiểu rõ hơn về danh mục sản phẩm của bạn.</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="ParentCategoryId" class="form-label">Danh mục cha</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-sitemap"></i></span>
+                                @if (ViewBag.IsChildCategory != null && ViewBag.IsChildCategory)
+                                {
+                                    <select asp-for="ParentCategoryId" asp-items="ViewBag.ParentCategories" class="form-select">
+                                        <option value="">-- Đây là danh mục gốc --</option>
+                                    </select>
+                                    <small class="d-block mt-1 text-muted">Danh mục cha hiện tại: @ViewBag.ParentCategoryName</small>
+                                }
+                                else
+                                {
+                                    <select asp-for="ParentCategoryId" asp-items="ViewBag.ParentCategories" class="form-select">
+                                        <option value="">-- Đây là danh mục gốc --</option>
+                                    </select>
+                                }
+                            </div>
+                            <span asp-validation-for="ParentCategoryId" class="text-danger d-block mt-1"></span>
+                            <div class="alert alert-warning mt-2 p-2 small">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                <strong>Lưu ý:</strong> Hệ thống chỉ hỗ trợ tối đa 2 cấp phân cấp. Danh mục con không thể trở thành danh mục cha và danh mục có danh mục con không thể trở thành danh mục con.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" id="categoryIsActiveSwitch" />
+                                <label class="form-check-label" for="categoryIsActiveSwitch">Kích hoạt danh mục này?</label>
+                                <small class="form-text text-muted d-block">Bỏ chọn nếu bạn muốn ẩn danh mục này khỏi trang web.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end border-top pt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-times me-1"></i> Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Bootstrap form validation
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Adjust input groups if needed
+                document.querySelectorAll('.input-group-text').forEach(function(el) {
+                    if (el.nextElementSibling && el.nextElementSibling.tagName === 'TEXTAREA') {
+                        el.style.alignSelf = 'flex-start';
+                        el.style.height = 'auto';
+                        el.style.borderRight = 'none';
+                    }
+                });
+                
+                var forms = document.getElementsByClassName('needs-validation');
+                Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+} 

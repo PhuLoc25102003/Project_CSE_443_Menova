@@ -47,6 +47,12 @@ namespace Menova.Data
                 .HasIndex(p => p.SKU)
                 .IsUnique();
 
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<ProductVariant>()
                 .HasOne(pv => pv.Product)
                 .WithMany(pv => pv.ProductVariants)

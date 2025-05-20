@@ -1,0 +1,343 @@
+/* Styles for Product Management Page */
+
+/* ===== LAYOUT STYLES ===== */
+.product-management {
+    margin-bottom: 1rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+    font-weight: 600;
+    color: #343a40;
+}
+
+.page-header p {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.page-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ===== CARD STYLES ===== */
+.card {
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 0.75rem 1rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-body.p-0 {
+    padding: 0 !important;
+}
+
+/* Product Form Card */
+.product-form-card {
+    background-color: #fff;
+}
+
+.product-form-card .card-body {
+    padding: 1.5rem;
+}
+
+/* ===== TOOLBAR STYLES ===== */
+.grid-toolbar {
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+    margin-bottom: 0.75rem !important;
+    border: 1px solid #e9ecef;
+    box-shadow: none;
+}
+
+.grid-toolbar .card-body {
+    padding: 0.5rem 0.75rem;
+}
+
+/* ===== BUTTON STYLES ===== */
+.btn {
+    font-weight: 500;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.25rem;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    transform: translateY(-1px);
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary, 
+.btn-outline-secondary, 
+.btn-outline-success, 
+.btn-outline-info, 
+.btn-outline-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* ===== AG GRID STYLES ===== */
+#productsGrid {
+    width: 100% !important;
+    height: 600px !important;
+    min-height: 400px;
+}
+
+.ag-theme-alpine {
+    --ag-border-color: #dee2e6;
+    --ag-odd-row-background-color: #f9f9f9;
+    --ag-header-background-color: #f8f9fa;
+    --ag-row-hover-color: #f1f5f9;
+    --ag-selected-row-background-color: #ebf2ff;
+    --ag-font-size: 14px;
+    --ag-font-family: inherit;
+}
+
+.ag-header-cell-resize::after {
+    background-color: #ddd;
+}
+
+.ag-floating-filter-input {
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.ag-row {
+    height: 50px !important;
+}
+
+.ag-center-cols-container {
+    width: 100%;
+}
+
+/* Cell styling */
+.product-image-cell {
+    width: 44px;
+    height: 34px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.product-image-cell:hover {
+    transform: scale(1.05);
+    border-color: #aaa;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+
+.action-buttons button, .action-buttons a {
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.action-buttons .btn:last-child {
+    margin-right: 0;
+}
+
+/* Cell text formatting */
+.text-danger.fw-bold {
+    font-weight: 600 !important;
+    color: #dc3545 !important;
+}
+
+.text-warning.fw-bold {
+    font-weight: 600 !important;
+    color: #ffc107 !important;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    border-radius: 0.25rem;
+}
+
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+/* ===== FORM STYLES ===== */
+.product-form .form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.product-form .form-label.required::after {
+    content: "*";
+    color: #dc3545;
+    margin-left: 0.25rem;
+}
+
+.product-form .form-control, 
+.product-form .form-select {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.product-form .form-control:focus,
+.product-form .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.product-form .input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    width: 100%;
+}
+
+.product-form .input-group-text {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-right: none;
+    color: #6c757d;
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.product-form .input-group-text i {
+    color: #6c757d;
+}
+
+.product-form .form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.invalid-feedback {
+    display: none;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* ===== SWITCH CONTROL ===== */
+.form-check-input {
+    cursor: pointer;
+    width: 2.5em;
+    margin-top: 0.25rem;
+}
+
+.form-check-label {
+    cursor: pointer;
+    font-size: 0.9375rem;
+    margin-left: 0.25rem;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* ===== RESPONSIVE STYLES ===== */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .page-header > div:last-child {
+        width: 100%;
+    }
+    
+    .page-header .btn {
+        width: 100%;
+    }
+    
+    .card-header .d-flex {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .card-header .d-flex > div {
+        width: 100%;
+    }
+    
+    #productsGrid {
+        height: calc(100vh - 280px) !important;
+    }
+    
+    .action-buttons {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+}
+
+.table-filter {
+    max-width: 200px;
+} 

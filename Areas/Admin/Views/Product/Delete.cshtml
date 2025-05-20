@@ -1,0 +1,101 @@
+@model Menova.Models.Product
+@{
+    ViewData["Title"] = "Xác nhận xóa sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">Xác nhận xóa sản phẩm</h5>
+                        <p class="text-muted mb-0">Bạn có chắc chắn muốn ẩn sản phẩm này?</p>
+                    </div>
+                    <div>
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Lưu ý:</strong> Sản phẩm sẽ bị ẩn khỏi cửa hàng, nhưng vẫn giữ lại trong hệ thống. Bạn có thể kích hoạt lại sản phẩm sau nếu cần.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded border" style="max-height: 200px;">
+                            }
+                            else if (Model.Images != null && Model.Images.Any())
+                            {
+                                <img src="@Model.Images.FirstOrDefault()?.ImageUrl" alt="@Model.Name" class="img-fluid rounded border" style="max-height: 200px;">
+                            }
+                            else
+                            {
+                                <div class="bg-light rounded border d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width: 200px;" class="bg-light">ID sản phẩm</th>
+                                            <td>@Model.ProductId</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="bg-light">Tên sản phẩm</th>
+                                            <td>@Model.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="bg-light">Mã SKU</th>
+                                            <td>@Model.SKU</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="bg-light">Danh mục</th>
+                                            <td>@(Model.Category?.Name ?? "Không có danh mục")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="bg-light">Giá</th>
+                                            <td>@Model.Price.ToString("N0") đ</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="bg-light">Trạng thái</th>
+                                            <td>
+                                                @if (Model.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Đang hiển thị</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Đã ẩn</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <form asp-action="Delete" method="post">
+                            <input type="hidden" asp-for="ProductId" />
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-1"></i> Xác nhận ẩn
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

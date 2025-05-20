@@ -10,13 +10,19 @@ namespace Menova.Data.Services
         public ICartRepository Carts { get; }
         public IOrderRepository Orders { get; }
         public IUserRepository Users { get; }
+        public ISizeRepository Sizes { get; }
+        public IColorRepository Colors { get; }
+        public IProductVariantRepository ProductVariants { get; }
 
         public UnitOfWork(ApplicationDbContext context,
                           IProductRepository productRepository,
                           ICategoryRepository categoryRepository,
                           ICartRepository cartRepository,
                           IOrderRepository orderRepository,
-                          IUserRepository userRepository)
+                          IUserRepository userRepository,
+                          ISizeRepository sizeRepository,
+                          IColorRepository colorRepository,
+                          IProductVariantRepository productVariantRepository)
         {
             _context = context;
             Products = productRepository;
@@ -24,6 +30,9 @@ namespace Menova.Data.Services
             Carts = cartRepository;
             Orders = orderRepository;
             Users = userRepository;
+            Sizes = sizeRepository;
+            Colors = colorRepository;
+            ProductVariants = productVariantRepository;
         }
 
         public async Task CompleteAsync()
@@ -36,5 +45,4 @@ namespace Menova.Data.Services
             _context.Dispose();
         }
     }
-
 }

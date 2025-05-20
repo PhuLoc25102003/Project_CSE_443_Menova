@@ -6,6 +6,7 @@ using Menova.Models;
 using Menova.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Menova.Controllers
 {
@@ -26,10 +27,9 @@ namespace Menova.Controllers
         {
             var viewModel = new HomeViewModel
             {
-                FeturedProducts = (List<Product>) await _productService.GetFeaturedProductsAsync(8),
+                FeturedProducts = (await _productService.GetFeaturedProductsAsync(8)).ToList(),
 
-
-                Categories = (List<Category>) await _categoryService.GetTopLevelCategoriesAsync(),
+                Categories = (await _categoryService.GetTopLevelCategoriesAsync()).ToList(),
                 
                 Slides = new List<SlideModel>
                 {

@@ -1,151 +1,655 @@
-﻿<!-- Views/Product/Index.cshtml -->
-@model IEnumerable<Product>
+﻿@model IEnumerable<Product>
 @{
     ViewData["Title"] = "Quản lý sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-    var currentFilter = ViewData["CurrentFilter"] as string;
-    var currentCategory = ViewData["CurrentCategory"] as int?;
-    var currentSort = ViewData["CurrentSort"] as string;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/product-management.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-grid.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-theme-alpine.css" />
+    <style>
+        .product-image-cell {
+            width: 40px;
+            height: 34px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .stock-warning {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        .stock-danger {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .grid-container {
+            height: 550px;
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            position: relative;
+            display: block;
+            overflow: visible;
+        }
+        
+        #productsGrid {
+            height: 100%;
+            width: 100%;
+            display: block;
+            position: relative;
+            background-color: white;
+        }
+        
+        .ag-theme-alpine {
+            --ag-border-color: #dee2e6;
+            --ag-odd-row-background-color: #f9f9f9;
+            --ag-header-background-color: #f8f9fa;
+            --ag-row-hover-color: #f1f5f9;
+            --ag-selected-row-background-color: #ebf2ff;
+            --ag-font-size: 14px;
+            --ag-font-family: inherit;
+            --ag-foreground-color: #181d1f;
+            --ag-background-color: #fff;
+            --ag-header-foreground-color: #424242;
+            --ag-data-color: #181d1f;
+            --ag-row-border-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .ag-header-cell-resize::after {
+            background-color: #ddd;
+        }
+
+        .ag-floating-filter-input {
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .ag-row {
+            height: 50px !important;
+        }
+
+        .ag-center-cols-container {
+            width: 100%;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+        }
+
+        .action-buttons a,
+        .action-buttons button {
+            margin-right: 2px;
+            padding: 2px 5px;
+        }
+
+        .action-buttons .btn:last-child {
+            margin-right: 0;
+        }
+        
+        /* Badge styles */
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            border-radius: 0.25rem;
+        }
+
+        .badge.bg-success {
+            background-color: #198754 !important;
+        }
+
+        .badge.bg-secondary {
+            background-color: #6c757d !important;
+        }
+        
+        /* Product Management Card Styles */
+        .product-management .card {
+            border-radius: .75rem;
+            box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1);
+            border: none;
+            overflow: visible;
+            position: relative;
+            z-index: 1;
+            height: auto;
+            min-height: auto;
+        }
+
+        .product-management .card-body {
+            position: relative;
+            height: auto !important;
+            min-height: auto !important;
+            max-height: none !important;
+            overflow: visible;
+        }
+        
+        /* AG Grid Specific card-body padding */
+        .product-management .card-body.p-0 {
+            padding: 0 !important;
+        }
+    </style>
 }
 
 <div class="product-management">
-    <div class="page-header">
-        <h1>Quản lý sản phẩm</h1>
-        <a href="@Url.Action("Create", "Product", new { area = "Admin" })" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Thêm sản phẩm mới
-        </a>
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3"><i class="fas fa-box-open me-2"></i>Quản lý sản phẩm</h1>
+            <p class="text-muted mb-0">Quản lý tất cả sản phẩm của cửa hàng</p>
+        </div>
+        <div>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Thêm sản phẩm mới
+            </a>
+        </div>
     </div>
 
-    <!-- Filter & Search -->
-    <div class="filter-section">
-        <form method="get" class="filter-form">
-            <div class="filter-group">
-                <label for="categoryId">Danh mục:</label>
-                <select name="categoryId" id="categoryId" class="form-control" onchange="this.form.submit()">
-                    <option value="">Tất cả danh mục</option>
-                    @foreach (var item in ViewBag.Categories)
-                    {
-                        <option value="@item.Value" selected="@(currentCategory.ToString() == item.Value)">@item.Text</option>
-                    }
-                </select>
+    <div class="card product-form-card mb-4">
+        <div class="card-header py-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <button id="refreshGrid" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-sync-alt me-1"></i> Làm mới
+                    </button>
+                    <button id="exportBtn" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-file-excel me-1"></i> Xuất Excel
+                    </button>
+                    <div class="form-check form-switch ms-2">
+                        <input class="form-check-input" type="checkbox" id="showActiveOnly" checked>
+                        <label class="form-check-label small" for="showActiveOnly">Chỉ hiện đang bán</label>
+                    </div>
+                </div>
+                <div class="text-muted small">
+                    <i class="fas fa-info-circle me-1"></i> Kéo thả để điều chỉnh cột
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body p-0">
+            <!-- AG Grid Container -->
+            <div id="productsGrid" class="ag-theme-alpine" style="width: 100%; height: 600px; display: block;"></div>
+            
+            <!-- Message when no data or grid fails -->
+            <div id="noDataMessage" class="alert alert-info m-3" style="display: none;">
+                <i class="fas fa-info-circle me-2"></i> Không có sản phẩm nào. Hãy thêm sản phẩm mới!
             </div>
             
-            <div class="filter-group">
-                <label for="sortOrder">Sắp xếp:</label>
-                <select name="sortOrder" id="sortOrder" class="form-control" onchange="this.form.submit()">
-                    <option value="">Mới nhất</option>
-                    <option value="name_asc" selected="@(currentSort == "name_asc")">Tên: A-Z</option>
-                    <option value="name_desc" selected="@(currentSort == "name_desc")">Tên: Z-A</option>
-                    <option value="price_asc" selected="@(currentSort == "price_asc")">Giá: Thấp đến cao</option>
-                    <option value="price_desc" selected="@(currentSort == "price_desc")">Giá: Cao đến thấp</option>
-                </select>
-            </div>
-            
-            <div class="search-group">
-                <input type="text" name="searchString" value="@currentFilter" placeholder="Tìm kiếm sản phẩm..." class="form-control">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-        </form>
-    </div>
-    
-    <!-- Products Table -->
-    <div class="data-table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Hình ảnh</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Danh mục</th>
-                    <th>Giá</th>
-                    <th>Kho hàng</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var product in Model)
-                {
-                    <tr>
-                        <td class="product-image-cell">
-                            @{
+            <!-- Fallback Table -->
+            @if (Model != null && Model.Any())
+            {
+                <div id="fallbackTable" class="table-responsive m-3" style="display: none;">
+                    <table class="table table-hover product-table">
+                        <thead>
+                            <tr>
+                                <th style="width:60px;">Ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>SKU</th>
+                                <th>Danh mục</th>
+                                <th>Giá</th>
+                                <th>Giảm giá</th>
+                                <th>Kho hàng</th>
+                                <th>Trạng thái</th>
+                                <th style="width:160px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model)
+                            {
                                 string imageUrl = !string.IsNullOrEmpty(product.ImageUrl) 
                                     ? product.ImageUrl 
                                     : (product.Images != null && product.Images.Any(i => i.IsPrimary) 
                                         ? product.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl 
                                         : "/images/placeholder.png");
-                            }
-                            <img src="@imageUrl" alt="@product.Name">
-                        </td>
-                        <td>@product.Name</td>
-                        <td>@product.Category?.Name</td>
-                        <td>
-                            @if (product.DiscountPrice != 0)
-                            {
-                                <span class="original-price">@String.Format("{0:N0}₫", product.Price)</span>
-                                <span class="discount-price">@String.Format("{0:N0}₫", product.DiscountPrice)</span>
-                            }
-                            else
-                            {
-                                <span>@String.Format("{0:N0}₫", product.Price)</span>
-                            }
-                        </td>
-                        <td>
-                            @{
+                                        
                                 int totalStock = product.ProductVariants?.Sum(v => v.StockQuantity) ?? 0;
-                                string stockClass = totalStock <= 5 ? "text-danger" : (totalStock <= 10 ? "text-warning" : "");
+                                string stockClass = totalStock <= 5 ? "stock-danger" : (totalStock <= 10 ? "stock-warning" : "");
+                                
+                                <tr class="@(!product.IsActive ? "table-secondary" : "")" 
+                                    data-category="@(product.Category?.Name ?? "")" 
+                                    data-active="@product.IsActive.ToString().ToLower()">
+                                    <td class="text-center">
+                                        <img class="product-image-cell" src="@imageUrl" alt="@product.Name" />
+                                    </td>
+                                    <td>@product.Name</td>
+                                    <td>@product.SKU</td>
+                                    <td>@(product.Category?.Name ?? "Không có danh mục")</td>
+                                    <td>@product.Price.ToString("N0") ₫</td>
+                                    <td>@product.DiscountPrice.ToString("N0") ₫</td>
+                                    <td class="@stockClass">@totalStock</td>
+                                    <td>
+                                        @if (product.IsActive)
+                                        {
+                                            <span class="badge bg-success">Đang bán</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Ngừng bán</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <form action="@Url.Action("ToggleStatus", "Product", new { area = "Admin" })" method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="@product.ProductId" />
+                                                <button type="submit" class="btn btn-sm @(product.IsActive ? "btn-outline-warning" : "btn-outline-success")" title="@(product.IsActive ? "Ẩn sản phẩm" : "Hiển thị sản phẩm")">
+                                                    <i class="fas @(product.IsActive ? "fa-eye-slash" : "fa-eye")"></i>
+                                                </button>
+                                            </form>
+                                            <a href="@Url.Action("Edit", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="@Url.Action("Details", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-info" title="Chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("Variants", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-secondary" title="Biến thể">
+                                                <i class="fas fa-cubes"></i>
+                                            </a>
+                                            <a href="@Url.Action("Delete", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
                             }
-                            <span class="@stockClass">@totalStock</span>
-                        </td>
-                        <td>
-                            @if (product.IsActive)
+                            @if (!Model.Any())
                             {
-                                <span class="status-badge bg-success">Đang bán</span>
+                                <tr>
+                                    <td colspan="9" class="text-center py-4">
+                                        <div class="alert alert-info mb-0">
+                                            <i class="fas fa-info-circle me-2"></i> Không có sản phẩm nào
+                                        </div>
+                                    </td>
+                                </tr>
                             }
-                            else
-                            {
-                                <span class="status-badge bg-secondary">Ngừng bán</span>
-                            }
-                        </td>
-                        <td class="actions-cell">
-                            <div class="actions-dropdown">
-                                <button class="btn-icon actions-toggle">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <div class="actions-menu">
-                                    <a href="@Url.Action("Edit", "Product", new { area = "Admin", id = product.ProductId })" class="action-item">
-                                        <i class="fas fa-edit"></i> Sửa
-                                    </a>
-                                    <a href="@Url.Action("Details", "Product", new { area = "Admin", id = product.ProductId })" class="action-item">
-                                        <i class="fas fa-eye"></i> Chi tiết
-                                    </a>
-                                    <a href="@Url.Action("Variants", "Product", new { area = "Admin", id = product.ProductId })" class="action-item">
-                                        <i class="fas fa-cubes"></i> Biến thể
-                                    </a>
-                                    <a href="@Url.Action("Delete", "Product", new { area = "Admin", id = product.ProductId })" class="action-item text-danger">
-                                        <i class="fas fa-trash-alt"></i> Xóa
-                                    </a>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    
-    <!-- Pagination -->
-    <div class="pagination-container">
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                @for (int i = 1; i <= ViewBag.TotalPages; i++)
-                {
-                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { searchString = currentFilter, categoryId = currentCategory, sortOrder = currentSort, page = i })">@i</a>
-                    </li>
-                }
-            </ul>
-        </nav>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/dist/ag-grid-community.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM loaded, initializing grid...");
+            
+            // Initialize grid only if we have the container
+            const gridDiv = document.getElementById('productsGrid');
+            if (!gridDiv) {
+                console.error("Grid container not found!");
+                document.getElementById('fallbackTable').style.display = 'block';
+                return;
+            }
+            
+            // If agGrid is not available, show fallback table
+            if (typeof agGrid === 'undefined') {
+                console.error("AG Grid library not loaded!");
+                document.getElementById('fallbackTable').style.display = 'block';
+                return;
+            }
+            
+            console.log("AG Grid found, preparing data...");
+            
+            // Prepare data
+            const rowData = [];
+            
+            // Safely check if Model exists and has items
+            const hasModelData = @Json.Serialize(Model != null && Model.Any());
+            console.log("Model has data:", hasModelData);
+            
+            @if (Model != null && Model.Any())
+            {
+                foreach (var product in Model)
+                {
+                    string imageUrl = !string.IsNullOrEmpty(product.ImageUrl) 
+                        ? product.ImageUrl 
+                        : (product.Images != null && product.Images.Any(i => i.IsPrimary) 
+                            ? product.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl 
+                            : "/images/placeholder.png");
+                            
+                    int totalStock = product.ProductVariants?.Sum(v => v.StockQuantity) ?? 0;
+                    
+                    <text>
+                    rowData.push({
+                        productId: @product.ProductId,
+                        name: @Json.Serialize(product.Name),
+                        sku: @Json.Serialize(product.SKU ?? ""),
+                        category: @Json.Serialize(product.Category?.Name ?? "Không có danh mục"),
+                        price: @product.Price.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                        formattedPrice: @Json.Serialize(product.Price.ToString("N0") + " ₫"),
+                        discountPrice: @product.DiscountPrice.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                        formattedDiscountPrice: @Json.Serialize(product.DiscountPrice.ToString("N0") + " ₫"),
+                        stockQuantity: @totalStock,
+                        stockWarning: @(totalStock <= 10 ? "true" : "false"),
+                        stockDanger: @(totalStock <= 5 ? "true" : "false"),
+                        imageUrl: @Json.Serialize(imageUrl),
+                        isActive: @Json.Serialize(product.IsActive)
+                    });
+                    </text>
+                }
+            }
+            
+            // Check if we have data
+            const hasData = rowData.length > 0;
+            console.log("Data loaded:", hasData ? "Yes" : "No", "rowData length:", rowData.length);
+            
+            if (!hasData) {
+                document.getElementById('noDataMessage').style.display = 'block';
+                return;
+            }
+                
+            // Cell renderers
+            const imageCellRenderer = function(params) {
+                return '<img class="product-image-cell" src="' + params.value + '" alt="Product Image" />';
+            };
+            
+            const statusCellRenderer = function(params) {
+                if (params.value === true) {
+                    return '<span class="badge bg-success">Đang bán</span>';
+                } else {
+                    return '<span class="badge bg-secondary">Ngừng bán</span>';
+                }
+            };
+            
+            const stockCellRenderer = function(params) {
+                const value = params.value;
+                const stockClass = params.data.stockDanger ? "stock-danger" : 
+                                  (params.data.stockWarning ? "stock-warning" : "");
+                
+                return '<span class="' + stockClass + '">' + value + '</span>';
+            };
+            
+            const actionCellRenderer = function(params) {
+                const productId = params.data.productId;
+                const isActive = params.data.isActive;
+                
+                return '<div class="action-buttons">' + 
+                    '<form action="@Url.Action("ToggleStatus", "Product", new { area = "Admin" })" method="post" style="display:inline;">' +
+                    '<input type="hidden" name="id" value="' + productId + '" />' +
+                    '<button type="submit" class="btn btn-sm ' + (isActive ? 'btn-outline-warning' : 'btn-outline-success') + 
+                    '" title="' + (isActive ? 'Ẩn sản phẩm' : 'Hiển thị sản phẩm') + '">' +
+                    '<i class="fas ' + (isActive ? 'fa-eye-slash' : 'fa-eye') + '"></i>' +
+                    '</button></form>' +
+                    '<a href="@Url.Action("Edit", "Product", new { area = "Admin" })/' + productId + 
+                    '" class="btn btn-sm btn-outline-primary ms-1" title="Sửa"><i class="fas fa-edit"></i></a>' +
+                    '<a href="@Url.Action("Details", "Product", new { area = "Admin" })/' + productId + 
+                    '" class="btn btn-sm btn-outline-info ms-1" title="Chi tiết"><i class="fas fa-eye"></i></a>' +
+                    '<a href="@Url.Action("Variants", "Product", new { area = "Admin" })/' + productId + 
+                    '" class="btn btn-sm btn-outline-secondary ms-1" title="Biến thể"><i class="fas fa-cubes"></i></a>' +
+                    '<a href="@Url.Action("Delete", "Product", new { area = "Admin" })/' + productId + 
+                    '" class="btn btn-sm btn-outline-danger ms-1" title="Xóa"><i class="fas fa-trash-alt"></i></a>' +
+                '</div>';
+            };
+            
+            // Column definitions
+            const columnDefs = [
+                { 
+                    field: 'imageUrl', 
+                    headerName: 'Ảnh', 
+                    width: 80,
+                    cellRenderer: imageCellRenderer,
+                    filter: false,
+                    floatingFilter: false,
+                    sortable: false
+                },
+                { 
+                    field: 'name', 
+                    headerName: 'Tên sản phẩm', 
+                    minWidth: 180,
+                    filter: 'agTextColumnFilter',
+                    floatingFilter: true
+                },
+                { 
+                    field: 'sku', 
+                    headerName: 'SKU', 
+                    width: 120,
+                    filter: 'agTextColumnFilter',
+                    floatingFilter: true
+                },
+                { 
+                    field: 'category', 
+                    headerName: 'Danh mục', 
+                    width: 150,
+                    filter: 'agTextColumnFilter',
+                    floatingFilter: true
+                },
+                { 
+                    field: 'formattedPrice', 
+                    headerName: 'Giá', 
+                    width: 120,
+                    filter: 'agNumberColumnFilter',
+                    floatingFilter: true
+                },
+                { 
+                    field: 'formattedDiscountPrice', 
+                    headerName: 'Giảm giá', 
+                    width: 120,
+                    filter: 'agNumberColumnFilter',
+                    floatingFilter: true
+                },
+                { 
+                    field: 'stockQuantity', 
+                    headerName: 'Kho hàng', 
+                    width: 110,
+                    filter: 'agNumberColumnFilter',
+                    floatingFilter: true,
+                    cellRenderer: stockCellRenderer
+                },
+                { 
+                    field: 'isActive', 
+                    headerName: 'Trạng thái', 
+                    width: 120,
+                    filter: 'agSetColumnFilter',
+                    floatingFilter: true,
+                    cellRenderer: statusCellRenderer
+                },
+                { 
+                    field: 'productId', 
+                    headerName: 'Thao tác', 
+                    width: 230, 
+                    cellRenderer: actionCellRenderer,
+                    filter: false,
+                    floatingFilter: false,
+                    sortable: false,
+                    resizable: false,
+                    pinned: 'right'
+                }
+            ];
+            
+            // Grid options
+            const gridOptions = {
+                columnDefs: columnDefs,
+                rowData: rowData,
+                defaultColDef: {
+                    flex: 1,
+                    minWidth: 80,
+                    sortable: true,
+                    resizable: true,
+                    filter: true
+                },
+                enableRangeSelection: true,
+                animateRows: true,
+                pagination: true,
+                paginationPageSize: 20,
+                enableCellTextSelection: true,
+                rowSelection: 'multiple',
+                suppressRowClickSelection: true,
+                domLayout: 'normal',
+                suppressScrollOnNewData: true,
+                headerHeight: 40,
+                rowHeight: 60
+            };
+            
+            // Filter by active status if checkbox is checked
+            const showActiveOnly = document.getElementById("showActiveOnly");
+            const applyActiveFilter = function() {
+                if (gridOptions.api) {
+                    if (showActiveOnly.checked) {
+                        gridOptions.api.setFilterModel({
+                            isActive: { 
+                                filterType: 'set', 
+                                values: ['true']
+                            }
+                        });
+                    } else {
+                        gridOptions.api.setFilterModel(null);
+                    }
+                }
+            };
+            
+            if (showActiveOnly) {
+                showActiveOnly.addEventListener('change', applyActiveFilter);
+            }
+            
+            // Export to Excel
+            const exportBtn = document.getElementById("exportBtn");
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function() {
+                    if (gridOptions.api) {
+                        gridOptions.api.exportDataAsExcel({
+                            fileName: 'danh_sach_san_pham_' + new Date().toISOString().slice(0, 10),
+                            skipColumnGroupHeaders: true,
+                            skipColumnHeaders: false,
+                            skipPinnedTop: true,
+                            skipPinnedBottom: true,
+                            allColumns: false,
+                            onlySelected: false,
+                            columnKeys: ['name', 'sku', 'category', 'formattedPrice', 'formattedDiscountPrice', 'stockQuantity']
+                        });
+                    } else {
+                        // Fallback to regular table export if AG Grid API not available
+                        exportTableToExcel("fallbackTable", "danh_sach_san_pham");
+                    }
+                });
+            }
+            
+            // Xử lý lỗi trong quá trình khởi tạo grid
+            try {
+                console.log("Initializing grid...");
+                console.log("Grid div exists:", !!gridDiv);
+                console.log("Grid div dimensions:", gridDiv.offsetWidth + "x" + gridDiv.offsetHeight);
+                console.log("Row data count:", rowData.length);
+                
+                // In dữ liệu row đầu tiên để kiểm tra lỗi
+                if (rowData.length > 0) {
+                    console.log("First row data:", JSON.stringify(rowData[0]));
+                }
+                
+                // Đảm bảo div container có chiều cao cụ thể
+                gridDiv.style.height = "600px";
+                gridDiv.style.width = "100%";
+                
+                // Before grid creation
+                console.log("About to create grid with options:", JSON.stringify({
+                    ...gridOptions,
+                    columnDefs: gridOptions.columnDefs.map(col => ({...col, cellRenderer: col.cellRenderer ? 'function' : undefined}))
+                }));
+
+                // Create grid
+                const grid = new agGrid.Grid(gridDiv, gridOptions);
+                console.log("Grid created:", !!grid);
+                
+                // Apply active filter initially if checkbox is checked
+                setTimeout(function() {
+                    if (showActiveOnly && showActiveOnly.checked) {
+                        applyActiveFilter();
+                    }
+                }, 200);
+                
+                // Size columns to fit
+                setTimeout(function() {
+                    if (gridOptions.api) {
+                        console.log("Sizing columns to fit...");
+                        gridOptions.api.sizeColumnsToFit();
+                    } else {
+                        console.error("Grid API not available after initialization!");
+                        document.getElementById('fallbackTable').style.display = 'block';
+                    }
+                }, 500);
+                
+                // Handle grid size on window resize
+                window.addEventListener('resize', function() {
+                    if (gridOptions.api) {
+                        setTimeout(function() {
+                            gridOptions.api.sizeColumnsToFit();
+                        }, 100);
+                    }
+                });
+                
+                // Refresh button
+                const refreshBtn = document.getElementById('refreshGrid');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', function() {
+                        if (gridOptions.api) {
+                            gridOptions.api.setFilterModel(null);
+                            if (showActiveOnly && showActiveOnly.checked) {
+                                applyActiveFilter();
+                            }
+                        } else {
+                            window.location.reload();
+                        }
+                    });
+                }
+                
+                console.log("Grid initialization complete!");
+            } catch (error) {
+                console.error("Error initializing AG Grid:", error);
+                console.error("Error details:", error.stack);
+                
+                // Thử tạo một minimal grid để xem có hoạt động không
+                try {
+                    console.log("Trying minimal grid config...");
+                    const minimalGridOptions = {
+                        columnDefs: [{ field: 'name', headerName: 'Tên sản phẩm' }],
+                        rowData: rowData,
+                        defaultColDef: { flex: 1 }
+                    };
+                    new agGrid.Grid(gridDiv, minimalGridOptions);
+                    console.log("Minimal grid created successfully");
+                } catch (minimalError) {
+                    console.error("Even minimal grid failed:", minimalError);
+                }
+                
+                document.getElementById('fallbackTable').style.display = 'block';
+                
+                // Show detailed error
+                const noDataMsg = document.getElementById('noDataMessage');
+                if (noDataMsg) {
+                    noDataMsg.style.display = 'block';
+                    noDataMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> Lỗi khởi tạo bảng: ' + error.message;
+                    noDataMsg.className = 'alert alert-danger m-3';
+                }
+            }
+            
+            // Function to export table to Excel (fallback method)
+            function exportTableToExcel(tableId, fileName) {
+                const wb = XLSX.utils.book_new();
+                const table = document.getElementById(tableId);
+                
+                if (table) {
+                    const clonedTable = table.cloneNode(true);
+                    const rows = clonedTable.querySelectorAll("tr");
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll("th, td");
+                        if (cells.length > 0) {
+                            cells[cells.length - 1].remove();
+                        }
+                    });
+                    
+                    const ws = XLSX.utils.table_to_sheet(clonedTable);
+                    XLSX.utils.book_append_sheet(wb, ws, "Sản phẩm");
+                    XLSX.writeFile(wb, fileName + "_" + new Date().toISOString().slice(0, 10) + ".xlsx");
+                }
+            }
+        });
+    </script>
+}

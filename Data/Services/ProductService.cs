@@ -169,6 +169,68 @@ namespace Menova.Data.Services
             return false;
         }
 
+        public async Task<bool> SoftDeleteProductAsync(int id)
+        {
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product != null)
+            {
+                product.IsActive = false;
+                product.UpdatedAt = DateTime.Now;
+                _unitOfWork.Products.Update(product);
+                await _unitOfWork.CompleteAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> ToggleProductStatusAsync(int id)
+        {
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product != null)
+            {
+                product.IsActive = !product.IsActive;
+                product.UpdatedAt = DateTime.Now;
+                _unitOfWork.Products.Update(product);
+                await _unitOfWork.CompleteAsync();
+                return true;
+            }
+            return false;
+        }
+        
+        public async Task<IEnumerable<Product>> GetAllProductsIncludingInactiveAsync()
+        {
+            try
+            {
+                // Cố gắng lấy sản phẩm với danh mục được tải sẵn
+                return await _unitOfWork.Products.GetAllWithIncludeAsync(p => p.Category, p => p.ProductVariants, p => p.Images);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading products with include: {ex.Message}");
+                
+                // Quay lại cách lấy cơ bản nếu có lỗi
+                var products = await _unitOfWork.Products.GetAllAsync();
+                
+                // Tải thủ công danh mục cho mỗi sản phẩm
+                foreach (var product in products)
+                {
+                    try
+                    {
+                        if (product.Category == null && product.CategoryId > 0)
+                        {
+                            product.Category = await _unitOfWork.Categories.GetByIdAsync(product.CategoryId);
+                        }
+                    }
+                    catch (Exception innerEx)
+                    {
+                        Console.WriteLine($"Error loading category for product {product.ProductId}: {innerEx.Message}");
+                    }
+                }
+                
+                return products;
+            }
+        }
+
         public async Task<bool> ProductExistsAsync(int id)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(id);

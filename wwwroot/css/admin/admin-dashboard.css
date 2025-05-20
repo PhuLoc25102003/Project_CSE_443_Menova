@@ -1,0 +1,111 @@
+/* Admin Dashboard Styles */
+/* ... existing code ... */
+
+/* Product Management Styles */
+.product-management .card {
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.product-management .card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.product-management .table th {
+    font-weight: 600;
+    color: #495057;
+}
+
+.product-management .table td {
+    vertical-align: middle;
+    padding: 0.75rem;
+}
+
+.product-management .btn-group {
+    display: flex;
+}
+
+.product-management .btn-group .btn {
+    border-radius: 0;
+}
+
+.product-management .btn-group .btn:first-child {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.product-management .btn-group .btn:last-child {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.product-thumbnail {
+    transition: transform 0.2s ease;
+}
+
+.product-thumbnail:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.product-sku {
+    font-size: 0.85rem;
+}
+
+.empty-state {
+    padding: 2rem 0;
+}
+
+.page-header .header-content h1 {
+    margin-bottom: 0.25rem;
+}
+
+.filter-section .card-title {
+    display: flex;
+    align-items: center;
+}
+
+.filter-section .card-title i {
+    margin-right: 0.5rem;
+}
+
+.filter-form .row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.filter-form [class*="col-"] {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+@media (max-width: 768px) {
+    .filter-form .col-md-3,
+    .filter-form .col-md-6 {
+        margin-bottom: 1rem;
+    }
+    
+    .product-management .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .product-management .btn-group .btn {
+        border-radius: 0.25rem;
+        margin-bottom: 0.25rem;
+    }
+}
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.pagination .page-link {
+    color: #624bff;
+    border-color: #e9ecef;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #624bff;
+    border-color: #624bff;
+} 

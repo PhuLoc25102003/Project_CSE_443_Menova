@@ -33,6 +33,9 @@ namespace Menova
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ISizeRepository, SizeRepository>();
+            services.AddScoped<IColorRepository, ColorRepository>();
+            services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
 
             // Register UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();

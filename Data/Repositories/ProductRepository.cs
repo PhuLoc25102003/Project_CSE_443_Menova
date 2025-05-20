@@ -1,5 +1,6 @@
 ﻿using Menova.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Menova.Data.Repositories
 {
@@ -7,6 +8,18 @@ namespace Menova.Data.Repositories
     {
         public ProductRepository(ApplicationDbContext context) : base(context)
         {
+        }
+
+        public async Task<IEnumerable<Product>> GetAllWithIncludeAsync(params Expression<Func<Product, object>>[] includeProperties)
+        {
+            IQueryable<Product> query = _context.Products;
+            
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+            
+            return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<Product>> GetFeaturedProductsAsync(int count)
