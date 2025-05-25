@@ -8,37 +8,7 @@
 }
 
 @section Styles {
-    <style>
-        .color-option {
-            width: 25px;
-            height: 25px;
-            display: inline-block;
-            margin-right: 5px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            vertical-align: middle;
-        }
-        
-        .color-select-option {
-            display: flex;
-            align-items: center;
-        }
-        
-        .size-option {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin: 0 5px 5px 0;
-            display: inline-block;
-            cursor: pointer;
-        }
-        
-        .size-option.selected {
-            background-color: #4e73df;
-            color: white;
-            border-color: #3a5ccc;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/product-variants.css" />
 }
 
 <div class="container-fluid py-4">
@@ -104,8 +74,8 @@
                     <!-- Add New Variant Form -->
                     <div class="row mb-4">
                         <div class="col-12">
-                            <div class="card border">
-                                <div class="card-header bg-light">
+                            <div class="card variant-form border mb-5">
+                                <div class="card-header">
                                     <h6 class="mb-0">Thêm biến thể mới</h6>
                                 </div>
                                 <div class="card-body">
@@ -152,8 +122,8 @@
                                     <form id="addVariantForm" method="post" asp-action="AddVariant" class="needs-validation" novalidate>
                                         <input type="hidden" name="ProductId" value="@Model.ProductId" />
                                         
-                                        <div class="row">
-                                            <div class="col-md-3 mb-3">
+                                        <div class="row g-3 align-items-end">
+                                            <div class="col-md-3">
                                                 <label class="form-label">Kích thước <span class="text-danger">*</span></label>
                                                 <select name="SizeId" class="form-select" required>
                                                     <option value="">-- Chọn kích thước --</option>
@@ -166,9 +136,9 @@
                                                     }
                                                 </select>
                                             </div>
-                                            <div class="col-md-3 mb-3">
+                                            <div class="col-md-3">
                                                 <label class="form-label">Màu sắc <span class="text-danger">*</span></label>
-                                                <select id="colorSelect" name="ColorId" class="form-select" required>
+                                                <select id="colorSelect" name="ColorId" class="form-select" required onchange="updateColorPreview()">
                                                     <option value="">-- Chọn màu sắc --</option>
                                                     @if (colors != null)
                                                     {
@@ -178,16 +148,16 @@
                                                         }
                                                     }
                                                 </select>
-                                <div id="colorPreview" class="mt-2" style="display: none;">
-                                    <span>Màu đã chọn:</span>
-                                    <div class="d-inline-block ms-2" style="width: 25px; height: 25px; border-radius: 4px; border: 1px solid #ddd;"></div>
-                                </div>
+                                                <div id="colorPreview" class="mt-2" style="display: none;">
+                                                    <span>Màu đã chọn:</span>
+                                                    <div class="d-inline-block ms-2" style="width: 25px; height: 25px; border-radius: 4px; border: 1px solid #ddd;"></div>
+                                                </div>
                                             </div>
-                                            <div class="col-md-3 mb-3">
+                                            <div class="col-md-3">
                                                 <label class="form-label">Số lượng <span class="text-danger">*</span></label>
                                                 <input type="number" name="StockQuantity" class="form-control" min="0" required />
                                             </div>
-                                            <div class="col-md-3 mb-3">
+                                            <div class="col-md-3">
                                                 <label class="form-label">Trạng thái</label>
                                                 <div class="form-check form-switch mt-2">
                                                     <input name="IsActive" class="form-check-input" type="checkbox" checked>
@@ -196,12 +166,25 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="text-end">
+                                        <div class="text-end mt-4">
                                             <button type="submit" class="btn btn-primary">
                                                 <i class="fas fa-plus-circle me-1"></i> Thêm biến thể
                                             </button>
                                         </div>
                                     </form>
+                                    <script>
+                                        function updateColorPreview() {
+                                            var select = document.getElementById('colorSelect');
+                                            var preview = document.getElementById('colorPreview');
+                                            var color = select.options[select.selectedIndex].getAttribute('data-color');
+                                            if (color) {
+                                                preview.style.display = 'block';
+                                                preview.querySelector('.d-inline-block').style.backgroundColor = color;
+                                            } else {
+                                                preview.style.display = 'none';
+                                            }
+                                        }
+                                    </script>
                                 </div>
                             </div>
                         </div>

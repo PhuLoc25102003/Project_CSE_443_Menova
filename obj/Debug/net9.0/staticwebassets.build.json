@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "IOUW+g9puKpKiM/2UXPpxsvTB1plx4Y/nq+ZeH1x8y4=",
+  "Hash": "AsaoyOxUQuqXuSr50l9omw9NcZgBhwHLeV9IAHmKXCg=",
   "Source": "Menova",
   "BasePath": "_content/Menova",
   "Mode": "Default",
@@ -878,12 +878,12 @@
       "OriginalItemSpec": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\lib\\jquery\\dist\\jquery.slim.min.map"
     },
     {
-      "Identity": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-rppuznjpdr.gz",
+      "Identity": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-kikbj6k9oa.gz",
       "SourceId": "Menova",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\",
       "BasePath": "_content/Menova",
-      "RelativePath": "css/admin/product-management#[.{fingerprint=rppuznjpdr}]?.css.gz",
+      "RelativePath": "css/admin/product-management#[.{fingerprint=kikbj6k9oa}]?.css.gz",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Alternative",
@@ -892,8 +892,8 @@
       "RelatedAsset": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-management.css",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "op9kk7nbgo",
-      "Integrity": "1FE/5wgzEUn5C0uKZBl7ig40uEYTtC8wMEWDwTKDDh8=",
+      "Fingerprint": "ze3sudxnl3",
+      "Integrity": "tf228/6XEs2xc4Oaibmm77KLuzDtY8Q+FYSDuhblM40=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-management.css"
@@ -1212,6 +1212,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js"
+    },
+    {
+      "Identity": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\nxr5hjmjd1-xkumu915bc.gz",
+      "SourceId": "Menova",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\",
+      "BasePath": "_content/Menova",
+      "RelativePath": "css/admin/product-table#[.{fingerprint=xkumu915bc}]?.css.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-table.css",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "xek91094ow",
+      "Integrity": "Z/82EBZ9y+feIxhcsmUuL86xjmlCgZELrMoAgNaheQs=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-table.css"
     },
     {
       "Identity": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\o9mors0583-ayz9nwx409.gz",
@@ -1900,11 +1921,32 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "rppuznjpdr",
-      "Integrity": "UfP4NH9cJzjgw4pIfaCHeLSEzRFIuQKLTsiKKTyBESc=",
+      "Fingerprint": "kikbj6k9oa",
+      "Integrity": "nIecSf45BUpbKIeIE2hE7r/Ql+9HErAbMOZOZM3kO/M=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\admin\\product-management.css"
+    },
+    {
+      "Identity": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-table.css",
+      "SourceId": "Menova",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\",
+      "BasePath": "_content/Menova",
+      "RelativePath": "css/admin/product-table#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "xkumu915bc",
+      "Integrity": "UTaiP7bFi7YRspd7Z+zVBuzmagTp54R/mjeeV31xdsA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\admin\\product-table.css"
     },
     {
       "Identity": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\cart.css",
@@ -4646,12 +4688,12 @@
     },
     {
       "Route": "css/admin/product-management.css",
-      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-rppuznjpdr.gz",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-kikbj6k9oa.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000595592615"
+          "Quality": "0.000594883998"
         }
       ],
       "ResponseHeaders": [
@@ -4661,15 +4703,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1678"
+          "Value": "1680"
         },
         {
           "Name": "ETag",
-          "Value": "\"1FE/5wgzEUn5C0uKZBl7ig40uEYTtC8wMEWDwTKDDh8=\""
+          "Value": "\"tf228/6XEs2xc4Oaibmm77KLuzDtY8Q+FYSDuhblM40=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 20 May 2025 04:17:49 GMT"
+          "Value": "Tue, 20 May 2025 16:37:32 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -4689,13 +4731,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"UfP4NH9cJzjgw4pIfaCHeLSEzRFIuQKLTsiKKTyBESc=\""
+          "Value": "W/\"nIecSf45BUpbKIeIE2hE7r/Ql+9HErAbMOZOZM3kO/M=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-UfP4NH9cJzjgw4pIfaCHeLSEzRFIuQKLTsiKKTyBESc="
+          "Value": "sha256-nIecSf45BUpbKIeIE2hE7r/Ql+9HErAbMOZOZM3kO/M="
         }
       ]
     },
@@ -4710,7 +4752,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "6231"
+          "Value": "6235"
         },
         {
           "Name": "Content-Type",
@@ -4718,11 +4760,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"UfP4NH9cJzjgw4pIfaCHeLSEzRFIuQKLTsiKKTyBESc=\""
+          "Value": "\"nIecSf45BUpbKIeIE2hE7r/Ql+9HErAbMOZOZM3kO/M=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 20 May 2025 04:17:49 GMT"
+          "Value": "Tue, 20 May 2025 16:37:32 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -4732,13 +4774,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-UfP4NH9cJzjgw4pIfaCHeLSEzRFIuQKLTsiKKTyBESc="
+          "Value": "sha256-nIecSf45BUpbKIeIE2hE7r/Ql+9HErAbMOZOZM3kO/M="
         }
       ]
     },
     {
       "Route": "css/admin/product-management.css.gz",
-      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-rppuznjpdr.gz",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-kikbj6k9oa.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -4747,7 +4789,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1678"
+          "Value": "1680"
         },
         {
           "Name": "Content-Type",
@@ -4755,11 +4797,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"1FE/5wgzEUn5C0uKZBl7ig40uEYTtC8wMEWDwTKDDh8=\""
+          "Value": "\"tf228/6XEs2xc4Oaibmm77KLuzDtY8Q+FYSDuhblM40=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 20 May 2025 04:17:49 GMT"
+          "Value": "Tue, 20 May 2025 16:37:32 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -4777,18 +4819,18 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-1FE/5wgzEUn5C0uKZBl7ig40uEYTtC8wMEWDwTKDDh8="
+          "Value": "sha256-tf228/6XEs2xc4Oaibmm77KLuzDtY8Q+FYSDuhblM40="
         }
       ]
     },
     {
-      "Route": "css/admin/product-management.rppuznjpdr.css",
-      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-rppuznjpdr.gz",
+      "Route": "css/admin/product-management.kikbj6k9oa.css",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-kikbj6k9oa.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000595592615"
+          "Quality": "0.000594883998"
         }
       ],
       "ResponseHeaders": [
@@ -4798,15 +4840,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1678"
+          "Value": "1680"
         },
         {
           "Name": "ETag",
-          "Value": "\"1FE/5wgzEUn5C0uKZBl7ig40uEYTtC8wMEWDwTKDDh8=\""
+          "Value": "\"tf228/6XEs2xc4Oaibmm77KLuzDtY8Q+FYSDuhblM40=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 20 May 2025 04:17:49 GMT"
+          "Value": "Tue, 20 May 2025 16:37:32 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -4826,13 +4868,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"UfP4NH9cJzjgw4pIfaCHeLSEzRFIuQKLTsiKKTyBESc=\""
+          "Value": "W/\"nIecSf45BUpbKIeIE2hE7r/Ql+9HErAbMOZOZM3kO/M=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "rppuznjpdr"
+          "Value": "kikbj6k9oa"
         },
         {
           "Name": "label",
@@ -4840,12 +4882,12 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-UfP4NH9cJzjgw4pIfaCHeLSEzRFIuQKLTsiKKTyBESc="
+          "Value": "sha256-nIecSf45BUpbKIeIE2hE7r/Ql+9HErAbMOZOZM3kO/M="
         }
       ]
     },
     {
-      "Route": "css/admin/product-management.rppuznjpdr.css",
+      "Route": "css/admin/product-management.kikbj6k9oa.css",
       "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-management.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -4855,7 +4897,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "6231"
+          "Value": "6235"
         },
         {
           "Name": "Content-Type",
@@ -4863,11 +4905,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"UfP4NH9cJzjgw4pIfaCHeLSEzRFIuQKLTsiKKTyBESc=\""
+          "Value": "\"nIecSf45BUpbKIeIE2hE7r/Ql+9HErAbMOZOZM3kO/M=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 20 May 2025 04:17:49 GMT"
+          "Value": "Tue, 20 May 2025 16:37:32 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -4877,7 +4919,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "rppuznjpdr"
+          "Value": "kikbj6k9oa"
         },
         {
           "Name": "label",
@@ -4885,13 +4927,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-UfP4NH9cJzjgw4pIfaCHeLSEzRFIuQKLTsiKKTyBESc="
+          "Value": "sha256-nIecSf45BUpbKIeIE2hE7r/Ql+9HErAbMOZOZM3kO/M="
         }
       ]
     },
     {
-      "Route": "css/admin/product-management.rppuznjpdr.css.gz",
-      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-rppuznjpdr.gz",
+      "Route": "css/admin/product-management.kikbj6k9oa.css.gz",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\k5ajtf2o4e-kikbj6k9oa.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -4900,7 +4942,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1678"
+          "Value": "1680"
         },
         {
           "Name": "Content-Type",
@@ -4908,11 +4950,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"1FE/5wgzEUn5C0uKZBl7ig40uEYTtC8wMEWDwTKDDh8=\""
+          "Value": "\"tf228/6XEs2xc4Oaibmm77KLuzDtY8Q+FYSDuhblM40=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 20 May 2025 04:17:49 GMT"
+          "Value": "Tue, 20 May 2025 16:37:32 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -4930,7 +4972,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "rppuznjpdr"
+          "Value": "kikbj6k9oa"
         },
         {
           "Name": "label",
@@ -4938,7 +4980,305 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-1FE/5wgzEUn5C0uKZBl7ig40uEYTtC8wMEWDwTKDDh8="
+          "Value": "sha256-tf228/6XEs2xc4Oaibmm77KLuzDtY8Q+FYSDuhblM40="
+        }
+      ]
+    },
+    {
+      "Route": "css/admin/product-table.css",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\nxr5hjmjd1-xkumu915bc.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000679809653"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1470"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Z/82EBZ9y+feIxhcsmUuL86xjmlCgZELrMoAgNaheQs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 21 May 2025 03:49:09 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"UTaiP7bFi7YRspd7Z+zVBuzmagTp54R/mjeeV31xdsA=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-UTaiP7bFi7YRspd7Z+zVBuzmagTp54R/mjeeV31xdsA="
+        }
+      ]
+    },
+    {
+      "Route": "css/admin/product-table.css",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5235"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UTaiP7bFi7YRspd7Z+zVBuzmagTp54R/mjeeV31xdsA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 21 May 2025 03:49:09 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-UTaiP7bFi7YRspd7Z+zVBuzmagTp54R/mjeeV31xdsA="
+        }
+      ]
+    },
+    {
+      "Route": "css/admin/product-table.css.gz",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\nxr5hjmjd1-xkumu915bc.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1470"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Z/82EBZ9y+feIxhcsmUuL86xjmlCgZELrMoAgNaheQs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 21 May 2025 03:49:09 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Z/82EBZ9y+feIxhcsmUuL86xjmlCgZELrMoAgNaheQs="
+        }
+      ]
+    },
+    {
+      "Route": "css/admin/product-table.xkumu915bc.css",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\nxr5hjmjd1-xkumu915bc.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000679809653"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1470"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Z/82EBZ9y+feIxhcsmUuL86xjmlCgZELrMoAgNaheQs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 21 May 2025 03:49:09 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"UTaiP7bFi7YRspd7Z+zVBuzmagTp54R/mjeeV31xdsA=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "xkumu915bc"
+        },
+        {
+          "Name": "label",
+          "Value": "css/admin/product-table.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-UTaiP7bFi7YRspd7Z+zVBuzmagTp54R/mjeeV31xdsA="
+        }
+      ]
+    },
+    {
+      "Route": "css/admin/product-table.xkumu915bc.css",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5235"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UTaiP7bFi7YRspd7Z+zVBuzmagTp54R/mjeeV31xdsA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 21 May 2025 03:49:09 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "xkumu915bc"
+        },
+        {
+          "Name": "label",
+          "Value": "css/admin/product-table.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-UTaiP7bFi7YRspd7Z+zVBuzmagTp54R/mjeeV31xdsA="
+        }
+      ]
+    },
+    {
+      "Route": "css/admin/product-table.xkumu915bc.css.gz",
+      "AssetFile": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\Debug\\net9.0\\compressed\\nxr5hjmjd1-xkumu915bc.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1470"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Z/82EBZ9y+feIxhcsmUuL86xjmlCgZELrMoAgNaheQs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 21 May 2025 03:49:09 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "xkumu915bc"
+        },
+        {
+          "Name": "label",
+          "Value": "css/admin/product-table.css.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Z/82EBZ9y+feIxhcsmUuL86xjmlCgZELrMoAgNaheQs="
         }
       ]
     },

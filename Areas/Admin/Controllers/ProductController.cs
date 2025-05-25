@@ -36,14 +36,7 @@ namespace Menova.Areas.Admin.Controllers
                 var products = await _productService.GetAllProductsIncludingInactiveAsync();
                 
                 // Ensure Category is loaded (this should be done in the service instead ideally)
-                foreach (var product in products)
-                {
-                     Console.WriteLine(product.Name +"---------------------------------------------");
-                    if (product.Category == null && product.CategoryId > 0)
-                    {
-                        product.Category = await _unitOfWork.Categories.GetByIdAsync(product.CategoryId);
-                    }
-                }
+                
                 
                 // Apply filters
                 if (!string.IsNullOrEmpty(searchString))
@@ -68,10 +61,6 @@ namespace Menova.Areas.Admin.Controllers
                     _ => products.OrderByDescending(p => p.CreatedAt), // Default sort
                 };
                
-                 foreach (var product in products)
-                {
-                     Console.WriteLine(product.Name);
-                }
                 // Apply pagination
                 var pagedProducts = products
                     .Skip((page - 1) * pageSize)
@@ -357,7 +346,8 @@ namespace Menova.Areas.Admin.Controllers
                     SizeId = sizeId,
                     ColorId = colorId,
                     StockQuantity = stockQuantity,
-                    IsActive = isActive
+                    IsActive = isActive,
+                    SKU = $"{product.SKU}-{sizeId}-{colorId}"
                 };
 
                 await _unitOfWork.ProductVariants.AddAsync(newVariant);

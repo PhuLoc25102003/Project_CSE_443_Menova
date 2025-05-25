@@ -59,22 +59,6 @@
                         <div class="detail-label">
                             <i class="fas fa-level-up-alt me-1"></i> Danh mục cha
                         </div>
-                        <div class="detail-value">
-                            @if (Model.ParentCategory != null)
-                            {
-                                <a asp-action="Details" asp-route-id="@Model.ParentCategoryId" class="category-badge-link">
-                                    <span class="category-badge">
-                                        <i class="fas fa-folder me-1"></i> @Model.ParentCategory.Name
-                                    </span>
-                                </a>
-                            }
-                            else
-                            {
-                                <span class="badge bg-light text-dark border">
-                                    <i class="fas fa-ban me-1"></i> Không có
-                                </span>
-                            }
-                        </div>
                     </div>
 
                     <div class="detail-item">
@@ -133,7 +117,7 @@
                                                     <i class="fas fa-file-alt subcategory-icon"></i>
                                                     <span class="fw-medium">@child.Name</span>
                                                 </div>
-                                                <span class="badge bg-secondary">ID: @child.CategoryId</span>
+                                                
                                             </div>
                                         </div>
                                         

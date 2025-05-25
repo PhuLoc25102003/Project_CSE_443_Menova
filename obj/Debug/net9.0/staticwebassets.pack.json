@@ -33,6 +33,10 @@
       "PackagePath": "staticwebassets\\css\\admin\\product-management.css"
     },
     {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-table.css",
+      "PackagePath": "staticwebassets\\css\\admin\\product-table.css"
+    },
+    {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\cart.css",
       "PackagePath": "staticwebassets\\css\\cart.css"
     },

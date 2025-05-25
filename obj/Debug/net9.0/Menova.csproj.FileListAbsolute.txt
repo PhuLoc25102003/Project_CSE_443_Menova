@@ -246,4 +246,5 @@ C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\refint\Men
 C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\Menova.pdb
 C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\Menova.genruntimeconfig.cache
 C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\ref\Menova.dll
-C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\k5ajtf2o4e-rppuznjpdr.gz
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\k5ajtf2o4e-kikbj6k9oa.gz
+C:\Users\LOC\OneDrive\Desktop\CSE_443_Project\Menova\obj\Debug\net9.0\compressed\nxr5hjmjd1-xkumu915bc.gz

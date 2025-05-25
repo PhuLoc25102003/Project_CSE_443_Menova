@@ -6,135 +6,9 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/admin/product-management.css" />
+    <link rel="stylesheet" href="~/css/admin/product-table.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-grid.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-theme-alpine.css" />
-    <style>
-        .product-image-cell {
-            width: 40px;
-            height: 34px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        
-        .stock-warning {
-            color: #ffc107;
-            font-weight: bold;
-        }
-        
-        .stock-danger {
-            color: #dc3545;
-            font-weight: bold;
-        }
-        
-        .grid-container {
-            height: 550px;
-            width: 100%;
-            padding: 5px;
-            box-sizing: border-box;
-            position: relative;
-            display: block;
-            overflow: visible;
-        }
-        
-        #productsGrid {
-            height: 100%;
-            width: 100%;
-            display: block;
-            position: relative;
-            background-color: white;
-        }
-        
-        .ag-theme-alpine {
-            --ag-border-color: #dee2e6;
-            --ag-odd-row-background-color: #f9f9f9;
-            --ag-header-background-color: #f8f9fa;
-            --ag-row-hover-color: #f1f5f9;
-            --ag-selected-row-background-color: #ebf2ff;
-            --ag-font-size: 14px;
-            --ag-font-family: inherit;
-            --ag-foreground-color: #181d1f;
-            --ag-background-color: #fff;
-            --ag-header-foreground-color: #424242;
-            --ag-data-color: #181d1f;
-            --ag-row-border-color: rgba(0, 0, 0, 0.05);
-        }
-        
-        .ag-header-cell-resize::after {
-            background-color: #ddd;
-        }
-
-        .ag-floating-filter-input {
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-
-        .ag-row {
-            height: 50px !important;
-        }
-
-        .ag-center-cols-container {
-            width: 100%;
-        }
-        
-        .action-buttons {
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: flex-start;
-        }
-
-        .action-buttons a,
-        .action-buttons button {
-            margin-right: 2px;
-            padding: 2px 5px;
-        }
-
-        .action-buttons .btn:last-child {
-            margin-right: 0;
-        }
-        
-        /* Badge styles */
-        .badge {
-            font-weight: 500;
-            padding: 0.35em 0.65em;
-            font-size: 0.75em;
-            border-radius: 0.25rem;
-        }
-
-        .badge.bg-success {
-            background-color: #198754 !important;
-        }
-
-        .badge.bg-secondary {
-            background-color: #6c757d !important;
-        }
-        
-        /* Product Management Card Styles */
-        .product-management .card {
-            border-radius: .75rem;
-            box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1);
-            border: none;
-            overflow: visible;
-            position: relative;
-            z-index: 1;
-            height: auto;
-            min-height: auto;
-        }
-
-        .product-management .card-body {
-            position: relative;
-            height: auto !important;
-            min-height: auto !important;
-            max-height: none !important;
-            overflow: visible;
-        }
-        
-        /* AG Grid Specific card-body padding */
-        .product-management .card-body.p-0 {
-            padding: 0 !important;
-        }
-    </style>
 }
 
 <div class="product-management">
@@ -210,7 +84,7 @@
                                 int totalStock = product.ProductVariants?.Sum(v => v.StockQuantity) ?? 0;
                                 string stockClass = totalStock <= 5 ? "stock-danger" : (totalStock <= 10 ? "stock-warning" : "");
                                 
-                                <tr class="@(!product.IsActive ? "table-secondary" : "")" 
+                                <tr class="@(!product.IsActive ? "table-secondary" : "") align-middle" 
                                     data-category="@(product.Category?.Name ?? "")" 
                                     data-active="@product.IsActive.ToString().ToLower()">
                                     <td class="text-center">
@@ -221,15 +95,21 @@
                                     <td>@(product.Category?.Name ?? "Không có danh mục")</td>
                                     <td>@product.Price.ToString("N0") ₫</td>
                                     <td>@product.DiscountPrice.ToString("N0") ₫</td>
-                                    <td class="@stockClass">@totalStock</td>
-                                    <td>
+                                    <td class="text-center">
+                                        <div class="stock-cell @stockClass">@totalStock</div>
+                                    </td>
+                                    <td class="text-center">
                                         @if (product.IsActive)
                                         {
-                                            <span class="badge bg-success">Đang bán</span>
+                                            <div class="status-cell">
+                                               <p>Đang bán</p>
+                                            </div>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-secondary">Ngừng bán</span>
+                                            <div class="status-cell">
+                                                <p>Ngừng bán</p>
+                                            </div>
                                         }
                                     </td>
                                     <td>
@@ -250,7 +130,7 @@
                                                 <i class="fas fa-cubes"></i>
                                             </a>
                                             <a href="@Url.Action("Delete", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-danger" title="Xóa">
-                                                <i class="fas fa-trash-alt"></i>
+                                                <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
                                     </td>
@@ -354,18 +234,36 @@
             
             const statusCellRenderer = function(params) {
                 if (params.value === true) {
-                    return '<span class="badge bg-success">Đang bán</span>';
+                    return '<div class="status-cell"><span class=""> Đang bán</span></div>';
                 } else {
-                    return '<span class="badge bg-secondary">Ngừng bán</span>';
+                    return '<div class="status-cell"><span class=""> Ngừng bán</span></div>';
                 }
             };
             
             const stockCellRenderer = function(params) {
                 const value = params.value;
-                const stockClass = params.data.stockDanger ? "stock-danger" : 
-                                  (params.data.stockWarning ? "stock-warning" : "");
+                let stockClass = "";
+                let badgeClass = "";
+                let icon = "";
                 
-                return '<span class="' + stockClass + '">' + value + '</span>';
+                if (params.data.stockDanger) {
+                    stockClass = "text-danger fw-bold";
+                    badgeClass = "bg-danger";
+                    icon = '<i class="fas fa-exclamation-circle"></i>';
+                } else if (params.data.stockWarning) {
+                    stockClass = "text-warning fw-bold"; 
+                    badgeClass = "bg-warning text-dark";
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                } else {
+                    badgeClass = "bg-success";
+                    icon = '<i class="fas fa-check-circle"></i>';
+                }
+                
+                if (value <= 0) {
+                    return '<div class="stock-cell"><p class="text-danger mb-0">Hết hàng</p></div>';
+                }
+                
+                return '<div class="stock-cell">' + value + '</div>';
             };
             
             const actionCellRenderer = function(params) {
@@ -386,7 +284,7 @@
                     '<a href="@Url.Action("Variants", "Product", new { area = "Admin" })/' + productId + 
                     '" class="btn btn-sm btn-outline-secondary ms-1" title="Biến thể"><i class="fas fa-cubes"></i></a>' +
                     '<a href="@Url.Action("Delete", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-danger ms-1" title="Xóa"><i class="fas fa-trash-alt"></i></a>' +
+                    '" class="btn btn-sm btn-outline-danger ms-1" title="Xóa"><i class="fas fa-trash"></i></a>' +
                 '</div>';
             };
             
@@ -399,7 +297,8 @@
                     cellRenderer: imageCellRenderer,
                     filter: false,
                     floatingFilter: false,
-                    sortable: false
+                    sortable: false,
+                    cellClass: 'cell-image'
                 },
                 { 
                     field: 'name', 
@@ -439,18 +338,32 @@
                 { 
                     field: 'stockQuantity', 
                     headerName: 'Kho hàng', 
-                    width: 110,
+                    width: 120,
                     filter: 'agNumberColumnFilter',
+                    filterParams: {
+                        buttons: ['apply', 'reset'],
+                        closeOnApply: true
+                    },
                     floatingFilter: true,
-                    cellRenderer: stockCellRenderer
+                    cellRenderer: stockCellRenderer,
+                    cellClass: 'cell-stock',
+                    headerClass: 'text-center'
                 },
                 { 
                     field: 'isActive', 
                     headerName: 'Trạng thái', 
-                    width: 120,
+                    width: 130,
                     filter: 'agSetColumnFilter',
                     floatingFilter: true,
-                    cellRenderer: statusCellRenderer
+                    cellRenderer: statusCellRenderer,
+                    cellClass: 'cell-status',
+                    headerClass: 'text-center',
+                    filterParams: {
+                        values: [true, false],
+                        cellRenderer: params => {
+                            return params.value === true ? 'Đang bán' : 'Ngừng bán';
+                        }
+                    }
                 },
                 { 
                     field: 'productId', 
@@ -461,7 +374,8 @@
                     floatingFilter: false,
                     sortable: false,
                     resizable: false,
-                    pinned: 'right'
+                    pinned: 'right',
+                    cellClass: 'cell-actions'
                 }
             ];
             
@@ -474,7 +388,11 @@
                     minWidth: 80,
                     sortable: true,
                     resizable: true,
-                    filter: true
+                    filter: true,
+                    wrapText: true,
+                    autoHeight: true,
+                    cellClass: 'align-middle',
+                    suppressAutoSize: false
                 },
                 enableRangeSelection: true,
                 animateRows: true,
@@ -580,6 +498,8 @@
                 window.addEventListener('resize', function() {
                     if (gridOptions.api) {
                         setTimeout(function() {
+                            // Force redraw entire grid when window resizes
+                            gridOptions.api.redrawRows();
                             gridOptions.api.sizeColumnsToFit();
                         }, 100);
                     }

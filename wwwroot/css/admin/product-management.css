@@ -136,7 +136,7 @@
     min-height: 400px;
 }
 
-.ag-theme-alpine {
+    .ag-theme-alpine {
     --ag-border-color: #dee2e6;
     --ag-odd-row-background-color: #f9f9f9;
     --ag-header-background-color: #f8f9fa;
