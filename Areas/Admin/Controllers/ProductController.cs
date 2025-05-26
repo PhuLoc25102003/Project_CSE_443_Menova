@@ -34,10 +34,10 @@ namespace Menova.Areas.Admin.Controllers
             {
                 // Get all products including inactive ones with Category loaded
                 var products = await _productService.GetAllProductsIncludingInactiveAsync();
-                
+
                 // Ensure Category is loaded (this should be done in the service instead ideally)
-                
-                
+
+
                 // Apply filters
                 if (!string.IsNullOrEmpty(searchString))
                 {
@@ -60,7 +60,7 @@ namespace Menova.Areas.Admin.Controllers
                     "date_desc" => products.OrderByDescending(p => p.CreatedAt),
                     _ => products.OrderByDescending(p => p.CreatedAt), // Default sort
                 };
-               
+
                 // Apply pagination
                 var pagedProducts = products
                     .Skip((page - 1) * pageSize)
@@ -82,12 +82,12 @@ namespace Menova.Areas.Admin.Controllers
                 // Log error for debugging
                 Console.WriteLine($"Error in Index action: {ex.Message}");
                 TempData["ErrorMessage"] = $"Lỗi khi tải danh sách sản phẩm: {ex.Message}";
-                
+
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
                 }
-                
+
                 // Return an empty list to prevent crashing
                 return View(new List<Product>());
             }
@@ -109,7 +109,7 @@ namespace Menova.Areas.Admin.Controllers
         {
             // Bỏ qua validation cho Category
             ModelState.Remove("Category");
-            
+
             // Lấy danh sách categories để hiển thị dropdown
             ViewBag.Categories = await _categoryService.GetAllCategoriesForSelectListAsync();
 
@@ -128,7 +128,7 @@ namespace Menova.Areas.Admin.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
                                               .Select(e => e.ErrorMessage)
                                               .ToList();
-                
+
                 foreach (var error in errors)
                 {
                     Console.WriteLine($"Validation error: {error}");
@@ -136,20 +136,20 @@ namespace Menova.Areas.Admin.Controllers
 
                 // Store validation errors in TempData to display them to the user
                 TempData["ValidationErrors"] = errors;
-                
+
                 // If model state is invalid, redisplay form with categories
                 ViewBag.Categories = await _categoryService.GetAllCategoriesForSelectListAsync();
                 return View(viewModel);
             }
-            
+
             try
             {
                 // Chuyển đổi ViewModel sang Product model
                 var product = viewModel.ToProduct();
-                
+
                 // Đảm bảo ngày tạo được thiết lập
                 product.CreatedAt = DateTime.Now;
-                
+
                 await _productService.AddProductAsync(product);
                 TempData["SuccessMessage"] = "Sản phẩm đã được tạo thành công.";
                 return RedirectToAction(nameof(Index));
@@ -158,13 +158,13 @@ namespace Menova.Areas.Admin.Controllers
             {
                 Console.WriteLine($"Exception when adding product: {ex.Message}");
                 TempData["ErrorMessage"] = $"Lỗi khi thêm sản phẩm: {ex.Message}";
-                
+
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
                     TempData["ErrorMessage"] += $" Chi tiết lỗi: {ex.InnerException.Message}";
                 }
-                
+
                 // If we got here, something failed, redisplay form
                 ViewBag.Categories = await _categoryService.GetAllCategoriesForSelectListAsync();
                 return View(viewModel);
@@ -175,7 +175,7 @@ namespace Menova.Areas.Admin.Controllers
         {
             // Bỏ qua validation cho Category
             ModelState.Remove("Category");
-            
+
             var product = await _productService.GetProductWithDetailsAsync(id);
 
             if (product == null)
@@ -208,7 +208,7 @@ namespace Menova.Areas.Admin.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
                                           .Select(e => e.ErrorMessage)
                                           .ToList();
-                
+
                 foreach (var error in errors)
                 {
                     Console.WriteLine($"Validation error: {error}");
@@ -216,12 +216,12 @@ namespace Menova.Areas.Admin.Controllers
 
                 // Store validation errors in TempData to display them to the user
                 TempData["ValidationErrors"] = errors;
-                
+
                 // Nếu model state không hợp lệ, cần lấy lại danh sách categories
                 ViewBag.Categories = await _categoryService.GetAllCategoriesForSelectListAsync();
                 return View(viewModel);
             }
-            
+
             try
             {
                 // Get the existing product from the database
@@ -230,7 +230,7 @@ namespace Menova.Areas.Admin.Controllers
                 {
                     return NotFound();
                 }
-                
+
                 // Update only the fields that should be updated
                 existingProduct.Name = viewModel.Name;
                 existingProduct.Description = viewModel.Description;
@@ -241,7 +241,7 @@ namespace Menova.Areas.Admin.Controllers
                 existingProduct.ImageUrl = viewModel.ImageUrl;
                 existingProduct.IsActive = viewModel.IsActive;
                 existingProduct.UpdatedAt = DateTime.Now;
-                
+
                 // Update the product in the database
                 await _productService.UpdateProductAsync(existingProduct);
                 TempData["SuccessMessage"] = "Sản phẩm đã được cập nhật thành công.";
@@ -250,13 +250,13 @@ namespace Menova.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Lỗi khi cập nhật sản phẩm: {ex.Message}";
-                
+
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
                     TempData["ErrorMessage"] += $" Chi tiết lỗi: {ex.InnerException.Message}";
                 }
-                
+
                 // Nếu có lỗi, cần lấy lại danh sách categories
                 ViewBag.Categories = await _categoryService.GetAllCategoriesForSelectListAsync();
                 return View(viewModel);
@@ -284,7 +284,7 @@ namespace Menova.Areas.Admin.Controllers
             TempData["SuccessMessage"] = "Sản phẩm đã được ẩn thành công.";
             return RedirectToAction(nameof(Index));
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> ToggleStatus(int id)
         {
@@ -301,20 +301,79 @@ namespace Menova.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Variants(int id)
+        [HttpGet]
+        [Route("Admin/Product/Variants/{id:int}")]
+        public async Task<IActionResult> Variants(int id, int page = 1)
         {
+            // Thay thế phương thức GetByIdAsync đơn giản bằng GetProductWithDetailsAsync để load cả biến thể
             var product = await _productService.GetProductWithDetailsAsync(id);
-
             if (product == null)
-            {
                 return NotFound();
+
+            // Cấu hình phân trang
+            int pageSize = 4; // Số biến thể mỗi trang
+            
+            // Tính toán thông tin phân trang nếu có biến thể
+            if (product.ProductVariants != null && product.ProductVariants.Any())
+            {
+                var totalItems = product.ProductVariants.Count;
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                
+                // Đảm bảo page nằm trong khoảng hợp lệ
+                page = Math.Max(1, Math.Min(page, totalPages));
+                
+                // Sắp xếp và phân trang biến thể
+                product.ProductVariants = product.ProductVariants
+                    .OrderBy(v => v.Size?.Name)
+                    .ThenBy(v => v.Color?.Name)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+                
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = totalPages;
+                ViewBag.TotalItems = totalItems;
+                ViewBag.PageSize = pageSize;
             }
 
-            // Get all sizes and colors for dropdowns
-            ViewBag.Sizes = await _unitOfWork.Sizes.GetAllAsync();
-            ViewBag.Colors = await _unitOfWork.Colors.GetAllAsync();
+            var sizes = await _unitOfWork.Sizes.GetAllAsync();
+            var colors = await _unitOfWork.Colors.GetAllAsync();
+
+            // Sửa tên màu bị lỗi encoding
+            foreach (var color in colors)
+            {
+                color.Name = FixVietnameseEncoding(color.Name);
+            }
+
+            ViewBag.Sizes = sizes;
+            ViewBag.Colors = colors;
 
             return View(product);
+        }
+
+        private string FixVietnameseEncoding(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+
+            var replacements = new Dictionary<string, string>
+        {
+        { "Ð?", "Đỏ" },
+        { "Xanh duong", "Xanh dương" },
+        { "Tr?ng", "Trắng" },
+        { "H?ng", "Hồng" },
+        { "B?c", "Bạc" },
+        { "Vàng d?ng", "Vàng đồng" },
+        { "Xanh ng?c", "Xanh ngọc" },
+        { "Ð? dô", "Đỏ đô" },
+        { "H?ng pastel", "Hồng pastel" }
+        };
+
+            foreach (var pair in replacements)
+            {
+                input = input.Replace(pair.Key, pair.Value);
+            }
+
+            return input;
         }
 
         [HttpPost]
@@ -430,7 +489,7 @@ namespace Menova.Areas.Admin.Controllers
                 }
 
                 int productId = variant.ProductId;
-                
+
                 _unitOfWork.ProductVariants.Remove(variant);
                 await _unitOfWork.CompleteAsync();
 

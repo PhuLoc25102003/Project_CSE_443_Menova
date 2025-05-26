@@ -305,6 +305,33 @@ namespace Menova.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            try
+            {
+                var category = await _categoryService.GetCategoryByIdAsync(id);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+
+                // Toggle the active status
+                category.IsActive = !category.IsActive;
+                await _categoryService.UpdateCategoryAsync(category);
+
+                string statusMessage = category.IsActive ? "hiển thị" : "ẩn";
+                TempData["SuccessMessage"] = $"Danh mục '{category.Name}' đã được {statusMessage} thành công.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi khi thay đổi trạng thái danh mục: {ex.Message}";
+                Console.WriteLine($"ERROR in ToggleStatus action: {ex.Message}");
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         private async Task<SelectList> GetParentCategoriesSelectList(int? excludeCategoryId = null)
         {
             var categories = await _categoryService.GetAllCategoriesAsync();

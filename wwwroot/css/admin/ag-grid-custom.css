@@ -1,0 +1,486 @@
+/* Custom AG Grid Styling for Menova Admin
+   Áp dụng cho cả bảng Category và Product
+*/
+
+/* Theme Variables - Base Style */
+:root {
+    --primary-color: #667eea;
+    --primary-hover: #5a67d8;
+    --secondary-color: #6c757d;
+    --success-color: #38ef7d;
+    --success-bg: rgba(56, 239, 125, 0.12);
+    --info-color: #4facfe;
+    --info-bg: rgba(79, 172, 254, 0.12);
+    --warning-color: #ffc107;
+    --warning-bg: rgba(255, 193, 7, 0.12);
+    --danger-color: #ff416c;
+    --danger-bg: rgba(255, 65, 108, 0.12);
+    --light-gray: #f8f9fa;
+    --border-color: #dee2e6;
+    --hover-color: #f1f5f9;
+    --white: #ffffff;
+    --dark: #2c3e50;
+    --grid-border-radius: 12px;
+    --row-height: 56px;
+    --header-height: 48px;
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --grid-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --icon-orange: #ff9800;
+    --icon-blue: #2196f3;
+    --icon-green: #4caf50;
+    --action-column-min-width: 220px;
+}
+
+/* Container styling cho cả hai bảng */
+.ag-theme-alpine {
+    --ag-border-color: var(--border-color);
+    --ag-odd-row-background-color: #f9f9f9;
+    --ag-header-background-color: #f8f9fa;
+    --ag-row-hover-color: var(--hover-color);
+    --ag-selected-row-background-color: rgba(102, 126, 234, 0.08);
+    --ag-font-size: 14px;
+    --ag-font-family: inherit;
+    --ag-foreground-color: #181d1f;
+    --ag-background-color: #fff;
+    --ag-header-foreground-color: var(--dark);
+    --ag-data-color: #181d1f;
+    --ag-row-border-color: rgba(0, 0, 0, 0.05);
+    --ag-alpine-active-color: var(--primary-color);
+    --ag-range-selection-border-color: var(--primary-color);
+    
+    border-radius: var(--grid-border-radius);
+    overflow: hidden;
+    box-shadow: var(--grid-shadow);
+}
+
+/* Grid Container - Đảm bảo hiển thị đúng */
+#productsGrid, #categoriesGrid {
+    width: 100% !important;
+    height: 600px !important;
+    display: block !important;
+    position: relative !important;
+    border-radius: var(--grid-border-radius) !important;
+    overflow: hidden !important;
+}
+
+/* Responsive grid container height điều chỉnh theo kích thước màn hình */
+@media (max-width: 768px) {
+    #productsGrid, #categoriesGrid {
+        height: 500px !important;
+    }
+}
+
+/* Header styling - Cả hai bảng */
+.ag-header {
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+    height: var(--header-height) !important;
+}
+
+.ag-header-cell {
+    padding: 0 16px !important;
+}
+
+.ag-header-cell-label {
+    color: var(--dark);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+/* Row styling - Cả hai bảng */
+.ag-row {
+    height: var(--row-height) !important;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+.ag-row:hover {
+    background-color: var(--hover-color) !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.ag-row-odd {
+    background-color: rgba(0,0,0,0.02);
+}
+
+/* Cell styling */
+.ag-cell {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 16px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+}
+
+/* Cell content alignment */
+.ag-cell {
+    justify-content: flex-start !important;
+}
+
+.ag-cell.cell-status, 
+.ag-cell.cell-stock, 
+.ag-cell.cell-image,
+.ag-cell.cell-actions,
+.text-center {
+    justify-content: center !important;
+}
+
+.ag-cell.text-end {
+    justify-content: flex-end !important;
+}
+
+/* Floating filter styling - Cả hai bảng */
+.ag-floating-filter {
+    height: 40px !important;
+    display: flex;
+    align-items: center;
+    background-color: rgba(248, 249, 250, 0.7);
+}
+
+.ag-floating-filter-input {
+    border-radius: 6px !important;
+    border: 1px solid var(--border-color) !important;
+    height: 30px !important;
+    font-size: 13px !important;
+    padding: 0 12px !important;
+    width: calc(100% - 12px) !important;
+    margin: 5px 6px !important;
+    background-color: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Action buttons - Tối ưu kích thước cho nút */
+.action-buttons {
+    display: flex !important;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px; /* Tăng khoảng cách giữa các nút */
+    white-space: nowrap;
+    width: 100% !important;
+    position: relative;
+    z-index: 10;
+    padding: 5px !important;
+}
+
+.action-buttons a,
+.action-buttons button,
+.action-buttons .btn {
+    flex-shrink: 0;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 32px; /* Tăng kích thước nút */
+    height: 32px;
+    padding: 0 !important;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    position: relative;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin: 0 !important;
+    min-width: auto !important;
+    overflow: hidden !important;
+}
+
+.action-buttons .btn i, 
+.action-buttons a i {
+    font-size: 14px;
+}
+
+.action-buttons a:hover,
+.action-buttons button:hover,
+.action-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Fix pinned right column in AG Grid - Responsive action column sizing */
+.ag-pinned-right-header,
+.ag-pinned-right-cols-container {
+    min-width: var(--action-column-min-width) !important;
+    width: var(--action-column-min-width) !important;
+    border-left: 1px solid var(--border-color);
+    max-width: var(--action-column-min-width) !important;
+}
+
+.cell-actions {
+    overflow: visible !important;
+    z-index: 20 !important;
+    background-color: rgba(255,255,255,0.9) !important;
+    padding: 0 !important;
+    min-width: var(--action-column-min-width) !important;
+    width: var(--action-column-min-width) !important;
+    max-width: var(--action-column-min-width) !important;
+}
+
+/* Thiết kế nút hoạt động */
+.action-buttons .btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.action-buttons .btn-outline-info:hover {
+    background-color: var(--info-color);
+    color: white;
+}
+
+.action-buttons .btn-outline-success:hover {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.action-buttons .btn-outline-danger:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+/* Category-specific styling */
+.category-name-cell {
+    display: flex;
+    align-items: center;
+}
+
+.category-icon, .subcategory-icon, .grandchild-icon {
+    margin-right: 0.5rem;
+    font-size: 1.1em;
+}
+
+.category-icon { color: var(--icon-orange); } 
+.subcategory-icon { color: var(--icon-blue); }
+.grandchild-icon { color: var(--icon-green); }
+
+.indent-1 { padding-left: 20px; position: relative; }
+.indent-2 { padding-left: 40px; position: relative; }
+
+.indent-1:before, .indent-2:before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    width: 8px;
+    height: 0;
+    border-top: 1px solid #ccc;
+}
+
+.indent-2:before {
+    left: 28px;
+}
+
+.category-parent-badge {
+    padding: 0.3em 0.6em;
+    border-radius: 6px;
+    font-size: 0.85em;
+    background-color: rgba(79, 172, 254, 0.12);
+    color: var(--icon-blue);
+    display: inline-block;
+    font-weight: 500;
+}
+
+/* Product-specific styling */
+.product-image-cell {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+.product-image-cell:hover {
+    transform: scale(1.1);
+}
+
+.status-green{
+    color: #38ef7d;
+    font-weight: 600;
+}
+
+.status-red{
+    color: #ff416c;
+    font-weight: 600;
+}
+
+/* Status and Stock cell styles */
+.status-cell, .stock-cell {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.stock-cell {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.stock-warning {
+    color: var(--warning-color);
+    font-weight: bold;
+}
+
+.stock-danger {
+    color: var(--danger-color);
+    font-weight: bold;
+}
+
+/* Status cell styling */
+.cell-status {
+    text-align: center;
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.cell-status .ag-cell-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.status-badge-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.cell-status .badge {
+    position: static !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Badge styling cho cả hai bảng */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge.bg-success {
+    background: var(--success-bg) !important;
+    color: var(--success-color) !important;
+    border: 1px solid rgba(56, 239, 125, 0.3);
+}
+
+.badge.bg-secondary {
+    background: rgba(108, 117, 125, 0.12) !important;
+    color: var(--secondary-color) !important;
+    border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+.badge.bg-warning {
+    background: var(--warning-bg) !important;
+    color: #856404 !important;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.badge.bg-danger {
+    background: var(--danger-bg) !important;
+    color: var(--danger-color) !important;
+    border: 1px solid rgba(255, 65, 108, 0.3);
+}
+
+.badge.bg-info {
+    background: var(--info-bg) !important;
+    color: var(--info-color) !important;
+    border: 1px solid rgba(79, 172, 254, 0.3);
+}
+
+/* Control panel styling */
+.card-header {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px 12px 0 0;
+}
+
+.card-header .btn-sm {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.card-header .text-muted {
+    color: rgba(255,255,255,0.8) !important;
+}
+
+/* Đảm bảo các cột co giãn đúng */
+.ag-center-cols-viewport {
+    overflow-x: auto !important;
+}
+
+.ag-center-cols-container {
+    width: auto !important;
+    min-width: 100% !important;
+}
+
+/* Đảm bảo scroll hiển thị đúng */
+.ag-body-viewport {
+    overflow: auto !important;
+}
+
+/* Make sure grid resizes correctly with container */
+.ag-root-wrapper {
+    width: 100% !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .action-buttons a,
+    .action-buttons button,
+    .action-buttons .btn {
+        width: 26px;
+        height: 26px;
+    }
+    
+    .action-buttons .btn i, 
+    .action-buttons a i {
+        font-size: 11px;
+    }
+    
+    :root {
+        --action-column-min-width: 160px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    :root {
+        --action-column-min-width: 140px;
+    }
+}
+
+/* Custom scrollbar for tables */
+.ag-body-viewport::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.ag-body-viewport::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.ag-body-viewport::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.ag-body-viewport::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+} 

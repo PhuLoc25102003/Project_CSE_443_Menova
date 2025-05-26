@@ -1,0 +1,734 @@
+/* Product Details Page Styles */
+
+:root {
+    /* Primary gradient colors */
+    --gradient-primary-start: #667eea;
+    --gradient-primary-end: #764ba2;
+    --gradient-success-start: #11998e;
+    --gradient-success-end: #38ef7d;
+    --gradient-danger-start: #ff416c;
+    --gradient-danger-end: #ff4b2b;
+    --gradient-info-start: #4facfe;
+    --gradient-info-end: #00f2fe;
+    --gradient-light-start: #f8faff;
+    --gradient-light-end: #f0f4ff;
+    
+    /* Base colors */
+    --primary-color: #667eea;
+    --primary-dark: #5a67d8;
+    --success-color: #11998e;
+    --danger-color: #ff416c;
+    --warning-color: #ffc107;
+    --info-color: #4facfe;
+    --light-color: #f8f9fa;
+    --dark-color: #2c3e50;
+    
+    /* Gray scale */
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #e1e8ed;
+    --gray-400: #ced4da;
+    --gray-500: #8492a6;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --gray-800: #343a40;
+    --gray-900: #212529;
+    
+    /* UI elements */
+    --border-radius-sm: 8px;
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+    --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --box-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --card-padding: 32px;
+}
+
+/* Fix footer positioning with flexbox approach */
+html {
+    height: 100%;
+}
+
+.product-input, .product-area-input{
+    width: 100% !important;
+    max-width: 80% !important;
+}
+
+body {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.sidebar {
+    position: fixed;
+    height: 100%;
+    z-index: 100;
+    flex-shrink: 0;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+}
+
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+.content {
+    flex: 1 0 auto; /* This makes the content area grow to push footer down */
+    padding: 20px;
+}
+
+/* Page Container Structure */
+.product-details-page {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 194px); /* Account for navbar, padding and footer */
+    width: 100%;
+}
+
+/* Card Structure */
+.main-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 40px;
+}
+
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top section layout */
+.top-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 30px;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.info-section {
+    flex: 1;
+    min-width: 300px;
+    max-width: 100%;
+}
+
+.image-section {
+    width: 350px;
+    max-width: 100%;
+    align-self: flex-start;
+}
+
+/* Description and variants sections */
+.description-section {
+    width: 100%;
+    margin: 0 0 30px 0;
+}
+
+.variants-section {
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+/* Action buttons */
+.action-buttons-section {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-300);
+    display: flex;
+    justify-content: center;
+}
+
+.action-buttons-container {
+    display: flex;
+    gap: 16px;
+}
+
+.action-buttons-container .btn {
+    min-width: 160px;
+    padding: 12px 24px;
+    font-weight: 600;
+}
+
+/* Product Image styling */
+.product-image {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.product-image img {
+    max-width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Pricing section styling */
+.product-pricing .pricing-details {
+    background-color: white;
+    padding: 20px;
+    border-radius: var(--border-radius-sm);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Variants table width */
+.product-variants .table-responsive {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.product-variants .table {
+    width: 100% !important;
+    border-collapse: collapse;
+}
+
+.product-variants .table th {
+    width: 33.33%;
+    text-align: center;
+}
+
+/* 6. Row and column management for better responsive behavior */
+.row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    margin-right: -15px !important;
+    margin-left: -15px !important;
+    width: auto !important; /* Prevent row overflow */
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+.row > [class^="col-"] {
+    padding-right: 15px !important;
+    padding-left: 15px !important;
+    box-sizing: border-box !important;
+}
+
+/* 7. Table wrapper - prevent horizontal overflow and improve display */
+.table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+/* Improved table styles for two-column layout */
+.product-variants {
+    background: linear-gradient(135deg, var(--gradient-light-start) 0%, var(--gradient-light-end) 100%);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-variants .table {
+    border-collapse: collapse;
+    width: 100% !important;
+    margin-bottom: 0 !important;
+    font-size: 0.9rem !important; /* Slightly smaller font */
+    background-color: white;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    table-layout: fixed !important; /* Prevent cell expansion */
+}
+
+.product-variants .table th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    font-weight: 600;
+    padding: 10px 12px !important; /* Reduced padding */
+    border-color: var(--gray-300);
+    word-break: break-word !important;
+}
+
+.product-variants .table td {
+    padding: 10px 12px !important; /* Reduced padding */
+    border-color: var(--gray-300);
+    vertical-align: middle;
+    word-break: break-word !important;
+}
+
+.product-variants .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--border-radius-sm);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Responsive styles update */
+@media (max-width: 991px) {
+    .top-section {
+        flex-direction: column-reverse; /* Image first, then info */
+    }
+    
+    .info-section, 
+    .image-section {
+        width: 100%;
+    }
+    
+    .image-section {
+        margin-bottom: 20px;
+    }
+}
+
+/* Update the layout for medium to large screens */
+@media (min-width: 768px) {
+    .product-details-page {
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }
+}
+
+/* Page header styles */
+.product-details-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: linear-gradient(135deg, var(--gradient-light-start) 0%, var(--gradient-light-end) 100%);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-details-page .header-content h1 {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: var(--dark-color);
+    line-height: 1.2;
+}
+
+.product-details-page .header-content p {
+    font-size: 0.95rem;
+    color: var(--gray-600);
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+.product-details-page .page-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Card styling */
+.product-details-page .card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    overflow: visible !important;
+    margin-bottom: 32px;
+    transition: all 0.3s ease;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-details-page .card:hover {
+    box-shadow: var(--box-shadow-hover);
+}
+
+.product-details-page .card-body {
+    padding: var(--card-padding);
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+/* Product information styling */
+.product-info {
+    background: linear-gradient(135deg, var(--gradient-light-start) 0%, var(--gradient-light-end) 100%);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-info .row, 
+.product-pricing .row {
+    margin-bottom: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-info h4,
+.product-description h4,
+.product-variants h4,
+.product-image h4,
+.product-pricing h4 {
+    font-size: 1.25rem;
+    margin-bottom: 16px;
+    font-weight: 600;
+    color: var(--dark-color);
+    line-height: 1.2;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gray-300);
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-info .fw-bold {
+    font-weight: 600 !important;
+    color: var(--dark-color);
+}
+
+.product-description .border {
+    padding: 24px !important;
+    background-color: white;
+    border: 2px solid var(--gray-300) !important;
+    border-radius: var(--border-radius);
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Image styling */
+.product-image {
+    background: linear-gradient(135deg, var(--gradient-light-start) 0%, var(--gradient-light-end) 100%);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-image .border {
+    padding: 20px !important;
+    border: none !important;
+    background-color: white;
+    border-radius: var(--border-radius-sm);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-image img {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    max-height: 200px;
+    max-width: 100% !important; /* Prevent image overflow */
+    object-fit: contain;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+.product-image img:hover {
+    transform: scale(1.05);
+}
+
+/* Pricing card styling */
+.product-pricing {
+    background: linear-gradient(135deg, var(--gradient-light-start) 0%, var(--gradient-light-end) 100%);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-pricing .card {
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    background-color: white;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-pricing .card-body {
+    padding: 20px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-pricing .text-danger {
+    color: var(--danger-color) !important;
+    font-weight: 600;
+}
+
+/* Badge styling */
+.badge {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, var(--gradient-success-start) 0%, var(--gradient-success-end) 100%) !important;
+}
+
+.badge.bg-secondary {
+    background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%) !important;
+}
+
+/* Bottom action buttons */
+.product-details-page .mt-4.border-top {
+    padding-top: 32px !important;
+    margin-top: 32px !important;
+    border-color: var(--gray-300) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.product-details-page .btn-group {
+    margin-right: 12px;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+}
+
+.product-details-page .btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 5;
+    visibility: visible !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+}
+
+.product-details-page .btn-primary {
+    background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.product-details-page .btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #6b46c1 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.product-details-page .btn-danger {
+    background: linear-gradient(135deg, var(--gradient-danger-start) 0%, var(--gradient-danger-end) 100%);
+    box-shadow: 0 4px 16px rgba(255, 65, 108, 0.3);
+}
+
+.product-details-page .btn-danger:hover {
+    background: linear-gradient(135deg, #ff2b4d 0%, #ff3b1d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 65, 108, 0.4);
+}
+
+.product-details-page .btn-outline-secondary {
+    border: 2px solid var(--gray-500);
+    color: var(--gray-700);
+    background: transparent;
+    padding: 10px 22px;
+}
+
+.product-details-page .btn-outline-secondary:hover {
+    background: var(--gray-500);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.product-details-page .btn-outline-primary {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+    padding: 10px 22px;
+}
+
+.product-details-page .btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Additional spacing for variant button */
+.product-variants .text-end {
+    margin-top: 16px !important;
+}
+
+/* Responsive styles */
+@media (max-width: 767.98px) {
+    .product-details-page .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+    }
+    
+    .product-details-page .page-actions {
+        margin-top: 12px;
+        width: 100%;
+    }
+    
+    .product-info .fw-bold,
+    .product-pricing .fw-bold {
+        margin-bottom: 4px;
+    }
+    
+    .product-variants .table-responsive {
+        border: 1px solid var(--gray-300);
+        border-radius: var(--border-radius-sm);
+    }
+    
+    .product-details-page .card-body {
+        padding: 20px;
+    }
+    
+    .product-details-page .row > [class^="col-"] {
+        margin-bottom: 20px;
+    }
+    
+    .product-info, 
+    .product-description, 
+    .product-variants, 
+    .product-image, 
+    .product-pricing {
+        padding: 16px;
+    }
+    
+    .product-details-page .btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    /* Better column handling for small screens */
+    .col-md-8, .col-md-4 {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Reduce card padding for better mobile view */
+    .card-body {
+        padding: 15px !important;
+    }
+    
+    /* Adjust button group for mobile */
+    .product-details-page .btn-group {
+        width: 100% !important;
+        margin-right: 0 !important;
+        margin-bottom: 10px !important;
+    }
+}
+
+/* Medium screens adjustments */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .product-details-page .card-body {
+        padding: 20px !important;
+    }
+    
+    .product-info, 
+    .product-description, 
+    .product-variants, 
+    .product-image, 
+    .product-pricing {
+        padding: 20px !important;
+    }
+}
+
+/* Large screens - prevent content from being too wide */
+@media (min-width: 1200px) {
+    .container-fluid {
+        max-width: 1400px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+}
+
+/* Zoom handling - prevent overflow when page is zoomed */
+@media (min-width: 768px) {
+    body {
+        min-width: 768px !important; /* Minimum width to prevent excessive squeezing */
+    }
+    
+    .container-fluid.py-4 {
+        min-width: 768px !important;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .product-image img,
+    .product-details-page .btn:hover,
+    .product-details-page .btn-primary:hover,
+    .product-details-page .btn-danger:hover,
+    .product-details-page .btn-outline-secondary:hover,
+    .product-details-page .btn-outline-primary:hover {
+        transform: none;
+        transition: none;
+    }
+}
+
+/* Force container width constraints */
+.card, .card-body, .col-12, .table-responsive, .alert {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+/* Custom scrollbar for table */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: var(--gray-200);
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: var(--gray-500);
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-600);
+}
+
+/* Word breaking for long text to prevent overflow */
+p, span, div, td, th, h1, h2, h3, h4, h5, h6 {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+} 
+
+

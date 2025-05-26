@@ -6,171 +6,278 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/admin/category-management.css" />
+    <link rel="stylesheet" href="~/css/admin/product-details.css" />
+    <style>
+        .product-details-page .header-content h1 {
+            font-size: 1.8rem;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            padding: 1rem;
+        }
+        
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-label {
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-value {
+            padding-left: 0.5rem;
+        }
+        
+        .description-box {
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            border-left: 4px solid #dee2e6;
+        }
+        
+        .category-tree-item {
+            border-left: 2px solid #dee2e6;
+            margin-left: 0.5rem;
+        }
+        
+        .subcategory-icon {
+            color: #6c757d;
+            margin-right: 0.5rem;
+        }
+        
+        .category-link {
+            color: #495057;
+            text-decoration: none;
+        }
+        
+        .category-link:hover {
+            color: #0d6efd;
+        }
+        
+        /* Đảm bảo layout 2 cột */
+        .category-details-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .category-info-column {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .category-structure-column {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        @@media (max-width: 768px) {
+            .category-details-container {
+                flex-direction: column;
+            }
+        }
+    </style>
 }
 
-<div class="category-management">
-    <div class="page-header d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3"><i class="fas fa-info-circle me-2"></i>Chi tiết danh mục</h1>
-            <p class="text-muted mb-0">Xem thông tin chi tiết về danh mục "@Model.Name"</p>
+<div class="product-details-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Chi tiết danh mục</h1>
+            
         </div>
-        <div>
+        <div class="page-actions">
+            <a asp-action="Create" asp-route-parentId="@Model.CategoryId" class="btn btn-primary"> 
+                <i class="fas fa-plus-circle me-2"></i> Thêm danh mục con
+            </a>           
+            <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i> Sửa danh mục
+            </a>
             <a asp-action="Index" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
             </a>
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card category-detail-card h-100">
-                <div class="card-header bg-primary bg-gradient text-white">
-                    <h5 class="mb-0"><i class="fas fa-folder-open me-2"></i>Thông tin danh mục</h5>
-                </div>
-                <div class="card-body">
-                    <div class="detail-item mb-4">
-                        <div class="detail-label">
-                            <i class="fas fa-fingerprint me-1"></i> ID danh mục
-                        </div>
-                        <div class="detail-value">
-                            <strong class="fs-5 text-dark">@Model.CategoryId</strong>
-                        </div>
+    <div class="main-card">
+        <!-- Container chứa 2 cột thông tin -->
+        <div class="category-details-container">
+            <!-- Cột bên trái - Thông tin danh mục -->
+            <div class="category-info-column">
+                <div class="card category-detail-card h-100">
+                    <div class="card-header bg-primary bg-gradient text-white">
+                        <h5 class="mb-0"><i class="fas fa-folder-open me-2"></i>Thông tin danh mục</h5>
                     </div>
-
-                    <div class="detail-item mb-4">
-                        <div class="detail-label">
-                            <i class="fas fa-tag me-1"></i> Tên danh mục
-                        </div>
-                        <div class="detail-value fw-bold fs-5 text-primary">@Model.Name</div>
-                    </div>
-
-                    <div class="detail-item mb-4">
-                        <div class="detail-label">
-                            <i class="fas fa-toggle-on me-1"></i> Trạng thái
-                        </div>
-                        <div class="detail-value fw-bold fs-5 text-primary">@(Model.IsActive ? "Đang hoạt động" : "Đã ẩn")</div>
-                    </div>
-
-                    <div class="detail-item mb-4">
-                        <div class="detail-label">
-                            <i class="fas fa-level-up-alt me-1"></i> Danh mục cha
-                        </div>
-                    </div>
-
-                    <div class="detail-item">
-                        <div class="detail-label">
-                            <i class="fas fa-align-left me-1"></i> Mô tả
-                        </div>
-                        <div class="detail-value description-box p-3">
-                            @if (!string.IsNullOrEmpty(Model.Description))
-                            {
-                                @Model.Description
-                            }
-                            else
-                            {
-                                <span class="text-muted fst-italic">Không có mô tả</span>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer bg-light">
-                    <div class="d-flex gap-2">
-                        <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="btn btn-primary">
-                            <i class="fas fa-edit me-1"></i> Sửa
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@Model.CategoryId" class="btn btn-outline-danger">
-                            <i class="fas fa-eye-slash me-1"></i> Ẩn
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card category-detail-card h-100">
-                <div class="card-header bg-info bg-gradient text-white">
-                    <h5 class="mb-0"><i class="fas fa-th-list me-2"></i>Cấu trúc phân cấp</h5>
-                </div>
-                <div class="card-body">
-                    <div class="detail-item mb-4">
-                        <div class="detail-label">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-sitemap me-1"></i> Danh mục con</span>
-                                <span class="badge bg-primary rounded-pill">@(Model.ChildCategories?.Count() ?? 0)</span>
+                    <div class="card-body">
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-fingerprint me-2"></i> ID danh mục
+                            </div>
+                            <div class="detail-value">
+                                <strong class="fs-5 text-dark">@Model.CategoryId</strong>
                             </div>
                         </div>
-                        <div class="detail-value">
-                            @if (Model.ChildCategories != null && Model.ChildCategories.Any())
-                            {
-                                <div class="category-tree mt-2">
-                                    @foreach (var child in Model.ChildCategories)
-                                    {
-                                        <div class="category-tree-item">
-                                            <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                <div>
-                                                    <i class="fas fa-file-alt subcategory-icon"></i>
-                                                    <a asp-action="Details" asp-route-id="@child.CategoryId" 
-                                                       class="fw-medium category-link">@child.Name</a>
-                                                </div>
-                                                <div class="btn-group">
-                                                    <a asp-action="Edit" asp-route-id="@child.CategoryId" class="btn btn-sm btn-outline-primary" title="Sửa">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <a asp-action="Details" asp-route-id="@child.CategoryId" class="btn btn-sm btn-outline-info" title="Chi tiết">
-                                                        <i class="fas fa-info-circle"></i>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="alert alert-info mt-2">
-                                    <i class="fas fa-info-circle me-2"></i> Không có danh mục con nào
-                                </div>
-                            }
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-tag me-2"></i> Tên danh mục
+                            </div>
+                            <div class="detail-value fw-bold fs-5 text-primary">@Model.Name</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-toggle-on me-2"></i> Trạng thái
+                            </div>
+                            <div class="detail-value">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success fs-6"><i class="fas fa-check-circle me-1"></i> Đang hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger fs-6"><i class="fas fa-ban me-1"></i> Đã ẩn</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-level-up-alt me-2"></i> Danh mục cha
+                            </div>
+                            <div class="detail-value">
+                                @if (Model.ParentCategory != null)
+                                {
+                                    <a asp-action="Details" asp-route-id="@Model.ParentCategory.CategoryId" class="fw-medium category-link">
+                                        <i class="fas fa-folder me-1"></i> @Model.ParentCategory.Name
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">Đây là danh mục gốc</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-align-left me-2"></i> Mô tả
+                            </div>
+                            <div class="detail-value description-box p-3">
+                                @if (!string.IsNullOrEmpty(Model.Description))
+                                {
+                                    @Model.Description
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">Không có mô tả</span>
+                                }
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="detail-item">
-                        
-                        <div class="detail-value">
-                            @if (Model.Products != null && Model.Products.Any())
-                            {
-                                <div class="list-group product-list mt-2">
-                                    @foreach (var product in Model.Products.Take(5))
-                                    {
-                                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <i class="fas fa-box-open text-muted me-2"></i>
-                                                <span>@product.Name</span>
-                                            </div>
-                                            <div>
-                                                <span class="badge bg-primary rounded-pill">@product.Price.ToString("N0") ₫</span>
-                                            </div>
-                                        </div>
-                                    }
-                                    @if (Model.Products.Count() > 5)
-                                    {
-                                        <div class="list-group-item text-center text-muted">
-                                            <i class="fas fa-ellipsis-h me-1"></i> 
-                                            Còn @(Model.Products.Count() - 5) sản phẩm khác...
-                                        </div>
-                                    }
+            <!-- Cột bên phải - Cấu trúc phân cấp -->
+            <div class="category-structure-column">
+                <div class="card category-detail-card h-100">
+                    <div class="card-header bg-info bg-gradient text-white">
+                        <h5 class="mb-0"><i class="fas fa-th-list me-2"></i>Cấu trúc phân cấp</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-sitemap me-2"></i> Danh mục con</span>
+                                    <span class="badge bg-primary rounded-pill">@(Model.ChildCategories?.Count() ?? 0)</span>
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="alert alert-info mt-2">
-                                    <i class="fas fa-info-circle me-2"></i> Chưa có sản phẩm nào thuộc danh mục này
+                            </div>
+                            <div class="detail-value">
+                                @if (Model.ChildCategories != null && Model.ChildCategories.Any())
+                                {
+                                    <div class="category-tree mt-2">
+                                        @foreach (var child in Model.ChildCategories)
+                                        {
+                                            <div class="category-tree-item">
+                                                <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+                                                    <div>
+                                                        <i class="fas fa-file-alt me-2 subcategory-icon"></i>
+                                                        <a asp-action="Details" asp-route-id="@child.CategoryId" 
+                                                        class="fw-medium category-link">@child.Name</a>
+                                                    </div>
+                                                    <div class="btn-group">
+                                                        <a asp-action="Edit" asp-route-id="@child.CategoryId" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a asp-action="Details" asp-route-id="@child.CategoryId" class="btn btn-sm btn-outline-info" title="Chi tiết">
+                                                            <i class="fas fa-info-circle"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info mt-2">
+                                        <i class="fas fa-info-circle me-2"></i> Không có danh mục con nào
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="detail-item mt-4">
+                            <div class="detail-label">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-box-open me-2"></i> Sản phẩm trong danh mục</span>
+                                    <span class="badge bg-success rounded-pill">@(Model.Products?.Count() ?? 0)</span>
                                 </div>
-                            }
+                            </div>
+                            <div class="detail-value">
+                                @if (Model.Products != null && Model.Products.Any())
+                                {
+                                    <div class="list-group product-list mt-2">
+                                        @foreach (var product in Model.Products.Take(5))
+                                        {
+                                            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-box-open text-muted me-2"></i>
+                                                    <span>@product.Name</span>
+                                                </div>
+                                                <div>
+                                                    <span class="badge bg-primary rounded-pill">@product.Price.ToString("N0") ₫</span>
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (Model.Products.Count() > 5)
+                                        {
+                                            <div class="list-group-item text-center text-muted">
+                                                <i class="fas fa-ellipsis-h me-2"></i> 
+                                                Còn @(Model.Products.Count() - 5) sản phẩm khác...
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info mt-2">
+                                        <i class="fas fa-info-circle me-2"></i> Chưa có sản phẩm nào thuộc danh mục này
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        
     </div>
 </div> 

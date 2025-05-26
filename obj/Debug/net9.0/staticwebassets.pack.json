@@ -25,8 +25,20 @@
       "PackagePath": "staticwebassets\\css\\admin\\admin-layout.css"
     },
     {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\ag-grid-custom.css",
+      "PackagePath": "staticwebassets\\css\\admin\\ag-grid-custom.css"
+    },
+    {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\category-management.css",
       "PackagePath": "staticwebassets\\css\\admin\\category-management.css"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-create.css",
+      "PackagePath": "staticwebassets\\css\\admin\\product-create.css"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-details.css",
+      "PackagePath": "staticwebassets\\css\\admin\\product-details.css"
     },
     {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-management.css",

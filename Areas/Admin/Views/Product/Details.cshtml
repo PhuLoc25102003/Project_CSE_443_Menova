@@ -4,13 +4,22 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/product-details.css" />
+}
+
 <div class="product-details-page">
     <div class="page-header">
         <div class="header-content">
-            <h1><i class="fas fa-info-circle me-2"></i>Chi tiết sản phẩm</h1>
-            <p class="text-muted">Xem thông tin chi tiết sản phẩm</p>
+            <h1>Chi tiết sản phẩm</h1>
+
         </div>
         <div class="page-actions">
+
+            <a asp-action="Variants" asp-route-id="@Model.ProductId" class="btn btn-primary">
+                <i class="fas fa-cubes"></i> Quản lý biến thể
+            </a>
+
             <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-primary">
                 <i class="fas fa-edit"></i> Sửa sản phẩm
             </a>
@@ -20,34 +29,35 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card main-card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-8">
+            <div class="top-section">
+                <!-- Left section for combined product info and pricing -->
+                <div class="info-section">
                     <!-- Product Information -->
                     <div class="product-info mb-4">
                         <h4>Thông tin sản phẩm</h4>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-3 fw-bold">ID:</div>
                             <div class="col-md-9">@Model.ProductId</div>
                         </div>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-3 fw-bold">Tên sản phẩm:</div>
                             <div class="col-md-9">@Model.Name</div>
                         </div>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-3 fw-bold">Mã SKU:</div>
                             <div class="col-md-9">@Model.SKU</div>
                         </div>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-3 fw-bold">Danh mục:</div>
                             <div class="col-md-9">@(Model.Category?.Name ?? "Không có danh mục")</div>
                         </div>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-3 fw-bold">Trạng thái:</div>
                             <div class="col-md-9">
@@ -61,117 +71,76 @@
                                 }
                             </div>
                         </div>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-3 fw-bold">Ngày tạo:</div>
                             <div class="col-md-9">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
                         </div>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-3 fw-bold">Cập nhật:</div>
                             <div class="col-md-9">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</div>
                         </div>
                     </div>
-                    
-                    <div class="product-description mb-4">
-                        <h4>Mô tả sản phẩm</h4>
-                        <div class="p-3 border rounded">
-                            @Html.Raw(Model.Description)
+
+                    <!-- Pricing Information -->
+                    <div class="product-pricing mb-4">
+                        <h4>Thông tin giá</h4>
+                        <div class="pricing-details">
+                            <div class="row mb-2">
+                                <div class="col-6 fw-bold">Giá gốc:</div>
+                                <div class="col-6 text-end">@Model.Price.ToString("N0") ₫</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 fw-bold">Giá khuyến mãi:</div>
+                                <div class="col-6 text-end">@Model.DiscountPrice.ToString("N0") ₫</div>
+                            </div>
+                            @if (Model.Price > Model.DiscountPrice && Model.DiscountPrice > 0)
+                            {
+                                var discountPercent = Math.Round((1 - (decimal)Model.DiscountPrice / Model.Price) * 100, 0);
+                                <div class="row">
+                                    <div class="col-6 fw-bold">Giảm giá:</div>
+                                    <div class="col-6 text-end text-danger">-@discountPercent%</div>
+                                </div>
+                            }
                         </div>
                     </div>
-                    
-                    @if (Model.ProductVariants != null && Model.ProductVariants.Any())
-                    {
-                        <div class="product-variants mb-4">
-                            <h4>Biến thể sản phẩm</h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Màu sắc</th>
-                                            <th>Kích cỡ</th>
-                                            <th>Số lượng</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var variant in Model.ProductVariants)
-                                        {
-                                            <tr>
-                                                <td>@(variant.Color?.Name ?? "-")</td>
-                                                <td>@(variant.Size?.Name ?? "-")</td>
-                                                <td>@variant.StockQuantity</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="text-end mt-2">
-                                <a asp-action="Variants" asp-route-id="@Model.ProductId" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-cubes"></i> Quản lý biến thể
-                                </a>
-                            </div>
-                        </div>
-                    }
                 </div>
-                
-                <div class="col-md-4">
-                    <!-- Product Image -->
+
+                <!-- Right section for product image -->
+                <div class="image-section">
                     <div class="product-image mb-4">
                         <h4>Hình ảnh sản phẩm</h4>
                         <div class="text-center p-3 border rounded">
                             @if (!string.IsNullOrEmpty(Model.ImageUrl))
                             {
-                                <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Name" style="max-height:200px" />
+                                <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Name" />
                             }
                             else if (Model.Images != null && Model.Images.Any(i => i.IsPrimary))
                             {
-                                <img src="@Model.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl" class="img-fluid rounded" alt="@Model.Name" style="max-height:200px" />
+                                <img src="@Model.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl" class="img-fluid rounded"
+                                    alt="@Model.Name" />
                             }
                             else
                             {
-                                <img src="/images/placeholder.png" class="img-fluid rounded" alt="Placeholder" style="max-height:200px" />
+                                <img src="/images/placeholder.png" class="img-fluid rounded" alt="Placeholder" />
                             }
                         </div>
                     </div>
-                    
-                    <!-- Pricing Information -->
-                    <div class="product-pricing mb-4">
-                        <h4>Thông tin giá</h4>
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row mb-2">
-                                    <div class="col-6 fw-bold">Giá gốc:</div>
-                                    <div class="col-6 text-end">@Model.Price.ToString("N0") ₫</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 fw-bold">Giá khuyến mãi:</div>
-                                    <div class="col-6 text-end">@Model.DiscountPrice.ToString("N0") ₫</div>
-                                </div>
-                                @if (Model.Price > Model.DiscountPrice && Model.DiscountPrice > 0)
-                                {
-                                    var discountPercent = Math.Round((1 - (decimal)Model.DiscountPrice / Model.Price) * 100, 0);
-                                    <div class="row">
-                                        <div class="col-6 fw-bold">Giảm giá:</div>
-                                        <div class="col-6 text-end text-danger">-@discountPercent%</div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
+                </div>
+            </div>
+
+            <!-- Product Description -->
+            <div class="description-section mb-4">
+                <div class="product-description">
+                    <h4>Mô tả sản phẩm</h4>
+                    <div class="p-3 border rounded">
+                        @Html.Raw(Model.Description)
                     </div>
                 </div>
             </div>
-            
-            <div class="mt-4 border-top pt-4">
-                <div class="btn-group">
-                    <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-primary">
-                        <i class="fas fa-edit"></i> Sửa sản phẩm
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@Model.ProductId" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Xóa sản phẩm
-                    </a>
-                </div>
-                <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
-            </div>
+
+
         </div>
     </div>
-</div> 
+</div>

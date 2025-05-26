@@ -1,6 +1,39 @@
 /* Admin Dashboard Styles */
 /* ... existing code ... */
 
+/* Two-column layout */
+.product-details-page .left-column,
+.product-details-page .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (min-width: 992px) {
+    .product-details-page {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+    
+    .product-details-page .left-column {
+        flex: 1;
+        min-width: 0; /* Prevent flex items from overflowing */
+    }
+    
+    .product-details-page .right-column {
+        width: 350px;
+        min-width: 350px;
+    }
+}
+
+@media (max-width: 991px) {
+    .product-details-page .left-column,
+    .product-details-page .right-column {
+        width: 100%;
+    }
+}
+
 /* Product Management Styles */
 .admin-dashboard-page .product-management .card {
     margin-bottom: 20px;

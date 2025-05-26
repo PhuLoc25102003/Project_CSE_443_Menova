@@ -8,15 +8,72 @@
     <link rel="stylesheet" href="~/css/admin/category-management.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-grid.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-theme-alpine.css" />
+    <link rel="stylesheet" href="~/css/admin/ag-grid-custom.css" />
+    <style>
+        /* Header styling from Edit page */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .header-content h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .page-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Card styling to match Product page */
+        .category-management .card {
+            border-radius: .75rem !important;
+            box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1) !important;
+            border: none !important;
+            overflow: visible !important;
+            position: relative !important;
+            z-index: 1 !important;
+            height: auto !important;
+            min-height: auto !important;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .category-management .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+        }
+        
+        /* Card header styling to match Product */
+        .category-form-card .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .category-form-card .card-header .btn-sm {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .category-form-card .card-header .text-muted {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+    </style>
 }
 
-<div class="category-management">
-    <div class="page-header d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3">Quản lý danh mục</h1>
-            
+<div class="category-management product-management-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Quản lý danh mục</h1>
         </div>
-        <div>
+        <div class="page-actions">
             <a asp-action="Create" class="btn btn-primary">
                 <i class="fas fa-plus me-1"></i> Thêm danh mục mới
             </a>
@@ -27,10 +84,10 @@
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div class="d-flex align-items-center flex-wrap gap-2">
-                    <button id="refreshGrid" class="btn btn-sm btn-outline-secondary">
+                    <button id="refreshGrid" class="btn btn-sm btn-outline-light">
                         <i class="fas fa-sync-alt me-1"></i> Làm mới
                     </button>
-                    <button id="expandAllBtn" class="btn btn-sm btn-outline-info">
+                    <button id="expandAllBtn" class="btn btn-sm btn-outline-light">
                         <i class="fas fa-expand-arrows-alt me-1"></i> Mở rộng tất cả
                     </button>
                 </div>
@@ -98,22 +155,16 @@
                                     <td>
                                         @if (category.IsActive)
                                         {
-                                            <span class="badge bg-success">Hiển thị</span>
+                                            <span class="badge bg-success">Đang hiển thị</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-danger">Ẩn</span>
+                                            <span class="badge bg-secondary">Ẩn</span>
                                         }
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <form asp-action="ToggleStatus" method="post" style="display:inline;">
-                                                <input type="hidden" name="id" value="@category.CategoryId" />
-                                                <button type="submit" class="btn btn-sm @(category.IsActive ? "btn-outline-warning" : "btn-outline-success")" title="@(category.IsActive ? "Ẩn danh mục" : "Hiển thị danh mục")">
-                                                    <i class="fas @(category.IsActive ? "fa-eye-slash" : "fa-eye")"></i>
-                                                </button>
-                                            </form>
-                                            @if (category.ParentCategoryId == null || Model.Count(c => c.ParentCategoryId == category.CategoryId) < 3)
+                                            @if (category.ParentCategoryId == null)
                                             {
                                                 <a asp-action="Create" asp-route-parentId="@category.CategoryId" class="btn btn-sm btn-outline-success me-1" title="Thêm danh mục con">
                                                     <i class="fas fa-plus-circle"></i>
@@ -172,26 +223,29 @@
             
             @if (Model != null && Model.Any())
             {
-                // Chỉ lấy các danh mục active
-                foreach (var parentCategory in Model.Where(c => c.ParentCategoryId == null && c.IsActive))
+                // Add root categories first
+                foreach (var rootCategory in Model.Where(c => c.ParentCategoryId == null))
                 {
-                    string parentDescription = parentCategory.Description ?? "";
-                    if (parentDescription.Length > 100) {
-                        parentDescription = parentDescription.Substring(0, 100) + "...";
+                    string rootDescription = rootCategory.Description ?? "";
+                    if (rootDescription.Length > 100) {
+                        rootDescription = rootDescription.Substring(0, 100) + "...";
                     }
                     
                     <text>
                     rowData.push({
-                        categoryId: @parentCategory.CategoryId,
-                        name: @Json.Serialize(parentCategory.Name),
-                        description: @Json.Serialize(parentDescription),
+                        categoryId: @rootCategory.CategoryId,
+                        name: @Json.Serialize(rootCategory.Name),
+                        description: @Json.Serialize(rootDescription),
                         parentName: "",
+                        parentId: null,
+                        isActive: @Json.Serialize(rootCategory.IsActive),
                         level: 0
                     });
                     </text>
                     
-                    // Add children
-                    foreach (var childCategory in Model.Where(c => c.ParentCategoryId == parentCategory.CategoryId && c.IsActive))
+                    // Get children of this root category
+                    var parentCategory = rootCategory;
+                    foreach (var childCategory in Model.Where(c => c.ParentCategoryId == parentCategory.CategoryId))
                     {
                         string childDescription = childCategory.Description ?? "";
                         if (childDescription.Length > 100) {
@@ -204,12 +258,14 @@
                             name: @Json.Serialize(childCategory.Name),
                             description: @Json.Serialize(childDescription),
                             parentName: @Json.Serialize(parentCategory.Name),
+                            parentId: @parentCategory.CategoryId,
+                            isActive: @Json.Serialize(childCategory.IsActive),
                             level: 1
                         });
                         </text>
                         
                         // Add grandchildren
-                        foreach (var grandchildCategory in Model.Where(c => c.ParentCategoryId == childCategory.CategoryId && c.IsActive))
+                        foreach (var grandchildCategory in Model.Where(c => c.ParentCategoryId == childCategory.CategoryId))
                         {
                             string grandchildDescription = grandchildCategory.Description ?? "";
                             if (grandchildDescription.Length > 100) {
@@ -222,6 +278,8 @@
                                 name: @Json.Serialize(grandchildCategory.Name),
                                 description: @Json.Serialize(grandchildDescription),
                                 parentName: @Json.Serialize(childCategory.Name),
+                                parentId: @childCategory.CategoryId,
+                                isActive: @Json.Serialize(grandchildCategory.IsActive),
                                 level: 2
                             });
                             </text>
@@ -261,9 +319,18 @@
                 return '<span class="category-parent-badge">' + params.value + '</span>';
             };
             
+            const statusCellRenderer = function(params) {
+                if (params.value) {
+                    return '<div class="status-badge-container status-green"><p>Đang hiển thị</p></div>';
+                } else {
+                    return '<div class="status-badge-container status-red"><p>Ẩn</p></div>';
+                }
+            };
+            
             const actionCellRenderer = function(params) {
                 const categoryId = params.data.categoryId;
                 const level = params.data.level;
+                const isActive = params.data.isActive;
                 let addChildButton = '';
                 
                 if (level < 2) {
@@ -271,7 +338,13 @@
                     '" class="btn btn-sm btn-outline-success me-1" title="Thêm danh mục con"><i class="fas fa-plus-circle"></i></a>';
                 }
                 
-                return '<div class="action-buttons">' + 
+                return '<div class="d-flex justify-content-center action-buttons">' + 
+                    '<form action="@Url.Action("ToggleStatus", "Category", new { area = "Admin" })" method="post" style="display:inline;">' +
+                    '<input type="hidden" name="id" value="' + categoryId + '" />' +
+                    '<button type="submit" class="btn btn-sm ' + (isActive ? 'btn-outline-warning' : 'btn-outline-success') + 
+                    ' me-1" title="' + (isActive ? 'Ẩn danh mục' : 'Hiển thị danh mục') + '">' +
+                    '<i class="fas ' + (isActive ? 'fa-eye-slash' : 'fa-eye') + '"></i>' +
+                    '</button></form>' +
                     addChildButton +
                     '<a href="@Url.Action("Edit", "Category", new { area = "Admin" })/' + categoryId + 
                     '" class="btn btn-sm btn-outline-primary me-1" title="Sửa"><i class="fas fa-edit"></i></a>' +
@@ -288,6 +361,7 @@
                     field: 'categoryId', 
                     headerName: 'ID', 
                     width: 70,
+                    flex: 0.5,
                     filter: 'agNumberColumnFilter',
                     floatingFilter: true
                 },
@@ -295,6 +369,7 @@
                     field: 'name', 
                     headerName: 'Tên danh mục', 
                     minWidth: 180,
+                    flex: 3,
                     filter: 'agTextColumnFilter',
                     floatingFilter: true,
                     cellRenderer: nameCellRenderer
@@ -303,6 +378,7 @@
                     field: 'description', 
                     headerName: 'Mô tả', 
                     minWidth: 200,
+                    flex: 4,
                     filter: 'agTextColumnFilter',
                     floatingFilter: true
                 },
@@ -310,22 +386,41 @@
                     field: 'parentName', 
                     headerName: 'Danh mục cha', 
                     width: 140,
+                    flex: 1.5,
                     filter: 'agTextColumnFilter',
                     floatingFilter: true,
                     cellRenderer: parentCellRenderer
                 },
                 { 
+                    field: 'isActive', 
+                    headerName: 'Trạng thái', 
+                    width: 130,
+                    flex: 0,
+                    filter: 'agSetColumnFilter',
+                    filterParams: {
+                        values: [true, false],
+                        cellRenderer: params => params.value ? 'Đang hiển thị' : 'Ẩn'
+                    },
+                    floatingFilter: true,
+                    cellRenderer: statusCellRenderer,
+                    cellClass: 'cell-status text-center',
+                    autoHeight: false,
+                    wrapText: false
+                },
+                { 
                     field: 'categoryId', 
                     headerName: 'Thao tác', 
-                    minWidth: 200,
-                    width: 200, 
+                    minWidth: 220,
+                    width: 220,
+                    maxWidth: 220,
+                    flex: 0,
                     cellRenderer: actionCellRenderer,
                     filter: false,
                     floatingFilter: false,
                     sortable: false,
-                    resizable: true,
+                    resizable: false,
                     pinned: 'right',
-                    cellClass: 'action-cell',
+                    cellClass: 'cell-actions text-center',
                     lockPinned: true,
                     suppressSizeToFit: true
                 }
@@ -351,91 +446,60 @@
                 suppressRowClickSelection: true,
                 domLayout: 'normal',
                 suppressScrollOnNewData: true,
-                headerHeight: 40,
-                rowHeight: 45
+                headerHeight: 48,
+                rowHeight: 56
             };
             
             // Xử lý lỗi trong quá trình khởi tạo grid
             try {
                 console.log("Initializing grid...");
-                console.log("Grid div exists:", !!gridDiv);
-                console.log("Grid div dimensions:", gridDiv.offsetWidth + "x" + gridDiv.offsetHeight);
-                console.log("Row data count:", rowData.length);
+                const grid = new agGrid.Grid(gridDiv, gridOptions);
+                console.log("Grid created");
                 
-                // Đảm bảo div container có chiều cao cụ thể
-                gridDiv.style.height = "600px";
-                gridDiv.style.width = "100%";
-                
-                // Grid created, ensure action column is always visible
-                new agGrid.Grid(gridDiv, gridOptions);
-                console.log("Grid created, checking API...");
-                
-                // Size columns to fit after grid is initialized
+                // Size columns to fit after grid is ready
                 setTimeout(function() {
-                    if (gridOptions.api) {
-                        console.log("Sizing columns to fit...");
-                        gridOptions.api.sizeColumnsToFit();
-                        
-                        // Make sure action column has enough width
-                        const actionColumn = gridOptions.columnApi.getColumn('categoryId');
-                        if (actionColumn) {
-                            gridOptions.columnApi.setColumnWidth(actionColumn, 200);
-                            console.log("Set action column width to 200px");
-                        }
-                    } else {
-                        console.error("Grid API not available after initialization!");
-                        document.getElementById('fallbackTable').style.display = 'block';
+                    gridOptions.api.sizeColumnsToFit();
+                    
+                    // Remove fixed column width to make it responsive
+                    // Make sure action column has minimum width but can resize
+                    const actionColumn = gridOptions.columnApi.getColumn('categoryId');
+                    if (actionColumn) {
+                        gridOptions.columnApi.setColumnMinWidth(actionColumn, 180);
                     }
-                }, 500);
+                }, 200);
                 
-                // Handle grid size on window resize with proper action column handling
+                // Add window resize handler to make grid responsive
                 window.addEventListener('resize', function() {
-                    if (gridOptions.api && gridOptions.columnApi) {
+                    if (gridOptions.api) {
                         setTimeout(function() {
-                            // First resize all columns to fit
                             gridOptions.api.sizeColumnsToFit();
-                            
-                            // Then ensure action column has proper width
-                            const actionColumn = gridOptions.columnApi.getColumn('categoryId');
-                            if (actionColumn) {
-                                gridOptions.columnApi.setColumnWidth(actionColumn, 200);
-                            }
                         }, 100);
                     }
                 });
                 
-                // Refresh button
+                // Add refresh button functionality
                 const refreshBtn = document.getElementById('refreshGrid');
                 if (refreshBtn) {
                     refreshBtn.addEventListener('click', function() {
-                        if (gridOptions.api) {
-                            gridOptions.api.setFilterModel(null);
-                            gridOptions.api.onFilterChanged();
-                        }
+                        location.reload();
                     });
                 }
                 
-                // Expand all button
-                const expandBtn = document.getElementById('expandAllBtn');
-                if (expandBtn) {
-                    expandBtn.addEventListener('click', function() {
-                        alert('Tính năng đang được phát triển');
+                // Add expand all functionality
+                const expandAllBtn = document.getElementById('expandAllBtn');
+                if (expandAllBtn) {
+                    expandAllBtn.addEventListener('click', function() {
+                        gridOptions.api.forEachNode(node => {
+                            node.setExpanded(true);
+                        });
                     });
                 }
                 
-                console.log("Grid initialization complete!");
             } catch (error) {
                 console.error("Error initializing AG Grid:", error);
                 document.getElementById('fallbackTable').style.display = 'block';
-                
-                // Show detailed error
-                const noDataMsg = document.getElementById('noDataMessage');
-                if (noDataMsg) {
-                    noDataMsg.style.display = 'block';
-                    noDataMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> Lỗi khởi tạo bảng: ' + error.message;
-                    noDataMsg.className = 'alert alert-danger m-3';
-                }
+                document.getElementById('categoriesGrid').style.display = 'none';
             }
         });
-    </script>
+   </script>
 } 

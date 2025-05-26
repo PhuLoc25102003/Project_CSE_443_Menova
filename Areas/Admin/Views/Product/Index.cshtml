@@ -9,15 +9,115 @@
     <link rel="stylesheet" href="~/css/admin/product-table.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-grid.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-theme-alpine.css" />
+    <link rel="stylesheet" href="~/css/admin/ag-grid-custom.css" />
+    <style>
+        /* Header styling from Edit page */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .header-content h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .page-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Copy of Category page CSS for consistent styling */
+        .product-management .card {
+            border-radius: .75rem !important;
+            box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1) !important;
+            border: none !important;
+            overflow: visible !important;
+            position: relative !important;
+            z-index: 1 !important;
+            height: auto !important;
+            min-height: auto !important;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .product-management .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+        }
+
+        .product-management .card-body {
+            padding: 1.5rem !important;
+            position: relative !important;
+            height: auto !important;
+            min-height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+        }
+
+        /* AG Grid Specific card-body padding */
+        .product-management .card-body.p-0 {
+            padding: 0 !important;
+        }
+
+        /* Card body for form cards */
+        .product-form-card .card-body {
+            height: auto !important;
+            min-height: auto !important;
+            overflow: visible !important;
+        }
+
+        /* Fix to ensure table is always displayed properly */
+        .table-responsive {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            max-width: 100% !important;
+        }
+
+        /* AG Grid container */
+        #productsGrid {
+            width: 100% !important;
+            height: 600px !important;
+            min-height: 400px !important;
+            display: block !important;
+            position: relative !important;
+            border-radius: 0.5rem;
+            overflow: hidden !important;
+        }
+
+        /* Card header styling to match Category */
+        .product-form-card .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .product-form-card .card-header .btn-sm {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .product-form-card .card-header .text-muted {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .product-form-card .card-header .form-check-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
 }
 
-<div class="product-management">
-    <div class="page-header d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3">Quản lý sản phẩm</h1>
-            
+<div class="product-management product-management-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Quản lý sản phẩm</h1>
         </div>
-        <div>
+        <div class="page-actions">
             <a asp-action="Create" class="btn btn-primary">
                 <i class="fas fa-plus me-1"></i> Thêm sản phẩm mới
             </a>
@@ -28,10 +128,10 @@
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div class="d-flex align-items-center flex-wrap gap-2">
-                    <button id="refreshGrid" class="btn btn-sm btn-outline-secondary">
+                    <button id="refreshGrid" class="btn btn-sm btn-outline-light">
                         <i class="fas fa-sync-alt me-1"></i> Làm mới
                     </button>
-                    <button id="exportBtn" class="btn btn-sm btn-outline-success">
+                    <button id="exportBtn" class="btn btn-sm btn-outline-light">
                         <i class="fas fa-file-excel me-1"></i> Xuất Excel
                     </button>
                     <div class="form-check form-switch ms-2">
@@ -101,15 +201,11 @@
                                     <td class="text-center">
                                         @if (product.IsActive)
                                         {
-                                            <div class="status-cell">
-                                               <p>Đang bán</p>
-                                            </div>
+                                            <span class="badge bg-success">Đang bán</span>
                                         }
                                         else
                                         {
-                                            <div class="status-cell">
-                                                <p>Ngừng bán</p>
-                                            </div>
+                                            <span class="badge bg-secondary">Ngừng bán</span>
                                         }
                                     </td>
                                     <td>
@@ -204,6 +300,7 @@
                         name: @Json.Serialize(product.Name),
                         sku: @Json.Serialize(product.SKU ?? ""),
                         category: @Json.Serialize(product.Category?.Name ?? "Không có danh mục"),
+                        categoryId: @(product.Category?.CategoryId ?? 0),
                         price: @product.Price.ToString(System.Globalization.CultureInfo.InvariantCulture),
                         formattedPrice: @Json.Serialize(product.Price.ToString("N0") + " ₫"),
                         discountPrice: @product.DiscountPrice.ToString(System.Globalization.CultureInfo.InvariantCulture),
@@ -234,36 +331,33 @@
             
             const statusCellRenderer = function(params) {
                 if (params.value === true) {
-                    return '<div class="status-cell"><span class=""> Đang bán</span></div>';
+                    return '<div class="status-badge-container "><p class="status-green">Đang bán</p></div>';
                 } else {
-                    return '<div class="status-cell"><span class=""> Ngừng bán</span></div>';
+                    return '<div class="status-badge-container"><p class="status-red">Ngừng bán</p></div>';
                 }
             };
             
             const stockCellRenderer = function(params) {
                 const value = params.value;
-                let stockClass = "";
-                let badgeClass = "";
-                let icon = "";
-                
-                if (params.data.stockDanger) {
-                    stockClass = "text-danger fw-bold";
-                    badgeClass = "bg-danger";
-                    icon = '<i class="fas fa-exclamation-circle"></i>';
-                } else if (params.data.stockWarning) {
-                    stockClass = "text-warning fw-bold"; 
-                    badgeClass = "bg-warning text-dark";
-                    icon = '<i class="fas fa-exclamation-triangle"></i>';
-                } else {
-                    badgeClass = "bg-success";
-                    icon = '<i class="fas fa-check-circle"></i>';
-                }
                 
                 if (value <= 0) {
-                    return '<div class="stock-cell"><p class="text-danger mb-0">Hết hàng</p></div>';
+                    return '<div class="stock-cell stock-danger">Hết hàng</div>';
+                }
+                
+                if (params.data.stockDanger) {
+                    return '<div class="stock-cell stock-danger">' + value + '</div>';
+                } else if (params.data.stockWarning) {
+                    return '<div class="stock-cell stock-warning">' + value + '</div>';
                 }
                 
                 return '<div class="stock-cell">' + value + '</div>';
+            };
+            
+            const categoryCellRenderer = function(params) {
+                if (!params.value || params.value === "Không có danh mục") {
+                    return '<span class="text-muted">Không có danh mục</span>';
+                }
+                return '<span class="category-parent-badge">' + params.value + '</span>';
             };
             
             const actionCellRenderer = function(params) {
@@ -278,11 +372,11 @@
                     '<i class="fas ' + (isActive ? 'fa-eye-slash' : 'fa-eye') + '"></i>' +
                     '</button></form>' +
                     '<a href="@Url.Action("Edit", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-primary me-1" title="Sửa"><i class="fas fa-edit"></i></a>' +
+                    '" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="fas fa-edit"></i></a>' +
                     '<a href="@Url.Action("Details", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-info me-1" title="Chi tiết"><i class="fas fa-eye"></i></a>' +
+                    '" class="btn btn-sm btn-outline-info" title="Chi tiết"><i class="fas fa-eye"></i></a>' +
                     '<a href="@Url.Action("Variants", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-secondary me-1" title="Biến thể"><i class="fas fa-cubes"></i></a>' +
+                    '" class="btn btn-sm btn-outline-secondary" title="Biến thể"><i class="fas fa-cubes"></i></a>' +
                     '<a href="@Url.Action("Delete", "Product", new { area = "Admin" })/' + productId + 
                     '" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash"></i></a>' +
                 '</div>';
@@ -294,6 +388,7 @@
                     field: 'imageUrl', 
                     headerName: 'Ảnh', 
                     width: 80,
+                    flex: 0.5,
                     cellRenderer: imageCellRenderer,
                     filter: false,
                     floatingFilter: false,
@@ -304,6 +399,7 @@
                     field: 'name', 
                     headerName: 'Tên sản phẩm', 
                     minWidth: 180,
+                    flex: 3,
                     filter: 'agTextColumnFilter',
                     floatingFilter: true
                 },
@@ -311,6 +407,7 @@
                     field: 'sku', 
                     headerName: 'SKU', 
                     width: 120,
+                    flex: 1,
                     filter: 'agTextColumnFilter',
                     floatingFilter: true
                 },
@@ -318,27 +415,34 @@
                     field: 'category', 
                     headerName: 'Danh mục', 
                     width: 150,
+                    flex: 1.5,
                     filter: 'agTextColumnFilter',
-                    floatingFilter: true
+                    floatingFilter: true,
+                    cellRenderer: categoryCellRenderer
                 },
                 { 
                     field: 'formattedPrice', 
                     headerName: 'Giá', 
                     width: 120,
+                    flex: 1,
                     filter: 'agNumberColumnFilter',
-                    floatingFilter: true
+                    floatingFilter: true,
+                    cellClass: 'text-end'
                 },
                 { 
                     field: 'formattedDiscountPrice', 
                     headerName: 'Giảm giá', 
                     width: 120,
+                    flex: 1,
                     filter: 'agNumberColumnFilter',
-                    floatingFilter: true
+                    floatingFilter: true,
+                    cellClass: 'text-end'
                 },
                 { 
                     field: 'stockQuantity', 
                     headerName: 'Kho hàng', 
                     width: 120,
+                    flex: 0.8,
                     filter: 'agNumberColumnFilter',
                     filterParams: {
                         buttons: ['apply', 'reset'],
@@ -353,11 +457,14 @@
                     field: 'isActive', 
                     headerName: 'Trạng thái', 
                     width: 130,
+                    flex: 0,
                     filter: 'agSetColumnFilter',
                     floatingFilter: true,
                     cellRenderer: statusCellRenderer,
-                    cellClass: 'cell-status',
+                    cellClass: 'cell-status text-center',
                     headerClass: 'text-center',
+                    autoHeight: false,
+                    wrapText: false,
                     filterParams: {
                         values: [true, false],
                         cellRenderer: params => {
@@ -368,15 +475,17 @@
                 { 
                     field: 'productId', 
                     headerName: 'Thao tác', 
-                    width: 230,
-                    minWidth: 200, 
+                    minWidth: 220,
+                    width: 220,
+                    maxWidth: 220,
+                    flex: 0,
                     cellRenderer: actionCellRenderer,
                     filter: false,
                     floatingFilter: false,
                     sortable: false,
-                    resizable: true,
+                    resizable: false,
                     pinned: 'right',
-                    cellClass: 'cell-actions action-cell',
+                    cellClass: 'cell-actions text-center',
                     lockPinned: true,
                     suppressSizeToFit: true
                 }
@@ -394,8 +503,7 @@
                     filter: true,
                     wrapText: true,
                     autoHeight: true,
-                    cellClass: 'align-middle',
-                    suppressAutoSize: false
+                    cellClass: 'align-middle'
                 },
                 enableRangeSelection: true,
                 animateRows: true,
@@ -406,8 +514,8 @@
                 suppressRowClickSelection: true,
                 domLayout: 'normal',
                 suppressScrollOnNewData: true,
-                headerHeight: 40,
-                rowHeight: 60
+                headerHeight: 48,
+                rowHeight: 56
             };
             
             // Filter by active status if checkbox is checked
@@ -444,146 +552,51 @@
                             skipPinnedBottom: true,
                             allColumns: false,
                             onlySelected: false,
-                            columnKeys: ['name', 'sku', 'category', 'formattedPrice', 'formattedDiscountPrice', 'stockQuantity']
+                            columnKeys: ['name', 'sku', 'category', 'formattedPrice', 'formattedDiscountPrice', 'stockQuantity', 'isActive']
                         });
-                    } else {
-                        // Fallback to regular table export if AG Grid API not available
-                        exportTableToExcel("fallbackTable", "danh_sach_san_pham");
                     }
                 });
             }
             
-            // Xử lý lỗi trong quá trình khởi tạo grid
+            // Initialize grid
             try {
                 console.log("Initializing grid...");
-                console.log("Grid div exists:", !!gridDiv);
-                console.log("Grid div dimensions:", gridDiv.offsetWidth + "x" + gridDiv.offsetHeight);
-                console.log("Row data count:", rowData.length);
-                
-                // In dữ liệu row đầu tiên để kiểm tra lỗi
-                if (rowData.length > 0) {
-                    console.log("First row data:", JSON.stringify(rowData[0]));
-                }
-                
-                // Đảm bảo div container có chiều cao cụ thể
-                gridDiv.style.height = "600px";
-                gridDiv.style.width = "100%";
-                
-                // Before grid creation
-                console.log("About to create grid with options:", JSON.stringify({
-                    ...gridOptions,
-                    columnDefs: gridOptions.columnDefs.map(col => ({...col, cellRenderer: col.cellRenderer ? 'function' : undefined}))
-                }));
-
-                // Create grid
                 const grid = new agGrid.Grid(gridDiv, gridOptions);
-                console.log("Grid created:", !!grid);
+                console.log("Grid created");
                 
-                // Apply active filter initially if checkbox is checked
+                // Size columns to fit after grid is ready
                 setTimeout(function() {
-                    if (showActiveOnly && showActiveOnly.checked) {
-                        applyActiveFilter();
+                    gridOptions.api.sizeColumnsToFit();
+                    
+                    // Remove fixed column width to make it responsive
+                    // Make sure action column has minimum width but can resize
+                    const actionColumn = gridOptions.columnApi.getColumn('productId');
+                    if (actionColumn) {
+                        gridOptions.columnApi.setColumnMinWidth(actionColumn, 180);
                     }
                 }, 200);
                 
-                // Size columns to fit
-                setTimeout(function() {
-                    if (gridOptions.api) {
-                        console.log("Sizing columns to fit...");
-                        gridOptions.api.sizeColumnsToFit();
-                        
-                        // Make sure action column has enough width
-                        const actionColumn = gridOptions.columnApi.getColumn('productId');
-                        if (actionColumn) {
-                            gridOptions.columnApi.setColumnWidth(actionColumn, 200);
-                            console.log("Set action column width to 200px");
-                        }
-                    } else {
-                        console.error("Grid API not available after initialization!");
-                        document.getElementById('fallbackTable').style.display = 'block';
-                    }
-                }, 500);
-                
-                // Handle grid size on window resize
+                // Add window resize handler to make grid responsive
                 window.addEventListener('resize', function() {
-                    if (gridOptions.api && gridOptions.columnApi) {
+                    if (gridOptions.api) {
                         setTimeout(function() {
-                            // First resize all columns to fit
                             gridOptions.api.sizeColumnsToFit();
-                            
-                            // Then ensure action column has proper width
-                            const actionColumn = gridOptions.columnApi.getColumn('productId');
-                            if (actionColumn) {
-                                gridOptions.columnApi.setColumnWidth(actionColumn, 200);
-                            }
                         }, 100);
                     }
                 });
                 
-                // Refresh button
+                // Add refresh button functionality
                 const refreshBtn = document.getElementById('refreshGrid');
                 if (refreshBtn) {
                     refreshBtn.addEventListener('click', function() {
-                        if (gridOptions.api) {
-                            gridOptions.api.setFilterModel(null);
-                            if (showActiveOnly && showActiveOnly.checked) {
-                                applyActiveFilter();
-                            }
-                        } else {
-                            window.location.reload();
-                        }
+                        location.reload();
                     });
                 }
                 
-                console.log("Grid initialization complete!");
             } catch (error) {
                 console.error("Error initializing AG Grid:", error);
-                console.error("Error details:", error.stack);
-                
-                // Thử tạo một minimal grid để xem có hoạt động không
-                try {
-                    console.log("Trying minimal grid config...");
-                    const minimalGridOptions = {
-                        columnDefs: [{ field: 'name', headerName: 'Tên sản phẩm' }],
-                        rowData: rowData,
-                        defaultColDef: { flex: 1 }
-                    };
-                    new agGrid.Grid(gridDiv, minimalGridOptions);
-                    console.log("Minimal grid created successfully");
-                } catch (minimalError) {
-                    console.error("Even minimal grid failed:", minimalError);
-                }
-                
                 document.getElementById('fallbackTable').style.display = 'block';
-                
-                // Show detailed error
-                const noDataMsg = document.getElementById('noDataMessage');
-                if (noDataMsg) {
-                    noDataMsg.style.display = 'block';
-                    noDataMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> Lỗi khởi tạo bảng: ' + error.message;
-                    noDataMsg.className = 'alert alert-danger m-3';
-                }
-            }
-            
-            // Function to export table to Excel (fallback method)
-            function exportTableToExcel(tableId, fileName) {
-                const wb = XLSX.utils.book_new();
-                const table = document.getElementById(tableId);
-                
-                if (table) {
-                    const clonedTable = table.cloneNode(true);
-                    const rows = clonedTable.querySelectorAll("tr");
-                    rows.forEach(row => {
-                        const cells = row.querySelectorAll("th, td");
-                        if (cells.length > 0) {
-                            cells[cells.length - 1].remove();
-                        }
-                    });
-                    
-                    const ws = XLSX.utils.table_to_sheet(clonedTable);
-                    XLSX.utils.book_append_sheet(wb, ws, "Sản phẩm");
-                    XLSX.writeFile(wb, fileName + "_" + new Date().toISOString().slice(0, 10) + ".xlsx");
-                }
+                document.getElementById('productsGrid').style.display = 'none';
             }
         });
     </script>
