@@ -5,108 +5,113 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/admin/category-management.css" />
+    <link rel="stylesheet" href="~/css/admin/product-create.css" />
 }
 
-<div class="category-management category-form-page">
-    <div class="page-header d-flex justify-content-between align-items-center mb-4">
-        <div>
-            @if (Model.ParentCategoryId.HasValue || ViewBag.IsChildCategory == true)
-            {
-                <h1 class="h3"><i class="fas fa-folder-plus me-2"></i>Thêm danh mục con</h1>
-                <p class="text-muted mb-0">Thêm danh mục con cho danh mục <strong>@ViewBag.ParentCategoryName</strong></p>
-            }
-            else
-            {
-                <h1 class="h3"><i class="fas fa-folder-plus me-2"></i>Thêm danh mục mới</h1>
-                <p class="text-muted mb-0">Thêm danh mục sản phẩm mới vào hệ thống</p>
-            }
-        </div>
-        <div>
-            <a asp-action="Index" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
-            </a>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-lg-12">
-            <div class="card category-form-card">
-                <div class="card-body">
-
-                    <form asp-action="Create" method="post" class="category-form needs-validation" novalidate>
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4 border-start border-danger border-4 ps-3 py-2 bg-light"></div>
-                        
-                        <div class="mb-4">
-                            <label asp-for="Name" class="form-label required">Tên danh mục</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
-                                <input asp-for="Name" class="form-control" placeholder="Ví dụ: Quần áo nam, Đồ điện tử..." required />
-                            </div>
-                            <div class="invalid-feedback">
-                                Vui lòng nhập tên danh mục.
-                            </div>
-                            <span asp-validation-for="Name" class="text-danger d-block mt-1"></span>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label asp-for="Description" class="form-label">Mô tả</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="align-self: flex-start;"><i class="fas fa-align-left"></i></span>
-                                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả chi tiết về danh mục (không bắt buộc)"></textarea>
-                            </div>
-                            <span asp-validation-for="Description" class="text-danger d-block mt-1"></span>
-                            <small class="form-text text-muted">Mô tả giúp khách hàng hiểu rõ hơn về danh mục sản phẩm của bạn.</small>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label asp-for="ParentCategoryId" class="form-label">Danh mục cha</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-sitemap"></i></span>
-                                @if (Model.ParentCategoryId.HasValue && ViewBag.ParentCategoryName != null)
-                                {
-                                    <input type="text" class="form-control" value="@ViewBag.ParentCategoryName" readonly />
-                                    <input asp-for="ParentCategoryId" type="hidden" />
-                                }
-                                else
-                                {
-                                    <select asp-for="ParentCategoryId" class="form-select" asp-items="ViewBag.ParentCategories">
-                                        <option value="">-- Đây là danh mục gốc --</option>
-                                    </select>
-                                }
-                            </div>
-                            @if (!Model.ParentCategoryId.HasValue && ViewBag.IsChildCategory != true)
-                            {
-                                <small class="form-text text-muted ps-1">Chọn nếu đây là danh mục con. Để trống nếu là danh mục gốc.</small>
-                            }
-                            <span asp-validation-for="ParentCategoryId" class="text-danger d-block mt-1"></span>
-                            <div class="alert alert-warning mt-2 p-2 small">
-                                <i class="fas fa-exclamation-triangle me-1"></i>
-                                <strong>Lưu ý:</strong> Hệ thống chỉ hỗ trợ tối đa 2 cấp phân cấp. Danh mục con không thể trở thành danh mục cha.
-                            </div>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <div class="form-check form-switch">
-                                <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" id="categoryIsActiveSwitch" checked="checked" />
-                                <label class="form-check-label" for="categoryIsActiveSwitch">Kích hoạt danh mục này?</label>
-                                <small class="form-text text-muted d-block">Bỏ chọn nếu bạn muốn ẩn danh mục này khỏi trang web.</small>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex justify-content-end border-top pt-4">
-                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
-                                <i class="fas fa-times me-1"></i> Hủy bỏ
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> Lưu danh mục
-                            </button>
-                        </div>
-                    </form>
-                </div>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                    <h1>Thêm danh mục con</h1>
+            </div>
+            <div>
+                <a asp-action="Index" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại
+                </a>
             </div>
         </div>
     </div>
+</div>
+
+<div class="container">
+    <form asp-action="Create" method="post" class="main-card needs-validation" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-4 border-start border-danger border-4 ps-3 py-2 bg-light"></div>
+        
+        <!-- Thông tin cơ bản -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-folder-open"></i>
+                Thông tin danh mục
+            </h3>
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label asp-for="Name" class="form-label required">Tên danh mục</label>
+                    <input asp-for="Name" class="form-control" placeholder="Ví dụ: Quần áo nam, Đồ điện tử..." required />
+                    <div class="invalid-feedback">
+                        Vui lòng nhập tên danh mục.
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger d-block mt-1"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ParentCategoryId" class="form-label">Danh mục cha</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-sitemap"></i></span>
+                        @if (Model.ParentCategoryId.HasValue && ViewBag.ParentCategoryName != null)
+                        {
+                            <input type="text" class="form-control" value="@ViewBag.ParentCategoryName" readonly />
+                            <input asp-for="ParentCategoryId" type="hidden" />
+                        }
+                        else
+                        {
+                            <select asp-for="ParentCategoryId" class="form-select" asp-items="ViewBag.ParentCategories">
+                                <option value="">-- Đây là danh mục gốc --</option>
+                            </select>
+                        }
+                    </div>
+                    @if (!Model.ParentCategoryId.HasValue && ViewBag.IsChildCategory != true)
+                    {
+                        <small class="form-text">Chọn nếu đây là danh mục con. Để trống nếu là danh mục gốc.</small>
+                    }
+                    <span asp-validation-for="ParentCategoryId" class="text-danger d-block mt-1"></span>
+                </div>
+            </div>
+            
+            <div class="row g-3 mt-2">
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả chi tiết về danh mục (không bắt buộc)"></textarea>
+                    <span asp-validation-for="Description" class="text-danger d-block mt-1"></span>
+                    <small class="form-text">Mô tả giúp khách hàng hiểu rõ hơn về danh mục sản phẩm của bạn.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cài đặt -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-cog"></i>
+                Cài đặt
+            </h3>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-check form-switch">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" id="categoryIsActiveSwitch" checked="checked" />
+                        <label class="form-check-label" for="categoryIsActiveSwitch">Kích hoạt danh mục này?</label>
+                        <small class="form-text d-block mt-1">Bỏ chọn nếu bạn muốn ẩn danh mục này khỏi trang web.</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="alert alert-warning p-3">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        <strong>Lưu ý:</strong> Hệ thống chỉ hỗ trợ tối đa 2 cấp phân cấp. Danh mục con không thể trở thành danh mục cha.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <div class="d-flex justify-content-between align-items-center">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i> Hủy bỏ
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Lưu danh mục
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
@@ -124,10 +129,6 @@
                         el.style.borderRight = 'none';
                     }
                 });
-                
-                // Check form elements are visible
-                console.log("Form elements: ", document.querySelectorAll('.category-form .form-control').length);
-                console.log("Buttons: ", document.querySelectorAll('.category-form .btn').length);
                 
                 var forms = document.getElementsByClassName('needs-validation');
                 Array.prototype.filter.call(forms, function (form) {

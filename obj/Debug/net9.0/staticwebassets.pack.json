@@ -61,6 +61,10 @@
       "PackagePath": "staticwebassets\\css\\product-detail.css"
     },
     {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\product-variants.css",
+      "PackagePath": "staticwebassets\\css\\product-variants.css"
+    },
+    {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\product.css",
       "PackagePath": "staticwebassets\\css\\product.css"
     },

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Menova")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e336aab3eb74325d7c7fcf3460b392c184c320ec")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+124e397c25d03d52dbab144094e73ee0009b1206")]
 [assembly: System.Reflection.AssemblyProductAttribute("Menova")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Menova")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

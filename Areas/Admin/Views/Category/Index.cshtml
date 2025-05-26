@@ -13,8 +13,8 @@
 <div class="category-management">
     <div class="page-header d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3"><i class="fas fa-folder-open me-2"></i>Quản lý danh mục</h1>
-            <p class="text-muted mb-0">Quản lý danh mục sản phẩm của cửa hàng</p>
+            <h1 class="h3">Quản lý danh mục</h1>
+            
         </div>
         <div>
             <a asp-action="Create" class="btn btn-primary">
@@ -41,7 +41,7 @@
         </div>
         
         <div class="card-body p-0">
-            <!-- AG Grid Container -->
+            <!-- AG Grid Container -->  
             <div id="categoriesGrid" class="ag-theme-alpine" style="width: 100%; height: 600px; display: block;"></div>
             
             <!-- Message when no data or grid fails -->
@@ -317,13 +317,17 @@
                 { 
                     field: 'categoryId', 
                     headerName: 'Thao tác', 
-                    width: 100, 
+                    minWidth: 200,
+                    width: 200, 
                     cellRenderer: actionCellRenderer,
                     filter: false,
                     floatingFilter: false,
                     sortable: false,
-                    resizable: false,
-                    pinned: 'right'
+                    resizable: true,
+                    pinned: 'right',
+                    cellClass: 'action-cell',
+                    lockPinned: true,
+                    suppressSizeToFit: true
                 }
             ];
             
@@ -362,25 +366,40 @@
                 gridDiv.style.height = "600px";
                 gridDiv.style.width = "100%";
                 
+                // Grid created, ensure action column is always visible
                 new agGrid.Grid(gridDiv, gridOptions);
                 console.log("Grid created, checking API...");
                 
-                // Size columns to fit
+                // Size columns to fit after grid is initialized
                 setTimeout(function() {
                     if (gridOptions.api) {
                         console.log("Sizing columns to fit...");
                         gridOptions.api.sizeColumnsToFit();
+                        
+                        // Make sure action column has enough width
+                        const actionColumn = gridOptions.columnApi.getColumn('categoryId');
+                        if (actionColumn) {
+                            gridOptions.columnApi.setColumnWidth(actionColumn, 200);
+                            console.log("Set action column width to 200px");
+                        }
                     } else {
                         console.error("Grid API not available after initialization!");
                         document.getElementById('fallbackTable').style.display = 'block';
                     }
                 }, 500);
                 
-                // Handle grid size on window resize
+                // Handle grid size on window resize with proper action column handling
                 window.addEventListener('resize', function() {
-                    if (gridOptions.api) {
+                    if (gridOptions.api && gridOptions.columnApi) {
                         setTimeout(function() {
+                            // First resize all columns to fit
                             gridOptions.api.sizeColumnsToFit();
+                            
+                            // Then ensure action column has proper width
+                            const actionColumn = gridOptions.columnApi.getColumn('categoryId');
+                            if (actionColumn) {
+                                gridOptions.columnApi.setColumnWidth(actionColumn, 200);
+                            }
                         }, 100);
                     }
                 });
