@@ -179,12 +179,11 @@
 
 .product-management-page .action-buttons {
     display: flex !important;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-items: center;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    align-items: center !important;
     white-space: nowrap;
-    width: auto !important;
-    min-width: 180px !important;
+    width: 100% !important;
     position: relative;
     z-index: 5;
     visibility: visible !important;

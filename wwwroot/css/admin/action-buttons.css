@@ -1,0 +1,80 @@
+/* Action Buttons Styling for Admin Area */
+
+/* Base styling for action buttons containers */
+.cell-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Common styling for action buttons */
+.cell-actions .btn, .action-buttons .btn {
+    margin: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    transition: all 0.2s ease-in-out;
+    border-width: 1px;
+}
+
+.cell-actions .btn i, .action-buttons .btn i {
+    margin: 0;
+    transition: transform 0.2s ease;
+}
+
+/* Enhanced hover effects for action buttons with predefined colors */
+.btn-outline-primary:hover {
+    background-color: #4e73df;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(78, 115, 223, 0.3);
+}
+
+.btn-outline-success:hover {
+    background-color: #1cc88a;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(28, 200, 138, 0.3);
+}
+
+.btn-outline-info:hover {
+    background-color: #36b9cc;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(54, 185, 204, 0.3);
+}
+
+.btn-outline-warning:hover {
+    background-color: #f6c23e;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(246, 194, 62, 0.3);
+}
+
+.btn-outline-danger:hover {
+    background-color: #e74a3b;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(231, 74, 59, 0.3);
+}
+
+.btn-outline-secondary:hover {
+    background-color: #858796;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(133, 135, 150, 0.3);
+}
+
+.cell-actions .btn:hover i, .action-buttons .btn:hover i {
+    transform: scale(1.15);
+} 

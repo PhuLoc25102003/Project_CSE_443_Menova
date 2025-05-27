@@ -1,0 +1,22 @@
+/* Common Page Header Styling */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.header-content h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.page-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+} 

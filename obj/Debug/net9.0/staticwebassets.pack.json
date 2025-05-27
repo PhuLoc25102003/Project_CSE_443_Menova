@@ -5,6 +5,18 @@
       "PackagePath": "staticwebassets\\Menova.kl2aeknrey.bundle.scp.css"
     },
     {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\assets\\productImages\\deluxe-20250527112530772.jpg",
+      "PackagePath": "staticwebassets\\assets\\productImages\\deluxe-20250527112530772.jpg"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\assets\\productImages\\dog-shit-20250527135657154.jpg",
+      "PackagePath": "staticwebassets\\assets\\productImages\\dog-shit-20250527135657154.jpg"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\assets\\productImages\\gym-20250527114620790.jpg",
+      "PackagePath": "staticwebassets\\assets\\productImages\\gym-20250527114620790.jpg"
+    },
+    {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\assets\\sliders\\slider-1.webp",
       "PackagePath": "staticwebassets\\assets\\sliders\\slider-1.webp"
     },
@@ -15,6 +27,10 @@
     {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\assets\\sliders\\slider-3.webp",
       "PackagePath": "staticwebassets\\assets\\sliders\\slider-3.webp"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\action-buttons.css",
+      "PackagePath": "staticwebassets\\css\\admin\\action-buttons.css"
     },
     {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\admin-dashboard.css",
@@ -29,8 +45,28 @@
       "PackagePath": "staticwebassets\\css\\admin\\ag-grid-custom.css"
     },
     {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\card-styling.css",
+      "PackagePath": "staticwebassets\\css\\admin\\card-styling.css"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\category-management-optimized.css",
+      "PackagePath": "staticwebassets\\css\\admin\\category-management-optimized.css"
+    },
+    {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\category-management.css",
       "PackagePath": "staticwebassets\\css\\admin\\category-management.css"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\cleanup-plan.md",
+      "PackagePath": "staticwebassets\\css\\admin\\cleanup-plan.md"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\grid-components.css",
+      "PackagePath": "staticwebassets\\css\\admin\\grid-components.css"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\page-header.css",
+      "PackagePath": "staticwebassets\\css\\admin\\page-header.css"
     },
     {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-create.css",
@@ -39,6 +75,10 @@
     {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-details.css",
       "PackagePath": "staticwebassets\\css\\admin\\product-details.css"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-management-optimized.css",
+      "PackagePath": "staticwebassets\\css\\admin\\product-management-optimized.css"
     },
     {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\css\\admin\\product-management.css",
@@ -93,8 +133,24 @@
       "PackagePath": "staticwebassets\\js\\admin\\admin-layout.js"
     },
     {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\js\\admin\\category-grid-init.js",
+      "PackagePath": "staticwebassets\\js\\admin\\category-grid-init.js"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\js\\admin\\delete-confirmation.js",
+      "PackagePath": "staticwebassets\\js\\admin\\delete-confirmation.js"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\js\\admin\\product-grid-init.js",
+      "PackagePath": "staticwebassets\\js\\admin\\product-grid-init.js"
+    },
+    {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\js\\admin\\product-management.js",
       "PackagePath": "staticwebassets\\js\\admin\\product-management.js"
+    },
+    {
+      "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\js\\admin\\sweet-alert-utils.js",
+      "PackagePath": "staticwebassets\\js\\admin\\sweet-alert-utils.js"
     },
     {
       "Id": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\wwwroot\\js\\cart.js",

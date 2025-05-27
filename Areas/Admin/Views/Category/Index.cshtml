@@ -4,68 +4,18 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
+@* Anti-forgery token for AJAX requests *@
+@Html.AntiForgeryToken()
+
 @section Styles {
-    <link rel="stylesheet" href="~/css/admin/category-management.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-grid.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-theme-alpine.css" />
     <link rel="stylesheet" href="~/css/admin/ag-grid-custom.css" />
-    <style>
-        /* Header styling from Edit page */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .header-content h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-        
-        .page-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        /* Card styling to match Product page */
-        .category-management .card {
-            border-radius: .75rem !important;
-            box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1) !important;
-            border: none !important;
-            overflow: visible !important;
-            position: relative !important;
-            z-index: 1 !important;
-            height: auto !important;
-            min-height: auto !important;
-            transition: box-shadow 0.3s ease;
-        }
-
-        .category-management .card:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
-        }
-        
-        /* Card header styling to match Product */
-        .category-form-card .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 0.75rem 0.75rem 0 0;
-        }
-
-        .category-form-card .card-header .btn-sm {
-            background-color: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            color: white;
-        }
-
-        .category-form-card .card-header .text-muted {
-            color: rgba(255, 255, 255, 0.8) !important;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/admin/page-header.css" />
+    <link rel="stylesheet" href="~/css/admin/card-styling.css" />
+    <link rel="stylesheet" href="~/css/admin/grid-components.css" />
+    <link rel="stylesheet" href="~/css/admin/action-buttons.css" />
+    <link rel="stylesheet" href="~/css/admin/category-management-optimized.css" />
 }
 
 <div class="category-management product-management-page">
@@ -176,9 +126,9 @@
                                             <a asp-action="Details" asp-route-id="@category.CategoryId" class="btn btn-sm btn-outline-info me-1" title="Chi tiết">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a asp-action="Delete" asp-route-id="@category.CategoryId" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                            <button type="button" onclick="confirmDeleteCategory(@category.CategoryId, '@category.Name')" class="btn btn-sm btn-outline-danger" title="Xóa">
                                                 <i class="fas fa-trash"></i>
-                                            </a>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -193,33 +143,87 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/dist/ag-grid-community.min.js"></script>
+    <script src="~/js/admin/delete-confirmation.js"></script>
+    <script src="~/js/admin/category-grid-init.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            console.log("DOM loaded, initializing grid...");
-            
-            // Initialize grid only if we have the container
-            const gridDiv = document.getElementById('categoriesGrid');
-            if (!gridDiv) {
-                console.error("Grid container not found!");
-                document.getElementById('fallbackTable').style.display = 'block';
+        function confirmDeleteCategory(categoryId, categoryName) {
+            if (typeof Swal === 'undefined') {
+                console.error('SweetAlert không khả dụng!');
                 return;
             }
             
-            // If agGrid is not available, show fallback table
-            if (typeof agGrid === 'undefined') {
-                console.error("AG Grid library not loaded!");
-                document.getElementById('fallbackTable').style.display = 'block';
-                return;
-            }
-            
-            console.log("AG Grid found, preparing data...");
-            
+            Swal.fire({
+                title: 'Xác nhận ẩn danh mục?',
+                html: `
+                    <div class="text-center">
+                        <p>Bạn có chắc chắn muốn <strong class="text-danger">ẩn</strong> danh mục <strong>${categoryName}</strong>?</p>
+                        <div class="alert alert-warning mt-3" role="alert">
+                            <div class="d-flex align-items-center justify-content-center mb-2">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Lưu ý:</strong>
+                            </div>
+                            <p class="mb-0">Danh mục sẽ bị ẩn và không hiển thị cho khách hàng.</p>
+                        </div>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ẩn danh mục',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Gửi yêu cầu AJAX để ẩn danh mục
+                    // Get anti-forgery token
+                    const antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                    
+                    fetch('@Url.Action("Delete", "Category", new { area = "Admin" })/' + categoryId, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': antiForgeryToken
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: data.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                // Refresh trang để cập nhật danh sách
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: data.message,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Đã xảy ra lỗi khi xử lý yêu cầu.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                }
+            });
+        }
+    </script>
+    <script>
+        // Ensure DOM is fully loaded before initializing grid
+        document.addEventListener("DOMContentLoaded", function() {
             // Prepare data
             const rowData = [];
-            
-            // Safely check if Model exists and has items
-            const hasModelData = @Json.Serialize(Model != null && Model.Any());
-            console.log("Model has data:", hasModelData);
             
             @if (Model != null && Model.Any())
             {
@@ -288,218 +292,19 @@
                 }
             }
             
-            // Check if we have data
-            const hasData = rowData.length > 0;
-            console.log("Data loaded:", hasData ? "Yes" : "No", "rowData length:", rowData.length);
-            
-            if (!hasData) {
-                document.getElementById('noDataMessage').style.display = 'block';
-                return;
-            }
-                
-            // Cell renderers
-            const nameCellRenderer = function(params) {
-                const level = params.data.level;
-                let icon = '<i class="fas fa-folder category-icon"></i>';
-                let indentClass = '';
-                
-                if (level === 1) {
-                    icon = '<i class="fas fa-file-alt subcategory-icon"></i>';
-                    indentClass = 'indent-1';
-                } else if (level === 2) {
-                    icon = '<i class="fas fa-file grandchild-icon"></i>';
-                    indentClass = 'indent-2';
-                }
-                
-                return '<div class="category-name-cell ' + indentClass + '">' + icon + ' ' + params.value + '</div>';
+            // URL configuration for action buttons
+            const urlConfig = {
+                createUrl: '@Url.Action("Create", "Category", new { area = "Admin" })',
+                editUrl: '@Url.Action("Edit", "Category", new { area = "Admin" })',
+                detailsUrl: '@Url.Action("Details", "Category", new { area = "Admin" })',
+                deleteFunc: 'confirmDeleteCategory'
             };
             
-            const parentCellRenderer = function(params) {
-                if (!params.value) return '-';
-                return '<span class="category-parent-badge">' + params.value + '</span>';
-            };
-            
-            const statusCellRenderer = function(params) {
-                if (params.value) {
-                    return '<div class="status-badge-container status-green"><p>Đang hiển thị</p></div>';
-                } else {
-                    return '<div class="status-badge-container status-red"><p>Ẩn</p></div>';
-                }
-            };
-            
-            const actionCellRenderer = function(params) {
-                const categoryId = params.data.categoryId;
-                const level = params.data.level;
-                const isActive = params.data.isActive;
-                let addChildButton = '';
-                
-                if (level < 2) {
-                    addChildButton = '<a href="@Url.Action("Create", "Category", new { area = "Admin" })?parentId=' + categoryId + 
-                    '" class="btn btn-sm btn-outline-success me-1" title="Thêm danh mục con"><i class="fas fa-plus-circle"></i></a>';
-                }
-                
-                return '<div class="d-flex justify-content-center action-buttons">' + 
-                    '<form action="@Url.Action("ToggleStatus", "Category", new { area = "Admin" })" method="post" style="display:inline;">' +
-                    '<input type="hidden" name="id" value="' + categoryId + '" />' +
-                    '<button type="submit" class="btn btn-sm ' + (isActive ? 'btn-outline-warning' : 'btn-outline-success') + 
-                    ' me-1" title="' + (isActive ? 'Ẩn danh mục' : 'Hiển thị danh mục') + '">' +
-                    '<i class="fas ' + (isActive ? 'fa-eye-slash' : 'fa-eye') + '"></i>' +
-                    '</button></form>' +
-                    addChildButton +
-                    '<a href="@Url.Action("Edit", "Category", new { area = "Admin" })/' + categoryId + 
-                    '" class="btn btn-sm btn-outline-primary me-1" title="Sửa"><i class="fas fa-edit"></i></a>' +
-                    '<a href="@Url.Action("Details", "Category", new { area = "Admin" })/' + categoryId + 
-                    '" class="btn btn-sm btn-outline-info me-1" title="Chi tiết"><i class="fas fa-eye"></i></a>' +
-                    '<a href="@Url.Action("Delete", "Category", new { area = "Admin" })/' + categoryId + 
-                    '" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash"></i></a>' +
-                '</div>';
-            };
-            
-            // Column definitions
-            const columnDefs = [
-                { 
-                    field: 'categoryId', 
-                    headerName: 'ID', 
-                    width: 70,
-                    flex: 0.5,
-                    filter: 'agNumberColumnFilter',
-                    floatingFilter: true
-                },
-                { 
-                    field: 'name', 
-                    headerName: 'Tên danh mục', 
-                    minWidth: 180,
-                    flex: 3,
-                    filter: 'agTextColumnFilter',
-                    floatingFilter: true,
-                    cellRenderer: nameCellRenderer
-                },
-                { 
-                    field: 'description', 
-                    headerName: 'Mô tả', 
-                    minWidth: 200,
-                    flex: 4,
-                    filter: 'agTextColumnFilter',
-                    floatingFilter: true
-                },
-                { 
-                    field: 'parentName', 
-                    headerName: 'Danh mục cha', 
-                    width: 140,
-                    flex: 1.5,
-                    filter: 'agTextColumnFilter',
-                    floatingFilter: true,
-                    cellRenderer: parentCellRenderer
-                },
-                { 
-                    field: 'isActive', 
-                    headerName: 'Trạng thái', 
-                    width: 130,
-                    flex: 0,
-                    filter: 'agSetColumnFilter',
-                    filterParams: {
-                        values: [true, false],
-                        cellRenderer: params => params.value ? 'Đang hiển thị' : 'Ẩn'
-                    },
-                    floatingFilter: true,
-                    cellRenderer: statusCellRenderer,
-                    cellClass: 'cell-status text-center',
-                    autoHeight: false,
-                    wrapText: false
-                },
-                { 
-                    field: 'categoryId', 
-                    headerName: 'Thao tác', 
-                    minWidth: 220,
-                    width: 220,
-                    maxWidth: 220,
-                    flex: 0,
-                    cellRenderer: actionCellRenderer,
-                    filter: false,
-                    floatingFilter: false,
-                    sortable: false,
-                    resizable: false,
-                    pinned: 'right',
-                    cellClass: 'cell-actions text-center',
-                    lockPinned: true,
-                    suppressSizeToFit: true
-                }
-            ];
-            
-            // Grid options
-            const gridOptions = {
-                columnDefs: columnDefs,
-                rowData: rowData,
-                defaultColDef: {
-                    flex: 1,
-                    minWidth: 80,
-                    sortable: true,
-                    resizable: true,
-                    filter: true
-                },
-                enableRangeSelection: true,
-                animateRows: true,
-                pagination: true,
-                paginationPageSize: 20,
-                enableCellTextSelection: true,
-                rowSelection: 'multiple',
-                suppressRowClickSelection: true,
-                domLayout: 'normal',
-                suppressScrollOnNewData: true,
-                headerHeight: 48,
-                rowHeight: 56
-            };
-            
-            // Xử lý lỗi trong quá trình khởi tạo grid
-            try {
-                console.log("Initializing grid...");
-                const grid = new agGrid.Grid(gridDiv, gridOptions);
-                console.log("Grid created");
-                
-                // Size columns to fit after grid is ready
-                setTimeout(function() {
-                    gridOptions.api.sizeColumnsToFit();
-                    
-                    // Remove fixed column width to make it responsive
-                    // Make sure action column has minimum width but can resize
-                    const actionColumn = gridOptions.columnApi.getColumn('categoryId');
-                    if (actionColumn) {
-                        gridOptions.columnApi.setColumnMinWidth(actionColumn, 180);
-                    }
-                }, 200);
-                
-                // Add window resize handler to make grid responsive
-                window.addEventListener('resize', function() {
-                    if (gridOptions.api) {
-                        setTimeout(function() {
-                            gridOptions.api.sizeColumnsToFit();
-                        }, 100);
-                    }
-                });
-                
-                // Add refresh button functionality
-                const refreshBtn = document.getElementById('refreshGrid');
-                if (refreshBtn) {
-                    refreshBtn.addEventListener('click', function() {
-                        location.reload();
-                    });
-                }
-                
-                // Add expand all functionality
-                const expandAllBtn = document.getElementById('expandAllBtn');
-                if (expandAllBtn) {
-                    expandAllBtn.addEventListener('click', function() {
-                        gridOptions.api.forEachNode(node => {
-                            node.setExpanded(true);
-                        });
-                    });
-                }
-                
-            } catch (error) {
-                console.error("Error initializing AG Grid:", error);
-                document.getElementById('fallbackTable').style.display = 'block';
-                document.getElementById('categoriesGrid').style.display = 'none';
-            }
+            // Initialize the grid - moved outside of the grid-init.js DOMContentLoaded event
+            // so we don't have nested DOMContentLoaded events
+            setTimeout(function() {
+                initializeCategoryGrid('categoriesGrid', 'fallbackTable', 'noDataMessage', rowData, urlConfig);
+            }, 0);
         });
-   </script>
+    </script>
 } 

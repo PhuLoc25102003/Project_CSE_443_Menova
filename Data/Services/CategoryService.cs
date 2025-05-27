@@ -16,6 +16,12 @@ namespace Menova.Data.Services
         public async Task<List<Category>> GetAllCategoriesAsync()
         {
             var categories = await _unitOfWork.Categories.GetAllAsync();
+            return categories.ToList();
+        }
+
+        public async Task<List<Category>> GetAllActiveCategoriesAsync()
+        {
+            var categories = await _unitOfWork.Categories.GetAllAsync();
             return categories.Where(c => c.IsActive).ToList();
         }
 
@@ -53,20 +59,30 @@ namespace Menova.Data.Services
                 });
         }
 
+        public async Task<IEnumerable<SelectListItem>> GetSubCategoriesForSelectListAsync()
+        {
+            var categories = await _unitOfWork.Categories.GetAllAsync();
+            return categories
+                .Where(c => c.IsActive && c.ParentCategoryId.HasValue)  // Chỉ lấy danh mục con (có ParentCategoryId)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CategoryId.ToString(),
+                    Text = c.Name
+                });
+        }
+
         public async Task AddCategoryAsync(Category category)
         {
             try
             {
                 Console.WriteLine($"Adding category: {category.Name}, ParentId: {category.ParentCategoryId}");
                 
-                // Ensure collections are initialized
                 if (category.ChildCategories == null)
                     category.ChildCategories = new List<Category>();
                 
                 if (category.Products == null)
                     category.Products = new List<Product>();
-                
-                // Set ParentCategory explicitly to null if not needed
+          
                 if (!category.ParentCategoryId.HasValue)
                     category.ParentCategory = null;
                 
@@ -92,18 +108,20 @@ namespace Menova.Data.Services
             {
                 Console.WriteLine($"Updating category: {category.Name}, ID: {category.CategoryId}");
                 
-                // Ensure collections are initialized
-                if (category.ChildCategories == null)
-                    category.ChildCategories = new List<Category>();
+                // Get the existing entity from the database
+                var existingCategory = await _unitOfWork.Categories.GetByIdAsync(category.CategoryId);
+                if (existingCategory == null)
+                {
+                    throw new Exception($"Category with ID {category.CategoryId} not found");
+                }
                 
-                if (category.Products == null)
-                    category.Products = new List<Product>();
+                // Update the properties of the existing entity
+                existingCategory.Name = category.Name;
+                existingCategory.Description = category.Description;
+                existingCategory.ParentCategoryId = category.ParentCategoryId;
+                existingCategory.IsActive = category.IsActive;
                 
-                // Set ParentCategory explicitly to null if not needed
-                if (!category.ParentCategoryId.HasValue)
-                    category.ParentCategory = null;
-                
-                _unitOfWork.Categories.Update(category);
+                // Save changes
                 await _unitOfWork.CompleteAsync();
                 Console.WriteLine($"Category updated successfully");
             }
@@ -149,7 +167,7 @@ namespace Menova.Data.Services
                     // Also deactivate all child categories
                     await DeactivateChildCategories(category.CategoryId);
                     
-                    _unitOfWork.Categories.Update(category);
+                    // No need to call Update since we're modifying an already tracked entity
                     await _unitOfWork.CompleteAsync();
                     Console.WriteLine($"Category soft deleted successfully");
                 }
@@ -168,7 +186,7 @@ namespace Menova.Data.Services
             foreach (var child in childCategories)
             {
                 child.IsActive = false;
-                _unitOfWork.Categories.Update(child);
+                // No need to call Update since we're modifying an already tracked entity
                 
                 // Recursive call to deactivate grandchildren
                 await DeactivateChildCategories(child.CategoryId);

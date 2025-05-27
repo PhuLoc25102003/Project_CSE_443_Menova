@@ -114,9 +114,26 @@
         
         /* Fix cho color preview */
         #colorPreview {
-            width: 100% !important;
-            box-sizing: border-box !important;
-            margin-bottom: 15px !important;
+            width: 35px !important;
+            height: 35px !important;
+            border-radius: 4px !important;
+            border: 1px solid #ddd !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        /* Cải thiện form label alignment */
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        /* Giảm khoảng cách giữa các form item */
+        .Variant-input-item {
+            margin-bottom: 15px;
         }
         
         /* Đảm bảo các form card không vượt quá khung */
@@ -225,7 +242,7 @@
         .add-variant-container .card,
         .variants-list-container .card {
             height: 100%;
-            min-height: 500px; /* Tăng chiều cao thêm để đảm bảo đủ chỗ cho 4 variants và pagination */
+            min-height: 550px; /* Tăng chiều cao thêm để đảm bảo đủ chỗ cho màu đã chọn và các elements khác */
         }
         
         .variants-list-container .card-body {
@@ -233,32 +250,41 @@
             flex-direction: column;
             height: 100%;
             padding: 20px; /* Đảm bảo padding đủ */
+            min-height: 450px; /* Đảm bảo chiều cao tối thiểu cho card body */
         }
         
         .table-responsive {
             flex-grow: 1;
             overflow-y: auto;
+            overflow-x: auto;
             margin-bottom: 20px;
+            min-height: 300px; /* Đảm bảo chiều cao tối thiểu cho bảng khi ít variants */
         }
         
         .add-variant-form {
             display: flex;
             flex-direction: column;
             height: 100%;
+            padding-bottom: 0;
         }
         
         .form-fields-container {
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 12px;
+            margin-bottom: 15px;
         }
         
         .form-actions {
-            margin-top: auto;
-            padding-top: 20px;
+            margin-top: 5px;
+            position: relative;
+            padding: 0;
         }
         
-        /* Style mới cho Variant-input-item */
         .Variant-input-item {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         
         .Variant-input-item label {
@@ -280,10 +306,15 @@
         /* Hiển thị màu đã chọn */
         .color-selected-container {
             margin-top: 10px;
-            padding: 10px;
+            padding: 12px;
             background-color: #f8f9fa;
             border-radius: 8px;
             border: 1px solid #e9ecef;
+            height: auto;
+            overflow: visible;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
         }
         
         /* Style cho nút */
@@ -307,6 +338,7 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
+            table-layout: fixed; /* Giúp cố định chiều rộng cột */
         }
         
         .variants-table th {
@@ -345,9 +377,17 @@
         .pagination-wrapper {
             margin-top: auto;
             width: 100%;
-            padding-top: 15px;
+            padding-top: 8px;
             border-top: 1px solid #e9ecef;
-            position: relative; /* Thêm position relative */
+            position: relative;
+            height: 80px; /* Chiều cao cố định cho phân trang */
+        }
+        
+        /* Tạo phần tử giữ chỗ cho pagination khi không có */
+        .pagination-placeholder {
+            height: 80px;
+            width: 100%;
+            margin-top: auto;
         }
         
         .pagination-container {
@@ -399,6 +439,26 @@
             text-align: center;
             color: #6c757d;
             font-size: 0.9rem;
+        }
+        
+        /* Improve status toggle styling */
+        .form-check.form-switch {
+            display: inline-flex;
+            align-items: center;
+            width: auto;
+            padding-left: 0;
+        }
+        
+        .form-check-input {
+            margin-right: 8px;
+            float: none;
+            margin-left: 0;
+        }
+        
+        .form-check-label {
+            display: inline-block;
+            margin-bottom: 0;
+            vertical-align: middle;
         }
     </style>
 }
@@ -503,22 +563,29 @@
                                 </div>
                                 
                                 <div class="Variant-input-item">
-                                    <label class="form-label">Màu sắc <span class="text-danger">*</span></label>
-                                    <select id="colorSelect" name="ColorId" class="form-select" required>
-                                        <option value="">-- Chọn màu sắc --</option>
-                                        @if (colors != null)
-                                        {
-                                            foreach (var color in colors)
-                                            {
-                                                <option value="@color.ColorId" data-color="@color.ColorCode">@color.Name</option>
-                                            }
-                                        }
-                                    </select>
-                                    <div class="validation-message" data-valmsg-for="ColorId" data-valmsg-replace="true"></div>
-                                    
-                                    <div id="colorPreview" class="color-selected-container" style="display: none;">
-                                        <span>Màu đã chọn:</span>
-                                        <div class="d-inline-block ms-2" style="width: 25px; height: 25px; border-radius: 4px; border: 1px solid #ddd;"></div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label class="form-label">Màu sắc <span class="text-danger">*</span></label>
+                                              <select id="colorSelect" name="ColorId" class="form-select" required>
+                                                <option value="">-- Chọn màu sắc --</option>
+                                                @if (colors != null)
+                                                    {
+                                                        foreach (var color in colors)
+                                                        {
+                                                            <option value="@color.ColorId" data-color="@color.ColorCode">@color.Name</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            <div class="validation-message" data-valmsg-for="ColorId" data-valmsg-replace="true"></div>
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <label class="form-label">Màu đã chọn</label>
+                                            <div class="d-flex align-items-center">
+                                                <div id="colorPreview" class="d-inline-block" style="width: 35px; height: 35px; border-radius: 4px; border: 1px solid #ddd; background-color: transparent;"></div>
+                                                
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -531,14 +598,16 @@
                                 <div class="Variant-input-item">
                                     <label class="form-label">Trạng thái</label>
                                     <div class="form-check form-switch">
-                                        <input name="IsActive" class="form-check-input" type="checkbox" checked>
+                                        <input name="IsActive" class="form-check-input" type="checkbox" checked value="true">
+                                        <!-- Hidden field to ensure IsActive is sent as false when checkbox is unchecked -->
+                                        <input name="IsActive" type="hidden" value="false">
                                         <label class="form-check-label">Hiển thị biến thể</label>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary w-100">
+                            <div class="form-actions mt-2">
+                                <button type="submit" class="btn btn-primary w-100 py-2">
                                     <i class="fas fa-plus-circle me-2"></i> Thêm biến thể
                                 </button>
                             </div>
@@ -562,6 +631,9 @@
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>
                                 Sản phẩm này chưa có biến thể nào. Vui lòng thêm biến thể sử dụng mẫu bên trái.
+                            </div>
+                            <div class="table-responsive" style="min-height: 300px;">
+                                <!-- Phần tử giữ chỗ khi không có biến thể -->
                             </div>
                         }
                         else
@@ -618,7 +690,7 @@
                                                     </form>
                                                 </td>
                                                 <td>
-                                                    <form method="post" asp-action="DeleteVariant" onsubmit="return confirm('Bạn có chắc chắn muốn xóa biến thể này?');">
+                                                    <form method="post" asp-action="DeleteVariant">
                                                         <input type="hidden" name="ProductVariantId" value="@variant.ProductVariantId" />
                                                         <button type="submit" class="btn btn-danger btn-sm w-100">
                                                             <i class="fas fa-trash-alt me-2"></i> Xóa
@@ -669,10 +741,12 @@
                                             }
                                         </ul>
                                     </div>
-                                    <div class="pagination-info">
-                                        Hiển thị @((currentPage - 1) * (ViewBag.PageSize ?? 4) + 1) - @(Math.Min(currentPage * (ViewBag.PageSize ?? 4), totalItems)) trên @totalItems biến thể
-                                    </div>
                                 </div>
+                            }
+                            else
+                            {
+                                <!-- Phần tử giữ chỗ cho phân trang khi không cần hiển thị -->
+                                <div class="pagination-placeholder"></div>
                             }
                         }
                     </div>
@@ -688,18 +762,20 @@
             // Handle color selection
             const colorSelect = document.getElementById('colorSelect');
             const colorPreview = document.getElementById('colorPreview');
-            const colorPreviewBox = colorPreview.querySelector('div');
+            const colorName = document.getElementById('colorName');
             
             if (colorSelect && colorPreview) {
                 colorSelect.addEventListener('change', function() {
                     const selectedOption = this.options[this.selectedIndex];
                     const colorCode = selectedOption.getAttribute('data-color');
+                    const selectedColorName = selectedOption.text;
                     
                     if (colorCode) {
-                        colorPreviewBox.style.backgroundColor = colorCode;
-                        colorPreview.style.display = 'block';
+                        colorPreview.style.backgroundColor = colorCode;
+                        colorName.textContent = selectedColorName;
                     } else {
-                        colorPreview.style.display = 'none';
+                        colorPreview.style.backgroundColor = 'transparent';
+                        colorName.textContent = 'Chưa chọn màu';
                     }
                 });
             }

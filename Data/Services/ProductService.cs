@@ -230,6 +230,47 @@ namespace Menova.Data.Services
                 return products;
             }
         }
+        
+        // Phương thức mới chỉ trả về sản phẩm đang active
+        public async Task<IEnumerable<Product>> GetAllActiveProductsAsync()
+        {
+            try
+            {
+                // Lấy tất cả sản phẩm kèm theo các thông tin liên quan
+                var allProducts = await _unitOfWork.Products.GetAllWithIncludeAsync(p => p.Category, p => p.ProductVariants, p => p.Images);
+                
+                // Chỉ trả về các sản phẩm có trạng thái IsActive = true
+                return allProducts.Where(p => p.IsActive);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading active products: {ex.Message}");
+                
+                // Quay lại cách lấy cơ bản nếu có lỗi
+                var products = await _unitOfWork.Products.GetAllAsync();
+                
+                // Lọc chỉ lấy sản phẩm active
+                products = products.Where(p => p.IsActive).ToList();
+                
+                // Tải thủ công danh mục cho mỗi sản phẩm
+                foreach (var product in products)
+                {
+                    try
+                    {
+                        if (product.Category == null && product.CategoryId > 0)
+                        {
+                            product.Category = await _unitOfWork.Categories.GetByIdAsync(product.CategoryId);
+                        }
+                    }
+                    catch (Exception innerEx)
+                    {
+                        Console.WriteLine($"Error loading category for product {product.ProductId}: {innerEx.Message}");
+                    }
+                }
+                
+                return products;
+            }
+        }
 
         public async Task<bool> ProductExistsAsync(int id)
         {

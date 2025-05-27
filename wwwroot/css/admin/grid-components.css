@@ -1,0 +1,138 @@
+/* AG Grid Container Styling */
+
+/* Product grid container */
+#productsGrid {
+    width: 100% !important;
+    height: 600px !important;
+    min-height: 400px !important;
+    display: block !important;
+    position: relative !important;
+    border-radius: 0.5rem;
+    overflow: hidden !important;
+}
+
+/* Category grid container */
+#categoriesGrid {
+    width: 100% !important;
+    height: 600px !important;
+    min-height: 400px !important;
+    display: block !important;
+    position: relative !important;
+    border-radius: 0.5rem;
+    overflow: hidden !important;
+}
+
+
+
+/* Status cell styling */
+.status-badge-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-badge-container p {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Compact badge styles */
+.badge {
+    display: inline-block !important;
+    width: auto !important;
+    white-space: nowrap !important;
+    padding: 0.25em 0.6em !important;
+    font-size: 0.75em !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Table-specific badge styles */
+.category-table .badge,
+.product-table .badge {
+    font-size: 0.7rem !important;
+    padding: 0.2em 0.5em !important;
+    font-weight: 500 !important;
+    min-width: 0 !important;
+    max-width: fit-content !important;
+}
+
+/* AG Grid badge styles */
+.ag-theme-alpine .badge,
+.ag-cell .badge {
+    max-width: fit-content !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+}
+
+/* Status cell renderer for AG Grid */
+.ag-cell .status-badge-container p {
+    width: auto !important;
+    max-width: fit-content !important;
+}
+
+.status-green {
+    background-color: rgba(28, 200, 138, 0.15);
+    color: #1cc88a;
+    border: 1px solid rgba(28, 200, 138, 0.3);
+}
+
+.status-red {
+    background-color: rgba(231, 74, 59, 0.15);
+    color: #e74a3b;
+    border: 1px solid rgba(231, 74, 59, 0.3);
+}
+
+/* Product image cell */
+.product-image-cell {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+/* Category name cell styling */
+.category-name-cell {
+    display: flex;
+    align-items: center;
+}
+
+.category-parent-badge {
+    display: inline-block;
+    background-color: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+    font-size: 0.85rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    border: 1px solid rgba(78, 115, 223, 0.2);
+}
+
+/* Stock quantity styling */
+.stock-cell {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    text-align: center;
+    min-width: 40px;
+    background-color: rgba(28, 200, 138, 0.1);
+    color: #1cc88a;
+    border: 1px solid rgba(28, 200, 138, 0.2);
+}
+
+.stock-warning {
+    background-color: rgba(246, 194, 62, 0.1);
+    color: #f6c23e;
+    border: 1px solid rgba(246, 194, 62, 0.2);
+}
+
+.stock-danger {
+    background-color: rgba(231, 74, 59, 0.1);
+    color: #e74a3b;
+    border: 1px solid rgba(231, 74, 59, 0.2);
+} 

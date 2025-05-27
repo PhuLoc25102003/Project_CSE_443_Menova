@@ -154,15 +154,16 @@
 /* Action buttons - Tối ưu kích thước cho nút */
 .action-buttons {
     display: flex !important;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: center;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    align-items: center !important;
     gap: 6px; /* Tăng khoảng cách giữa các nút */
     white-space: nowrap;
     width: 100% !important;
     position: relative;
     z-index: 10;
     padding: 5px !important;
+    text-align: center !important;
 }
 
 .action-buttons a,
@@ -214,6 +215,17 @@
     min-width: var(--action-column-min-width) !important;
     width: var(--action-column-min-width) !important;
     max-width: var(--action-column-min-width) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* Đảm bảo nội dung nằm giữa cột */
+.ag-cell.cell-actions .ag-cell-wrapper {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 /* Thiết kế nút hoạt động */
@@ -348,7 +360,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+   
     height: 100%;
 }
 
@@ -483,4 +495,30 @@
 
 .ag-body-viewport::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
+}
+
+.ag-theme-alpine .cell-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ag-theme-alpine .cell-status .badge {
+    margin: 0 auto;
+    min-width: 0;
+    width: auto !important;
+    display: inline-block !important;
+}
+
+/* Center the content of status cells */
+.ag-theme-alpine .ag-cell.cell-status {
+    padding: 0;
+}
+
+/* Ensure text in badges remains on one line */
+.ag-theme-alpine .badge {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: fit-content;
 } 

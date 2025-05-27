@@ -5,111 +5,14 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/admin/product-management.css" />
-    <link rel="stylesheet" href="~/css/admin/product-table.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-grid.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-theme-alpine.css" />
     <link rel="stylesheet" href="~/css/admin/ag-grid-custom.css" />
-    <style>
-        /* Header styling from Edit page */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .header-content h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-        
-        .page-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        /* Copy of Category page CSS for consistent styling */
-        .product-management .card {
-            border-radius: .75rem !important;
-            box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1) !important;
-            border: none !important;
-            overflow: visible !important;
-            position: relative !important;
-            z-index: 1 !important;
-            height: auto !important;
-            min-height: auto !important;
-            transition: box-shadow 0.3s ease;
-        }
-
-        .product-management .card:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
-        }
-
-        .product-management .card-body {
-            padding: 1.5rem !important;
-            position: relative !important;
-            height: auto !important;
-            min-height: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-        }
-
-        /* AG Grid Specific card-body padding */
-        .product-management .card-body.p-0 {
-            padding: 0 !important;
-        }
-
-        /* Card body for form cards */
-        .product-form-card .card-body {
-            height: auto !important;
-            min-height: auto !important;
-            overflow: visible !important;
-        }
-
-        /* Fix to ensure table is always displayed properly */
-        .table-responsive {
-            overflow-x: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-            max-width: 100% !important;
-        }
-
-        /* AG Grid container */
-        #productsGrid {
-            width: 100% !important;
-            height: 600px !important;
-            min-height: 400px !important;
-            display: block !important;
-            position: relative !important;
-            border-radius: 0.5rem;
-            overflow: hidden !important;
-        }
-
-        /* Card header styling to match Category */
-        .product-form-card .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 0.75rem 0.75rem 0 0;
-        }
-
-        .product-form-card .card-header .btn-sm {
-            background-color: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            color: white;
-        }
-
-        .product-form-card .card-header .text-muted {
-            color: rgba(255, 255, 255, 0.8) !important;
-        }
-
-        .product-form-card .card-header .form-check-label {
-            color: rgba(255, 255, 255, 0.9);
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/admin/page-header.css" />
+    <link rel="stylesheet" href="~/css/admin/card-styling.css" />
+    <link rel="stylesheet" href="~/css/admin/grid-components.css" />
+    <link rel="stylesheet" href="~/css/admin/action-buttons.css" />
+    <link rel="stylesheet" href="~/css/admin/product-management-optimized.css" />
 }
 
 <div class="product-management product-management-page">
@@ -210,22 +113,16 @@
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <form action="@Url.Action("ToggleStatus", "Product", new { area = "Admin" })" method="post" style="display:inline;">
-                                                <input type="hidden" name="id" value="@product.ProductId" />
-                                                <button type="submit" class="btn btn-sm @(product.IsActive ? "btn-outline-warning" : "btn-outline-success")" title="@(product.IsActive ? "Ẩn sản phẩm" : "Hiển thị sản phẩm")">
-                                                    <i class="fas @(product.IsActive ? "fa-eye-slash" : "fa-eye")"></i>
-                                                </button>
-                                            </form>
-                                            <a href="@Url.Action("Edit", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                            <a asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-primary" title="Sửa">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="@Url.Action("Details", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-info" title="Chi tiết">
+                                            <a asp-action="Details" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-info" title="Chi tiết">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="@Url.Action("Variants", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-secondary" title="Biến thể">
+                                            <a asp-action="Variants" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-secondary" title="Biến thể">
                                                 <i class="fas fa-cubes"></i>
                                             </a>
-                                            <a href="@Url.Action("Delete", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                            <a asp-action="Delete" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-danger" title="Xóa">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
@@ -254,33 +151,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/dist/ag-grid-community.min.js"></script>
+    <script src="~/js/admin/delete-confirmation.js"></script>
+    <script src="~/js/admin/product-grid-init.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            console.log("DOM loaded, initializing grid...");
-            
-            // Initialize grid only if we have the container
-            const gridDiv = document.getElementById('productsGrid');
-            if (!gridDiv) {
-                console.error("Grid container not found!");
-                document.getElementById('fallbackTable').style.display = 'block';
-                return;
-            }
-            
-            // If agGrid is not available, show fallback table
-            if (typeof agGrid === 'undefined') {
-                console.error("AG Grid library not loaded!");
-                document.getElementById('fallbackTable').style.display = 'block';
-                return;
-            }
-            
-            console.log("AG Grid found, preparing data...");
-            
+        // Ensure DOM is fully loaded before initializing grid
+        document.addEventListener("DOMContentLoaded", function() {
             // Prepare data
             const rowData = [];
-            
-            // Safely check if Model exists and has items
-            const hasModelData = @Json.Serialize(Model != null && Model.Any());
-            console.log("Model has data:", hasModelData);
             
             @if (Model != null && Model.Any())
             {
@@ -315,289 +192,19 @@
                 }
             }
             
-            // Check if we have data
-            const hasData = rowData.length > 0;
-            console.log("Data loaded:", hasData ? "Yes" : "No", "rowData length:", rowData.length);
-            
-            if (!hasData) {
-                document.getElementById('noDataMessage').style.display = 'block';
-                return;
-            }
-                
-            // Cell renderers
-            const imageCellRenderer = function(params) {
-                return '<img class="product-image-cell" src="' + params.value + '" alt="Product Image" />';
+            // URL configuration for action buttons
+            const urlConfig = {
+                editUrl: '@Url.Action("Edit", "Product", new { area = "Admin" })',
+                detailsUrl: '@Url.Action("Details", "Product", new { area = "Admin" })',
+                variantsUrl: '@Url.Action("Variants", "Product", new { area = "Admin" })',
+                deleteUrl: '@Url.Action("Delete", "Product", new { area = "Admin" })'
             };
             
-            const statusCellRenderer = function(params) {
-                if (params.value === true) {
-                    return '<div class="status-badge-container "><p class="status-green">Đang bán</p></div>';
-                } else {
-                    return '<div class="status-badge-container"><p class="status-red">Ngừng bán</p></div>';
-                }
-            };
-            
-            const stockCellRenderer = function(params) {
-                const value = params.value;
-                
-                if (value <= 0) {
-                    return '<div class="stock-cell stock-danger">Hết hàng</div>';
-                }
-                
-                if (params.data.stockDanger) {
-                    return '<div class="stock-cell stock-danger">' + value + '</div>';
-                } else if (params.data.stockWarning) {
-                    return '<div class="stock-cell stock-warning">' + value + '</div>';
-                }
-                
-                return '<div class="stock-cell">' + value + '</div>';
-            };
-            
-            const categoryCellRenderer = function(params) {
-                if (!params.value || params.value === "Không có danh mục") {
-                    return '<span class="text-muted">Không có danh mục</span>';
-                }
-                return '<span class="category-parent-badge">' + params.value + '</span>';
-            };
-            
-            const actionCellRenderer = function(params) {
-                const productId = params.data.productId;
-                const isActive = params.data.isActive;
-                
-                return '<div class="action-buttons">' + 
-                    '<form action="@Url.Action("ToggleStatus", "Product", new { area = "Admin" })" method="post" style="display:inline;">' +
-                    '<input type="hidden" name="id" value="' + productId + '" />' +
-                    '<button type="submit" class="btn btn-sm ' + (isActive ? 'btn-outline-warning' : 'btn-outline-success') + 
-                    '" title="' + (isActive ? 'Ẩn sản phẩm' : 'Hiển thị sản phẩm') + '">' +
-                    '<i class="fas ' + (isActive ? 'fa-eye-slash' : 'fa-eye') + '"></i>' +
-                    '</button></form>' +
-                    '<a href="@Url.Action("Edit", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="fas fa-edit"></i></a>' +
-                    '<a href="@Url.Action("Details", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-info" title="Chi tiết"><i class="fas fa-eye"></i></a>' +
-                    '<a href="@Url.Action("Variants", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-secondary" title="Biến thể"><i class="fas fa-cubes"></i></a>' +
-                    '<a href="@Url.Action("Delete", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash"></i></a>' +
-                '</div>';
-            };
-            
-            // Column definitions
-            const columnDefs = [
-                { 
-                    field: 'imageUrl', 
-                    headerName: 'Ảnh', 
-                    width: 80,
-                    flex: 0.5,
-                    cellRenderer: imageCellRenderer,
-                    filter: false,
-                    floatingFilter: false,
-                    sortable: false,
-                    cellClass: 'cell-image'
-                },
-                { 
-                    field: 'name', 
-                    headerName: 'Tên sản phẩm', 
-                    minWidth: 180,
-                    flex: 3,
-                    filter: 'agTextColumnFilter',
-                    floatingFilter: true
-                },
-                { 
-                    field: 'sku', 
-                    headerName: 'SKU', 
-                    width: 120,
-                    flex: 1,
-                    filter: 'agTextColumnFilter',
-                    floatingFilter: true
-                },
-                { 
-                    field: 'category', 
-                    headerName: 'Danh mục', 
-                    width: 150,
-                    flex: 1.5,
-                    filter: 'agTextColumnFilter',
-                    floatingFilter: true,
-                    cellRenderer: categoryCellRenderer
-                },
-                { 
-                    field: 'formattedPrice', 
-                    headerName: 'Giá', 
-                    width: 120,
-                    flex: 1,
-                    filter: 'agNumberColumnFilter',
-                    floatingFilter: true,
-                    cellClass: 'text-end'
-                },
-                { 
-                    field: 'formattedDiscountPrice', 
-                    headerName: 'Giảm giá', 
-                    width: 120,
-                    flex: 1,
-                    filter: 'agNumberColumnFilter',
-                    floatingFilter: true,
-                    cellClass: 'text-end'
-                },
-                { 
-                    field: 'stockQuantity', 
-                    headerName: 'Kho hàng', 
-                    width: 120,
-                    flex: 0.8,
-                    filter: 'agNumberColumnFilter',
-                    filterParams: {
-                        buttons: ['apply', 'reset'],
-                        closeOnApply: true
-                    },
-                    floatingFilter: true,
-                    cellRenderer: stockCellRenderer,
-                    cellClass: 'cell-stock',
-                    headerClass: 'text-center'
-                },
-                { 
-                    field: 'isActive', 
-                    headerName: 'Trạng thái', 
-                    width: 130,
-                    flex: 0,
-                    filter: 'agSetColumnFilter',
-                    floatingFilter: true,
-                    cellRenderer: statusCellRenderer,
-                    cellClass: 'cell-status text-center',
-                    headerClass: 'text-center',
-                    autoHeight: false,
-                    wrapText: false,
-                    filterParams: {
-                        values: [true, false],
-                        cellRenderer: params => {
-                            return params.value === true ? 'Đang bán' : 'Ngừng bán';
-                        }
-                    }
-                },
-                { 
-                    field: 'productId', 
-                    headerName: 'Thao tác', 
-                    minWidth: 220,
-                    width: 220,
-                    maxWidth: 220,
-                    flex: 0,
-                    cellRenderer: actionCellRenderer,
-                    filter: false,
-                    floatingFilter: false,
-                    sortable: false,
-                    resizable: false,
-                    pinned: 'right',
-                    cellClass: 'cell-actions text-center',
-                    lockPinned: true,
-                    suppressSizeToFit: true
-                }
-            ];
-            
-            // Grid options
-            const gridOptions = {
-                columnDefs: columnDefs,
-                rowData: rowData,
-                defaultColDef: {
-                    flex: 1,
-                    minWidth: 80,
-                    sortable: true,
-                    resizable: true,
-                    filter: true,
-                    wrapText: true,
-                    autoHeight: true,
-                    cellClass: 'align-middle'
-                },
-                enableRangeSelection: true,
-                animateRows: true,
-                pagination: true,
-                paginationPageSize: 20,
-                enableCellTextSelection: true,
-                rowSelection: 'multiple',
-                suppressRowClickSelection: true,
-                domLayout: 'normal',
-                suppressScrollOnNewData: true,
-                headerHeight: 48,
-                rowHeight: 56
-            };
-            
-            // Filter by active status if checkbox is checked
-            const showActiveOnly = document.getElementById("showActiveOnly");
-            const applyActiveFilter = function() {
-                if (gridOptions.api) {
-                    if (showActiveOnly.checked) {
-                        gridOptions.api.setFilterModel({
-                            isActive: { 
-                                filterType: 'set', 
-                                values: ['true']
-                            }
-                        });
-                    } else {
-                        gridOptions.api.setFilterModel(null);
-                    }
-                }
-            };
-            
-            if (showActiveOnly) {
-                showActiveOnly.addEventListener('change', applyActiveFilter);
-            }
-            
-            // Export to Excel
-            const exportBtn = document.getElementById("exportBtn");
-            if (exportBtn) {
-                exportBtn.addEventListener('click', function() {
-                    if (gridOptions.api) {
-                        gridOptions.api.exportDataAsExcel({
-                            fileName: 'danh_sach_san_pham_' + new Date().toISOString().slice(0, 10),
-                            skipColumnGroupHeaders: true,
-                            skipColumnHeaders: false,
-                            skipPinnedTop: true,
-                            skipPinnedBottom: true,
-                            allColumns: false,
-                            onlySelected: false,
-                            columnKeys: ['name', 'sku', 'category', 'formattedPrice', 'formattedDiscountPrice', 'stockQuantity', 'isActive']
-                        });
-                    }
-                });
-            }
-            
-            // Initialize grid
-            try {
-                console.log("Initializing grid...");
-                const grid = new agGrid.Grid(gridDiv, gridOptions);
-                console.log("Grid created");
-                
-                // Size columns to fit after grid is ready
-                setTimeout(function() {
-                    gridOptions.api.sizeColumnsToFit();
-                    
-                    // Remove fixed column width to make it responsive
-                    // Make sure action column has minimum width but can resize
-                    const actionColumn = gridOptions.columnApi.getColumn('productId');
-                    if (actionColumn) {
-                        gridOptions.columnApi.setColumnMinWidth(actionColumn, 180);
-                    }
-                }, 200);
-                
-                // Add window resize handler to make grid responsive
-                window.addEventListener('resize', function() {
-                    if (gridOptions.api) {
-                        setTimeout(function() {
-                            gridOptions.api.sizeColumnsToFit();
-                        }, 100);
-                    }
-                });
-                
-                // Add refresh button functionality
-                const refreshBtn = document.getElementById('refreshGrid');
-                if (refreshBtn) {
-                    refreshBtn.addEventListener('click', function() {
-                        location.reload();
-                    });
-                }
-                
-            } catch (error) {
-                console.error("Error initializing AG Grid:", error);
-                document.getElementById('fallbackTable').style.display = 'block';
-                document.getElementById('productsGrid').style.display = 'none';
-            }
+            // Initialize the grid - moved outside of the grid-init.js DOMContentLoaded event
+            // so we don't have nested DOMContentLoaded events
+            setTimeout(function() {
+                initializeProductGrid('productsGrid', 'fallbackTable', 'noDataMessage', rowData, urlConfig);
+            }, 0);
         });
     </script>
 }
