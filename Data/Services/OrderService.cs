@@ -44,7 +44,7 @@ namespace Menova.Data.Services
 
         public async Task<List<Order>> GetRecentOrdersAsync(int count)
         {
-            var orders = await _unitOfWork.Orders.GetAllAsync();
+            var orders = await _unitOfWork.Orders.GetAllWithDetailsAsync();
             return orders
                 .OrderByDescending(o => o.OrderDate)
                 .Take(count)
@@ -74,8 +74,9 @@ namespace Menova.Data.Services
             {
                 { "Pending", orders.Count(o => o.OrderStatus.ToLower() == "pending") },
                 { "Processing", orders.Count(o => o.OrderStatus.ToLower() == "processing") },
-                { "Shipped", orders.Count(o => o.OrderStatus.ToLower() == "shipped") },
+                { "Shipping", orders.Count(o => o.OrderStatus.ToLower() == "shipping") },
                 { "Delivered", orders.Count(o => o.OrderStatus.ToLower() == "delivered") },
+                { "Received", orders.Count(o => o.OrderStatus.ToLower() == "received") },
                 { "Cancelled", orders.Count(o => o.OrderStatus.ToLower() == "cancelled") }
             };
         }

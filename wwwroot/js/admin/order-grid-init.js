@@ -51,7 +51,7 @@ function currencyFormatter(params) {
     return params.value.toLocaleString('vi-VN') + ' VNĐ';
 }
 
-// Action buttons renderer function
+// Action buttons renderer function - removed trash icon
 function actionRenderer(params, urlConfig) {
     if (!params.data || !params.data.orderId) return '';
     const orderId = params.data.orderId;
@@ -62,12 +62,6 @@ function actionRenderer(params, urlConfig) {
            title="Xem chi tiết">
             <i class="fas fa-eye"></i>
         </a>
-        <button type="button" 
-                onclick="${urlConfig.deleteConfirmFn}(${orderId})" 
-                class="btn btn-sm btn-outline-danger" 
-                title="Xóa">
-            <i class="fas fa-trash"></i>
-        </button>
     </div>`;
 }
 
@@ -88,11 +82,11 @@ function initializeOrderGrid(gridId, fallbackTableId, noDataMessageId, rowData, 
         // Calculate percentage for each column based on importance
         const totalFlexUnits = 100;
         const colFlexes = {
-            orderId: 15,         // 15% (increased from 10%)
+            orderId: 15,         // 15%
             orderDate: 16,       // 16%
-            userName: 17,        // 17% (reduced from 20%)
-            phoneNumber: 15,     // 15%
-            totalAmount: 17,     // 17% (reduced from 19%)
+            userName: 20,        // 20% (increased from 17%)
+            phoneNumber: 14,     // 14% (decreased from 15%)
+            totalAmount: 15,     // 15% (decreased from 17%)
             orderStatus: 20      // 20%
         };
         

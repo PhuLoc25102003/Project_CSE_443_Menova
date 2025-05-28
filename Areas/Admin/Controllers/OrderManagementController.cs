@@ -135,9 +135,9 @@ namespace Menova.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            // In a real application, you might want to add a deletion method to your service
-            // For now, just redirect back with a message
-            TempData["ErrorMessage"] = "Chức năng xóa đơn hàng hiện chưa được hỗ trợ.";
+            // Orders cannot be deleted as per business requirements
+            // We keep this method to prevent errors but redirect with a message
+            TempData["ErrorMessage"] = "Không được phép xóa đơn hàng.";
             return RedirectToAction("Index");
         }
 
@@ -174,6 +174,7 @@ namespace Menova.Areas.Admin.Controllers
                 {
                     filteredOrders = filteredOrders.Where(o => 
                         o.OrderId.ToString().Contains(searchQuery) || 
+                        (o.User?.FullName?.Contains(searchQuery) ?? false) ||
                         (o.User?.PhoneNumber?.Contains(searchQuery) ?? false) ||
                         (o.PhoneNumber?.Contains(searchQuery) ?? false)
                     ).ToList();

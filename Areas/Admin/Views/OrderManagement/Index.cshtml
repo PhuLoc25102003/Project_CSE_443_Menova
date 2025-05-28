@@ -316,7 +316,7 @@
                             <tr>
                                 <td>#@order.OrderId</td>
                                 <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>@(order.User?.PhoneNumber ?? "N/A")</td>
+                                <td>@(order.User?.FullName ?? "N/A")</td>
                                 <td>@order.PhoneNumber</td>
                                 <td>@order.TotalAmount.ToString("N0") VNĐ</td>
                                 <td>
@@ -328,9 +328,6 @@
                                            class="btn btn-sm btn-outline-info" title="Xem chi tiết">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <button type="button" onclick="confirmDeleteOrder(@order.OrderId)" class="btn btn-sm btn-outline-danger" title="Xóa">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -721,7 +718,7 @@
                     rowData.push({
                         orderId: @order.OrderId,
                         orderDate: '@order.OrderDate.ToString("o")',
-                        userName: @Json.Serialize(order.User?.PhoneNumber ?? "N/A"),
+                        userName: @Json.Serialize(order.User?.FullName ?? "N/A"),
                         phoneNumber: @Json.Serialize(order.PhoneNumber ?? ""),
                         totalAmount: @order.TotalAmount.ToString(System.Globalization.CultureInfo.InvariantCulture),
                         orderStatus: @Json.Serialize(order.OrderStatus ?? "")
@@ -815,8 +812,8 @@
                     { 
                         headerName: "Khách hàng", 
                         field: "userName", 
-                        flex: 1,
-                        minWidth: 120,
+                        flex: 1.5,
+                        minWidth: 160,
                         hide: window.innerWidth < 768
                     },
                     { 
@@ -852,18 +849,18 @@
                             if (!params.value) return '';
                             
                             const statusMap = {
-                                'pending': { text: 'Chờ xử lý', class: 'order-status-pending' },
-                                'processing': { text: 'Đang xử lý', class: 'order-status-processing' },
-                                'shipping': { text: 'Đang giao hàng', class: 'order-status-shipping' },
-                                'delivered': { text: 'Đã giao hàng', class: 'order-status-shipped' },
-                                'received': { text: 'Đã nhận hàng', class: 'order-status-delivered' },
-                                'cancelled': { text: 'Đã hủy', class: 'order-status-cancelled' }
+                                'pending': { text: 'Chờ xử lý', class: 'status-pending' },
+                                'processing': { text: 'Đang xử lý', class: 'status-processing' },
+                                'shipping': { text: 'Đang giao hàng', class: 'status-shipping' },
+                                'delivered': { text: 'Đã giao hàng', class: 'status-shipped' },
+                                'received': { text: 'Đã nhận hàng', class: 'status-completed' },
+                                'cancelled': { text: 'Đã hủy', class: 'status-cancelled' }
                             };
                             
                             const status = params.value.toLowerCase();
                             const statusInfo = statusMap[status] || { text: params.value, class: '' };
                             
-                            return `<span class="order-status ${statusInfo.class}">${statusInfo.text}</span>`;
+                            return `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
                         },
                         cellClass: 'text-center',
                         suppressSizeToFit: true
@@ -883,12 +880,6 @@
                                    title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <button type="button" 
-                                        onclick="${urlConfig.deleteConfirmFn}(${orderId})" 
-                                        class="btn btn-sm btn-outline-danger" 
-                                        title="Xóa">
-                                    <i class="fas fa-trash"></i>
-                                </button>
                             </div>`;
                         },
                         cellClass: ['action-cell', 'text-center'],

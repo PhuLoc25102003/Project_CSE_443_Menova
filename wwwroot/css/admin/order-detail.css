@@ -26,6 +26,17 @@
     --action-column-min-width: 220px;
     --shipping-color: #795548;
     --shipping-bg: rgba(121, 85, 72, 0.12);
+    
+    /* Timeline status colors */
+    --timeline-future-color: #ffffff;
+    --timeline-future-bg: rgba(255, 255, 255, 0.12);
+    --timeline-future-border: #e9ecef;
+    
+    --timeline-done-color: #38ef7d;
+    --timeline-done-bg: rgba(56, 239, 125, 0.12);
+    
+    --timeline-current-color: #4facfe;
+    --timeline-current-bg: rgba(79, 172, 254, 0.12);
 }
 
 /* Order Detail Page */
@@ -376,7 +387,7 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: var(--border-color);
+    background: var(--timeline-future-border);
     transform: translate(-50%, -50%);
     z-index: 2;
 }
@@ -386,88 +397,78 @@
     background: var(--light-gray);
     padding: 15px;
     border-radius: 10px;
-    border-top: 4px solid var(--border-color);
+    border-top: 4px solid var(--timeline-future-border);
     height: 100%;
 }
 
+/* Trạng thái đã qua (đã hoàn thành) - màu xanh lá */
 .timeline-item--active::before {
-    background: var(--success-color);
+    background: var(--timeline-done-color);
     box-shadow: 0 0 0 4px rgba(56, 239, 125, 0.2);
 }
 
 .timeline-item--active .timeline-content {
-    border-top-color: var(--success-color);
-    background: var(--success-bg);
+    border-top-color: var(--timeline-done-color);
+    background: var(--timeline-done-bg);
 }
 
 .timeline-item--active .timeline-title {
-    color: var(--success-color);
+    color: var(--timeline-done-color);
 }
 
 .timeline-item--active .timeline-date {
-    color: var(--success-color);
+    color: var(--timeline-done-color);
 }
 
+/* Trạng thái chưa tới (tương lai) - màu trắng */
 .timeline-item--disabled::before {
-    background: #d1d5db;
-    opacity: 0.5;
+    background: var(--timeline-future-border);
+    opacity: 0.8;
 }
 
 .timeline-item--disabled .timeline-content {
-    border-top-color: #d1d5db;
-    background: #f3f4f6;
-    opacity: 0.7;
+    border-top-color: var(--timeline-future-border);
+    background: var(--white);
+    opacity: 0.9;
 }
 
-.timeline-item--cancelled::before {
-    background: var(--danger-color);
-    box-shadow: 0 0 0 4px rgba(255, 65, 108, 0.2);
+.timeline-item--disabled .timeline-title,
+.timeline-item--disabled .timeline-date {
+    color: var(--secondary-color);
 }
 
-.timeline-item--cancelled .timeline-content {
-    border-top-color: var(--danger-color);
-    background: var(--danger-bg);
-}
-
-.timeline-item--cancelled .timeline-title {
-    color: var(--danger-color);
-}
-
-.timeline-item--cancelled .timeline-date {
-    color: var(--danger-color);
-}
-
+/* Trạng thái hiện tại (đang ở trạng thái đó) - màu xanh dương */
 .timeline-item.current-status::before {
-    background: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
-    animation: pulse 2s infinite;
+    background: var(--timeline-current-color);
+    box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.3);
+    animation: pulseCurrent 2s infinite;
 }
 
 .timeline-item.current-status .timeline-content {
-    border-top-color: var(--primary-color);
-    background: rgba(102, 126, 234, 0.12);
+    border-top-color: var(--timeline-current-color);
+    background: var(--timeline-current-bg);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .timeline-item.current-status .timeline-title {
-    color: var(--primary-color);
+    color: var(--timeline-current-color);
     font-weight: 700;
 }
 
 .timeline-item.current-status .timeline-date {
-    color: var(--primary-color);
+    color: var(--timeline-current-color);
     font-weight: 600;
 }
 
-@keyframes pulse {
+@keyframes pulseCurrent {
     0% {
-        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.5);
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.5);
     }
     70% {
-        box-shadow: 0 0 0 8px rgba(102, 126, 234, 0);
+        box-shadow: 0 0 0 8px rgba(79, 172, 254, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0);
     }
 }
 
@@ -652,7 +653,17 @@
     
     .timeline-item--active .timeline-content {
         border-top-color: transparent;
-        border-left-color: var(--success-color);
+        border-left-color: var(--timeline-done-color);
+    }
+    
+    .timeline-item.current-status .timeline-content {
+        border-top-color: transparent;
+        border-left-color: var(--timeline-current-color);
+    }
+    
+    .timeline-item--disabled .timeline-content {
+        border-top-color: transparent;
+        border-left-color: var(--timeline-future-border);
     }
 }
 
@@ -684,35 +695,61 @@
 /* Timeline status specific styles */
 .timeline-item[data-status="shipping"]::before,
 .timeline-item[data-status="shipping"].timeline-item--active::before {
-    background: var(--shipping-color);
-    box-shadow: 0 0 0 4px rgba(121, 85, 72, 0.2);
+    /* Sử dụng màu theo trạng thái thay vì màu shipping cố định */
+    background: var(--timeline-done-color); /* nếu đã qua */
+}
+
+.timeline-item[data-status="shipping"].current-status::before {
+    background: var(--timeline-current-color); /* nếu là trạng thái hiện tại */
+}
+
+.timeline-item[data-status="shipping"]:not(.current-status):not(.timeline-item--active)::before {
+    background: var(--timeline-future-border); /* nếu là trạng thái tương lai */
 }
 
 .timeline-item[data-status="shipping"] .timeline-content,
 .timeline-item[data-status="shipping"].timeline-item--active .timeline-content {
-    border-top-color: var(--shipping-color);
-    background: var(--shipping-bg);
+    border-top-color: var(--timeline-done-color);
+    background: var(--timeline-done-bg);
+}
+
+.timeline-item[data-status="shipping"].current-status .timeline-content {
+    border-top-color: var(--timeline-current-color);
+    background: var(--timeline-current-bg);
+}
+
+.timeline-item[data-status="shipping"]:not(.current-status):not(.timeline-item--active) .timeline-content {
+    border-top-color: var(--timeline-future-border);
+    background: var(--white);
 }
 
 .timeline-item[data-status="shipping"] .timeline-title,
-.timeline-item[data-status="shipping"].timeline-item--active .timeline-title,
-.timeline-item[data-status="shipping"] .timeline-date,
-.timeline-item[data-status="shipping"].timeline-item--active .timeline-date {
-    color: var(--shipping-color);
+.timeline-item[data-status="shipping"] .timeline-date {
+    color: var(--timeline-done-color); /* nếu đã qua */
+}
+
+.timeline-item[data-status="shipping"].current-status .timeline-title,
+.timeline-item[data-status="shipping"].current-status .timeline-date {
+    color: var(--timeline-current-color); /* nếu là trạng thái hiện tại */
+}
+
+.timeline-item[data-status="shipping"]:not(.current-status):not(.timeline-item--active) .timeline-title,
+.timeline-item[data-status="shipping"]:not(.current-status):not(.timeline-item--active) .timeline-date {
+    color: var(--secondary-color); /* nếu là trạng thái tương lai */
 }
 
 .timeline-item.current-status[data-status="shipping"]::before {
-    animation: pulseShipping 2s infinite;
+    animation: pulseCurrent 2s infinite;
 }
 
-@keyframes pulseShipping {
+@keyframes pulseCurrent {
     0% {
-        box-shadow: 0 0 0 0 rgba(121, 85, 72, 0.5);
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.5);
     }
     70% {
-        box-shadow: 0 0 0 8px rgba(121, 85, 72, 0);
+        box-shadow: 0 0 0 8px rgba(79, 172, 254, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(121, 85, 72, 0);
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0);
     }
 } 
