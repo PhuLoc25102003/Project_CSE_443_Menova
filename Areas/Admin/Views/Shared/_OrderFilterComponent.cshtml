@@ -1,0 +1,64 @@
+@model Menova.Areas.Admin.Models.OrderManagementViewModel
+
+<div class="filter-component">
+    <div class="filter-header">
+        <h4><i class="fas fa-filter"></i> Bộ lọc & Tìm kiếm đơn hàng</h4>
+        <a asp-area="Admin" asp-controller="OrderManagement" asp-action="Index" class="clear-filter">
+            <i class="fas fa-times"></i> Xóa bộ lọc
+        </a>
+    </div>
+    
+    <form method="get" asp-area="Admin" asp-controller="OrderManagement" asp-action="Index">
+        <div class="filter-content">
+            <div class="search-box">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" class="form-control" id="searchQuery" name="searchQuery" 
+                           value="@Model.SearchQuery" placeholder="Tìm kiếm nhanh">
+                    @if (!string.IsNullOrEmpty(Model.SearchQuery))
+                    {
+                        <button type="button" class="btn-close" onclick="clearSearch()"></button>
+                    }
+                </div>
+            </div>
+            
+            <div class="filter-status">
+                <select class="form-select" id="statusFilter" name="statusFilter">
+                    <option value="">Trạng thái</option>
+                    <option value="Pending" selected="@(Model.StatusFilter == "Pending")">Đang xử lý</option>
+                    <option value="Processing" selected="@(Model.StatusFilter == "Processing")">Đang xử lý</option>
+                    <option value="Shipped" selected="@(Model.StatusFilter == "Shipped")">Đã giao hàng</option>
+                    <option value="Delivered" selected="@(Model.StatusFilter == "Delivered")">Đã nhận hàng</option>
+                    <option value="Cancelled" selected="@(Model.StatusFilter == "Cancelled")">Đã hủy</option>
+                </select>
+            </div>
+            
+            <div class="filter-date">
+                <input type="date" class="form-control" id="startDate" name="startDate" 
+                       value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" placeholder="Từ ngày">
+            </div>
+            
+            <div class="filter-date">
+                <input type="date" class="form-control" id="endDate" name="endDate" 
+                       value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" placeholder="Đến ngày">
+            </div>
+            
+            <div class="filter-button">
+                <button type="submit" class="filter-btn">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+            </div>
+        </div>
+        
+    </form>
+</div>
+
+<script>
+    function clearSearch() {
+        document.getElementById('searchQuery').value = '';
+        // Submit the form after clearing
+        document.querySelector('.filter-component form').submit();
+    }
+</script> 

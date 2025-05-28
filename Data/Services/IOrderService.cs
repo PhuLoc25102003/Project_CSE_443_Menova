@@ -6,11 +6,14 @@ namespace Menova.Data.Services
     {
         Task<IEnumerable<Order>> GetUserOrdersAsync(int userId);
         Task<Order> GetOrderDetailsAsync(int orderId, int userId);
+        Task<Order> GetOrderDetailsForAdminAsync(int orderId);
         Task<Order> CreateOrderAsync(int userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes);
         Task UpdateOrderStatusAsync(int orderId, string status);
 
         Task<int> GetTotalOrderCountAsync();
         Task<List<Order>> GetRecentOrdersAsync(int count);
         Task<decimal> GetTotalRevenueAsync();
+        Task<List<Order>> GetOrdersInDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<Dictionary<string, int>> GetOrderCountsByStatusAsync();
     }
 }

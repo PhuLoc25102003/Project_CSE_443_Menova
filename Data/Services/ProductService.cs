@@ -89,7 +89,7 @@ namespace Menova.Data.Services
                 CurrentCategory = currentCategory,
                 SubCategories = subCategories,
                 Products = products.ToList(),
-                Pagination = new PaginationInfo
+                Pagination = new Menova.Models.ViewModels.PaginationInfo
                 {
                     CurrentPage = page,
                     ItemsPerPage = pageSize,
@@ -118,22 +118,93 @@ namespace Menova.Data.Services
 
         public async Task<List<ProductSalesSummary>> GetTopSellingProductsAsync(int count)
         {
-            // Giả lập dữ liệu - trong thực tế sẽ lấy từ OrderDetails
-            var products = await _unitOfWork.Products.GetFeaturedProductsAsync(count);
+            // Thực hiện truy vấn từ cơ sở dữ liệu để lấy sản phẩm bán chạy nhất
+            // Lấy tất cả đơn hàng và chi tiết đơn hàng
+            var orders = await _unitOfWork.Orders.GetAllWithDetailsAsync();
+            
+            // Nhóm các chi tiết đơn hàng theo sản phẩm và tính tổng số lượng bán và doanh thu
+            var productSummaries = orders
+                .SelectMany(o => o.OrderDetails)
+                .GroupBy(od => od.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    TotalSales = g.Sum(od => od.Quantity),
+                    Revenue = g.Sum(od => od.UnitPrice * od.Quantity)
+                })
+                .OrderByDescending(x => x.Revenue)
+                .Take(count)
+                .ToList();
 
-            return products.Select(p => new ProductSalesSummary
+            // Lấy thông tin chi tiết của các sản phẩm
+            var result = new List<ProductSalesSummary>();
+            foreach (var summary in productSummaries)
             {
-                Product = p,
-                TotalSales = new Random().Next(10, 100), // Giả lập
-                Revenue = p.Price * new Random().Next(10, 100) // Giả lập
-            }).ToList();
+                var product = await _unitOfWork.Products.GetByIdAsync(summary.ProductId);
+                if (product != null)
+                {
+                    result.Add(new ProductSalesSummary
+                    {
+                        Product = product,
+                        TotalSales = summary.TotalSales,
+                        Revenue = summary.Revenue
+                    });
+                }
+            }
+
+            // Nếu không có dữ liệu bán hàng hoặc số lượng không đủ, bổ sung thêm sản phẩm nổi bật
+            if (result.Count < count)
+            {
+                var existingProductIds = result.Select(p => p.Product.ProductId).ToList();
+                var featuredProducts = (await _unitOfWork.Products.GetFeaturedProductsAsync(count))
+                    .Where(p => !existingProductIds.Contains(p.ProductId))
+                    .Take(count - result.Count);
+
+                foreach (var product in featuredProducts)
+                {
+                    result.Add(new ProductSalesSummary
+                    {
+                        Product = product,
+                        TotalSales = 0,
+                        Revenue = 0
+                    });
+                }
+            }
+
+            return result;
         }
 
         public async Task<List<Product>> GetLowStockProductsAsync(int count)
         {
-            var products = await _unitOfWork.Products.GetAllAsync();
+            // Lấy tất cả sản phẩm đang active với variants và thông tin chi tiết
+            var products = await _unitOfWork.Products.GetAllWithIncludeAsync(p => p.ProductVariants);
+            
+            // Lọc sản phẩm active và tính toán hàng tồn kho có vấn đề
             return products
-                .Where(p => p.ProductVariants != null && p.ProductVariants.Sum(v => v.StockQuantity) < 10)
+                .Where(p => p.IsActive) // Chỉ xem xét sản phẩm đang active
+                .Where(p => {
+                    // Kiểm tra nếu sản phẩm có variants
+                    if (p.ProductVariants == null || !p.ProductVariants.Any())
+                        return false;
+                    
+                    // Chỉ xét các variant đang active
+                    var activeVariants = p.ProductVariants.Where(v => v.IsActive).ToList();
+                    
+                    if (!activeVariants.Any())
+                        return false;
+                    
+                    // Tiêu chí cảnh báo hết hàng:
+                    // 1. Nếu có ít nhất 30% các biến thể có số lượng < 5
+                    // 2. Hoặc nếu tổng số lượng / số biến thể < 3 (trung bình mỗi biến thể < 3)
+                    int lowStockVariants = activeVariants.Count(v => v.StockQuantity < 5);
+                    double percentLowStock = (double)lowStockVariants / activeVariants.Count;
+                    
+                    int totalStock = activeVariants.Sum(v => v.StockQuantity);
+                    double averageStock = (double)totalStock / activeVariants.Count;
+                    
+                    return percentLowStock > 0.3 || averageStock < 3;
+                })
+                .OrderBy(p => p.ProductVariants.Where(v => v.IsActive).Average(v => v.StockQuantity))
                 .Take(count)
                 .ToList();
         }

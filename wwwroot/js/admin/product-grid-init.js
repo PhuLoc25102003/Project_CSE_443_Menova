@@ -10,9 +10,9 @@ const imageCellRenderer = function(params) {
 
 const statusCellRenderer = function(params) {
     if (params.value === true) {
-        return '<span class="badge bg-success">Đang bán</span>';
+        return '<div class="status-badge-container"><span class="status-badge status-active">Đang bán</span></div>';
     } else {
-        return '<span class="badge bg-secondary">Ngừng bán</span>';
+        return '<div class="status-badge-container"><span class="status-badge status-inactive">Ngừng bán</span></div>';
     }
 };
 
@@ -20,16 +20,16 @@ const stockCellRenderer = function(params) {
     const value = params.value;
     
     if (value <= 0) {
-        return '<div class="stock-cell stock-danger">Hết hàng</div>';
+        return '<div class="status-badge-container"><span class="status-badge status-outofstock">Hết hàng</span></div>';
     }
     
     if (params.data.stockDanger) {
-        return '<div class="stock-cell stock-danger">' + value + '</div>';
+        return '<div class="status-badge-container"><span class="status-badge status-danger">' + value + '</span></div>';
     } else if (params.data.stockWarning) {
-        return '<div class="stock-cell stock-warning">' + value + '</div>';
+        return '<div class="status-badge-container"><span class="status-badge status-warning">' + value + '</span></div>';
     }
     
-    return '<div class="stock-cell">' + value + '</div>';
+    return '<div class="status-badge-container"><span class="status-badge status-success">' + value + '</span></div>';
 };
 
 const categoryCellRenderer = function(params) {
@@ -43,15 +43,14 @@ function createActionCellRenderer(editUrl, detailsUrl, variantsUrl, deleteUrl) {
     return function(params) {
         const productId = params.data.productId;
         
-        return '<div class="d-flex justify-content-center align-items-center">' + 
+        return '<div class="action-buttons">' + 
             '<a href="' + editUrl + '/' + productId + 
             '" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="fas fa-edit"></i></a>' +
             '<a href="' + detailsUrl + '/' + productId + 
             '" class="btn btn-sm btn-outline-info" title="Chi tiết"><i class="fas fa-eye"></i></a>' +
             '<a href="' + variantsUrl + '/' + productId + 
             '" class="btn btn-sm btn-outline-secondary" title="Biến thể"><i class="fas fa-cubes"></i></a>' +
-            '<a href="' + deleteUrl + '/' + productId + 
-            '" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash"></i></a>' +
+            '<button type="button" onclick="confirmDeleteProduct(' + productId + ')" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash"></i></button>' +
         '</div>';
     };
 }
@@ -171,7 +170,7 @@ function initializeProductGrid(gridContainerId, fallbackTableId, noDataMessageId
             },
             floatingFilter: true,
             cellRenderer: stockCellRenderer,
-            cellClass: 'cell-stock',
+            cellClass: 'text-center',
             headerClass: 'text-center'
         },
         { 
@@ -196,9 +195,9 @@ function initializeProductGrid(gridContainerId, fallbackTableId, noDataMessageId
         { 
             field: 'productId', 
             headerName: 'Thao tác', 
-            minWidth: 220,
-            width: 220,
-            maxWidth: 220,
+            minWidth: 160,
+            width: 160,
+            maxWidth: 160,
             flex: 0,
             cellRenderer: actionCellRenderer,
             filter: false,
@@ -206,9 +205,12 @@ function initializeProductGrid(gridContainerId, fallbackTableId, noDataMessageId
             sortable: false,
             resizable: false,
             pinned: 'right',
-            cellClass: 'cell-actions text-center',
+            cellClass: 'action-cell',
             lockPinned: true,
-            suppressSizeToFit: true
+            suppressSizeToFit: true,
+            cellClassRules: {
+                'ag-column-thao-tac': function() { return true; }
+            }
         }
     ];
     
@@ -274,12 +276,19 @@ function initializeProductGrid(gridContainerId, fallbackTableId, noDataMessageId
         setTimeout(function() {
             gridOptions.api.sizeColumnsToFit();
             
-            // Remove fixed column width to make it responsive
-            // Make sure action column has minimum width but can resize
+            // Make sure action column has correct width
             const actionColumn = gridOptions.columnApi.getColumn('productId');
             if (actionColumn) {
-                gridOptions.columnApi.setColumnMinWidth(actionColumn, 180);
+                // Set the action column to exactly 160px
+                gridOptions.columnApi.setColumnWidth(actionColumn, 160);
             }
+            
+            // Hide any empty columns
+            gridOptions.columnApi.getAllColumns().forEach(col => {
+                if (!col.getColDef().field && !col.getColDef().headerName) {
+                    gridOptions.columnApi.setColumnVisible(col, false);
+                }
+            });
         }, 200);
         
         // Add window resize handler to make grid responsive

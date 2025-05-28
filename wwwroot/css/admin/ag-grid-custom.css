@@ -3,33 +3,33 @@
 */
 
 /* Theme Variables - Base Style */
-:root {
-    --primary-color: #667eea;
-    --primary-hover: #5a67d8;
-    --secondary-color: #6c757d;
-    --success-color: #38ef7d;
-    --success-bg: rgba(56, 239, 125, 0.12);
-    --info-color: #4facfe;
-    --info-bg: rgba(79, 172, 254, 0.12);
-    --warning-color: #ffc107;
-    --warning-bg: rgba(255, 193, 7, 0.12);
-    --danger-color: #ff416c;
-    --danger-bg: rgba(255, 65, 108, 0.12);
-    --light-gray: #f8f9fa;
-    --border-color: #dee2e6;
-    --hover-color: #f1f5f9;
-    --white: #ffffff;
-    --dark: #2c3e50;
-    --grid-border-radius: 12px;
-    --row-height: 56px;
-    --header-height: 48px;
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --grid-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    --icon-orange: #ff9800;
-    --icon-blue: #2196f3;
-    --icon-green: #4caf50;
-    --action-column-min-width: 220px;
-}
+    :root {
+        --primary-color: #667eea;
+        --primary-hover: #5a67d8;
+        --secondary-color: #6c757d;
+        --success-color: #38ef7d;
+        --success-bg: rgba(56, 239, 125, 0.12);
+        --info-color: #4facfe;
+        --info-bg: rgba(79, 172, 254, 0.12);
+        --warning-color: #ffc107;
+        --warning-bg: rgba(255, 193, 7, 0.12);
+        --danger-color: #ff416c;
+        --danger-bg: rgba(255, 65, 108, 0.12);
+        --light-gray: #f8f9fa;
+        --border-color: #dee2e6;
+        --hover-color: #f1f5f9;
+        --white: #ffffff;
+        --dark: #2c3e50;
+        --grid-border-radius: 12px;
+        --row-height: 56px;
+        --header-height: 48px;
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --grid-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --icon-orange: #ff9800;
+        --icon-blue: #2196f3;
+        --icon-green: #4caf50;
+        --action-column-min-width: 220px;
+    }
 
 /* Container styling cho cả hai bảng */
 .ag-theme-alpine {
@@ -354,14 +354,6 @@
     width: 100%;
     display: flex;
     justify-content: center;
-}
-
-.status-badge-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-   
-    height: 100%;
 }
 
 .cell-status .badge {

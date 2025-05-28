@@ -27,9 +27,9 @@ const parentCellRenderer = function(params) {
 
 const statusCellRenderer = function(params) {
     if (params.value) {
-        return '<span class="badge bg-success">Đang hiển thị</span>';
+        return '<div class="status-badge-container"><span class="status-badge status-active">Đang hiển thị</span></div>';
     } else {
-        return '<span class="badge bg-secondary">Ẩn</span>';
+        return '<div class="status-badge-container"><span class="status-badge status-inactive">Ẩn</span></div>';
     }
 };
 
@@ -42,15 +42,15 @@ function createActionCellRenderer(createUrl, editUrl, detailsUrl, deleteFunc) {
         
         if (level === 0) {
             addChildButton = '<a href="' + createUrl + '?parentId=' + categoryId + 
-            '" class="btn btn-sm btn-outline-success me-1" title="Thêm danh mục con"><i class="fas fa-plus-circle"></i></a>';
+            '" class="btn btn-sm btn-outline-success" title="Thêm danh mục con"><i class="fas fa-plus-circle"></i></a>';
         }
         
-        return '<div class="d-flex justify-content-center align-items-center" style="width:100%;">' +
+        return '<div class="action-buttons">' +
             addChildButton +
             '<a href="' + editUrl + '/' + categoryId + 
-            '" class="btn btn-sm btn-outline-primary me-1" title="Sửa"><i class="fas fa-edit"></i></a>' +
+            '" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="fas fa-edit"></i></a>' +
             '<a href="' + detailsUrl + '/' + categoryId + 
-            '" class="btn btn-sm btn-outline-info me-1" title="Chi tiết"><i class="fas fa-eye"></i></a>' +
+            '" class="btn btn-sm btn-outline-info" title="Chi tiết"><i class="fas fa-eye"></i></a>' +
             '<button onclick="' + deleteFunc + '(' + categoryId + ', \'' + categoryName + '\')" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="fas fa-trash"></i></button>' +
         '</div>';
     };
@@ -158,9 +158,9 @@ function initializeCategoryGrid(gridContainerId, fallbackTableId, noDataMessageI
         { 
             field: 'categoryId', 
             headerName: 'Thao tác', 
-            minWidth: 220,
-            width: 220,
-            maxWidth: 220,
+            minWidth: 140,
+            width: 140,
+            maxWidth: 140,
             flex: 0,
             cellRenderer: actionCellRenderer,
             filter: false,
@@ -168,9 +168,13 @@ function initializeCategoryGrid(gridContainerId, fallbackTableId, noDataMessageI
             sortable: false,
             resizable: false,
             pinned: 'right',
-            cellClass: 'cell-actions text-center',
+            cellClass: 'action-cell',
+            headerClass: 'text-center action-header',
             lockPinned: true,
-            suppressSizeToFit: true
+            suppressSizeToFit: true,
+            cellClassRules: {
+                'ag-column-thao-tac': function() { return true; }
+            }
         }
     ];
     
@@ -216,11 +220,11 @@ function initializeCategoryGrid(gridContainerId, fallbackTableId, noDataMessageI
         setTimeout(function() {
             gridOptions.api.sizeColumnsToFit();
             
-            // Remove fixed column width to make it responsive
-            // Make sure action column has minimum width but can resize
+            // Make sure action column has correct width
             const actionColumn = gridOptions.columnApi.getColumn('categoryId');
             if (actionColumn) {
-                gridOptions.columnApi.setColumnMinWidth(actionColumn, 180);
+                // Set the action column to exactly 140px
+                gridOptions.columnApi.setColumnWidth(actionColumn, 140);
             }
         }, 200);
         

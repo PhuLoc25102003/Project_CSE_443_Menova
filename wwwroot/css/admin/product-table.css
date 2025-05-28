@@ -222,36 +222,6 @@
     height: 100%;
 }
 
-.product-table .status-badge {
-    padding: 0.5rem;
-    font-size: 0.875rem;
-}
-
-/* Improved inventory status visibility */
-.product-table .stock-normal {
-    color: #198754;
-}
-
-.product-table .stock-warning {
-    color: #ffc107;
-    font-weight: bold;
-}
-
-.product-table .stock-danger {
-    color: #dc3545;
-    font-weight: bold;
-}
-
-/* Status badge styling */
-.status-badge {
-    font-size: 0.875rem;
-    padding: 0.5rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
-}
-
 /* Stock status badge styling */
 .stock-cell .badge {
     font-size: 0.7rem;

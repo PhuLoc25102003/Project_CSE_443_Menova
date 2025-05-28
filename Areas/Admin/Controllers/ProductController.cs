@@ -28,7 +28,7 @@ namespace Menova.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<IActionResult> Index(string searchString, int? categoryId, string sortOrder, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string searchString, int? categoryId, string sortOrder, int page = 1, int pageSize = 20)
         {
             ViewData["CurrentFilter"] = searchString;
             ViewData["CurrentCategory"] = categoryId;

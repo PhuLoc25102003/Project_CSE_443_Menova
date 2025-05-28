@@ -646,6 +646,8 @@ body {
         background-color: #f8f9fc;
     }
 
+/* Removing old status-badge styling that conflicts with grid-components.css */
+/*
 .status-badge {
     display: inline-block;
     padding: 5px 10px;
@@ -654,6 +656,7 @@ body {
     font-weight: 500;
     color: white;
 }
+*/
 
 .product-cell {
     display: flex;

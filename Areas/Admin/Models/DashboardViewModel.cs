@@ -12,6 +12,7 @@ namespace Menova.Areas.Admin.Models
         public List<ProductSalesSummary> TopSellingProducts { get; set; }
         public List<Product> LowStockProducts { get; set; }
         public ChartData SalesChartData { get; set; }
+        public Dictionary<string, int> OrderStatistics { get; set; }
     }
 
     public class ProductSalesSummary

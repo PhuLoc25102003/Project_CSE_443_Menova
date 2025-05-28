@@ -3,11 +3,20 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+    --font-primary: 'Roboto', system-ui, sans-serif;
+    --font-secondary: 'Open Sans', system-ui, sans-serif;
 }
 
 body {
     overflow-x: hidden;
+    font-family: var(--font-primary);
 }
 
 /* Header Styles */

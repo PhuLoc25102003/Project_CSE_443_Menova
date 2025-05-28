@@ -1,0 +1,1069 @@
+    @using Menova.Areas.Admin.Models
+@model OrderManagementViewModel
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@* Anti-forgery token for AJAX requests *@
+@Html.AntiForgeryToken()
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-grid.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-theme-alpine.css" />
+    <link rel="stylesheet" href="~/css/admin/ag-grid-custom.css" />
+    <link rel="stylesheet" href="~/css/admin/ag-grid-overrides.css" />
+    <link rel="stylesheet" href="~/css/admin/page-header.css" />
+    <link rel="stylesheet" href="~/css/admin/card-styling.css" />
+    <link rel="stylesheet" href="~/css/admin/grid-components.css" />
+    <link rel="stylesheet" href="~/css/admin/action-buttons.css" />
+    <link rel="stylesheet" href="~/css/admin/order-status-summary.css" />
+    <link rel="stylesheet" href="~/css/admin/order-filter.css" />
+    <link rel="stylesheet" href="~/css/admin/top-filter-bar.css" />
+    <link rel="stylesheet" href="~/css/admin/grid-responsive.css" />
+    <link rel="stylesheet" href="~/css/ordermanagement.css" />
+    <link rel="stylesheet" href="~/css/admin/grid-fix.css" />
+    <style>
+        /* Critical styles for search visibility - inlined for immediate effect */
+        .filter-search,
+        #orderSearchContainer {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 100% !important;
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        
+        #searchQueryInput {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 100% !important;
+            min-width: 150px !important;
+        }
+        
+        /* Ensure parent containers don't hide the search */
+        .top-filter-bar {
+            display: flex !important;
+            flex-direction: column !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 100% !important;
+            overflow: visible !important;
+        }
+        
+        /* Fixed styles to prevent horizontal overflow */
+        #ordersGrid {
+            width: 100% !important;
+            height: 700px !important; /* Increased height to fit 20 rows perfectly */
+            overflow: hidden !important;
+            contain: layout size !important;
+        }
+        
+        /* Remove all borders and vertical gray lines */
+        .ag-theme-alpine * {
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* Completely remove all vertical bars */
+        .ag-theme-alpine .ag-cell,
+        .ag-theme-alpine .ag-header-cell {
+            border: none !important;
+            border-right: none !important;
+            border-left: none !important;
+        }
+        
+        /* Force transparent background for pinned columns */
+        .ag-theme-alpine .ag-pinned-right-header,
+        .ag-theme-alpine .ag-pinned-right-cols-container,
+        .ag-theme-alpine .ag-pinned-right-cols-viewport {
+            border: none !important;
+            border-left: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+        
+        /* Ensure containers don't overflow */
+        .ag-theme-alpine .ag-root-wrapper,
+        .ag-theme-alpine .ag-root,
+        .ag-theme-alpine .ag-body-viewport,
+        .ag-theme-alpine .ag-center-cols-viewport,
+        .ag-theme-alpine .ag-center-cols-clipper,
+        .ag-theme-alpine .ag-center-cols-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            overflow-x: hidden !important;
+        }
+        
+        /* Force rows to stay within container with consistent height */
+        .ag-theme-alpine .ag-row {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            height: 48px !important;
+            min-height: 48px !important;
+            max-height: 48px !important;
+            border-bottom: 1px solid #f0f0f0 !important;
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+        }
+        
+        /* Hide any extraneous elements */
+        .ag-column-drop, 
+        .ag-column-drop-wrapper, 
+        .ag-column-drop-viewport,
+        .ag-header-cell:empty,
+        .ag-cell:empty {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+        }
+        
+        /* Fix for header row width */
+        .ag-theme-alpine .ag-header-row {
+            width: 100% !important;
+            display: flex !important;
+        }
+        
+        /* Make header divider subtle */
+        .ag-theme-alpine .ag-header {
+            border-bottom: 2px solid #e0e0e0 !important;
+        }
+        
+        /* Remove any dividers from column headers */
+        .ag-theme-alpine .ag-header-cell::after,
+        .ag-theme-alpine .ag-header-cell::before {
+            display: none !important;
+            width: 0 !important;
+            content: none !important;
+        }
+        
+        /* Better fit for pinned columns */
+        .ag-theme-alpine .ag-pinned-right-cols-container {
+            width: 120px !important;
+        }
+        
+        /* Fix action buttons display */
+        .action-buttons {
+            display: flex !important;
+            justify-content: center !important;
+            gap: 5px !important;
+        }
+        
+        /* Card body container fix */
+        .order-grid-card .card-body {
+            overflow-x: hidden !important;
+        }
+        
+        /* Set custom variables to override all borders */
+        .ag-theme-alpine {
+            --ag-borders: none !important;
+            --ag-borders-row: none !important;
+            --ag-borders-secondary: none !important;
+            --ag-header-column-separator-display: none !important;
+            --ag-row-border-style: solid !important;
+            --ag-row-border-width: 0 0 1px 0 !important;
+            --ag-row-border-color: #f0f0f0 !important;
+        }
+        
+        /* Performance optimizations to prevent lag during zoom */
+        .ag-theme-alpine {
+            transform: translateZ(0) !important;
+            backface-visibility: hidden !important;
+            will-change: transform !important;
+            contain: layout size !important;
+        }
+        
+        /* Remove horizontal scrollbar */
+        .ag-theme-alpine .ag-body-horizontal-scroll,
+        .ag-theme-alpine .ag-body-horizontal-scroll-viewport,
+        .ag-theme-alpine .ag-body-horizontal-scroll-container {
+            display: none !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            min-height: 0 !important;
+            overflow: hidden !important;
+            visibility: hidden !important;
+        }
+    </style>
+}
+
+<div class="order-management-page product-management-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Quản lý đơn hàng</h1>
+            <div class="revenue-display">
+                <span class="text-secondary">Tổng doanh thu:</span>
+                <span class="h4 ms-2">@Model.TotalRevenue.ToString("N0") VNĐ</span>
+            </div>
+        </div>
+        <div class="page-actions">
+            <button id="exportOrders" class="btn btn-outline-success">
+                <i class="fas fa-file-export me-1"></i> Xuất Excel
+            </button>
+        </div>
+    </div>
+
+    @* Status Summary Cards *@
+    <partial name="_OrderStatusSummary" model="Model.StatusCounts" />
+    
+    @* Top Filter Bar *@
+    <div class="top-filter-bar">
+        <div class="filter-header">
+            <h5><i class="fas fa-filter"></i> Lọc đơn hàng</h5>
+            <a href="@Url.Action("Index", "OrderManagement", new { area = "Admin" })" class="reset-btn">
+                <i class="fas fa-redo-alt"></i> Xóa bộ lọc
+            </a>
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn @(string.IsNullOrEmpty(Model.StatusFilter) ? "active" : "")" data-status="">
+                <i class="fas fa-list-ul"></i> Tất cả
+            </button>
+            <button class="filter-btn @(Model.StatusFilter == "Pending" ? "active" : "")" data-status="Pending">
+                <i class="fas fa-clock"></i> Chờ xử lý
+            </button>
+            <button class="filter-btn @(Model.StatusFilter == "Processing" ? "active" : "")" data-status="Processing">
+                <i class="fas fa-cog"></i> Đang xử lý
+            </button>
+            <button class="filter-btn @(Model.StatusFilter == "Shipping" ? "active" : "")" data-status="Shipping">
+                <i class="fas fa-truck"></i> Đang giao hàng
+            </button>
+            <button class="filter-btn @(Model.StatusFilter == "Delivered" ? "active" : "")" data-status="Delivered">
+                <i class="fas fa-shipping-fast"></i> Đã giao hàng
+            </button>
+            <button class="filter-btn @(Model.StatusFilter == "Received" ? "active" : "")" data-status="Received">
+                <i class="fas fa-check-circle"></i> Đã nhận hàng
+            </button>
+            <button class="filter-btn @(Model.StatusFilter == "Cancelled" ? "active" : "")" data-status="Cancelled">
+                <i class="fas fa-times-circle"></i> Đã hủy
+            </button>
+        </div>
+        <div class="filter-search" id="orderSearchContainer">
+            <div class="search-input-group" style="background: transparent !important; border-color: rgba(255, 255, 255, 0.3) !important;">
+                <div class="search-icon" style="display: flex !important; align-items: center !important; justify-content: center !important; width: 2.5rem !important; position: absolute !important; left: 0 !important; top: 50% !important; transform: translateY(-50%) !important; height: 100% !important; color: white !important;">
+                    <i class="fas fa-search" style="margin: 0 !important; line-height: 1 !important; color: white !important;"></i>
+                </div>
+                <input type="text" 
+                       id="searchQueryInput" 
+                       placeholder="Tìm kiếm theo mã đơn hàng, số điện thoại..." 
+                       value="@Model.SearchQuery"
+                       class="search-text-input" 
+                       style="padding-left: 2.5rem !important; color: white !important; background: transparent !important;">
+                <button type="button" id="searchButton" class="search-button">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+            </div>
+            <div class="date-filter-group">
+                <div class="date-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <input type="date" id="startDateFilter" value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" placeholder="Từ ngày">
+                <input type="date" id="endDateFilter" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" placeholder="Đến ngày">
+                <button type="button" id="applyDateFilter" class="apply-btn">
+                    <i class="fas fa-check"></i> Áp dụng
+                </button>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card order-grid-card">
+        <div class="card-header py-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <button id="refreshGrid" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-sync-alt me-1"></i> Làm mới
+                    </button>
+                </div>
+                <div class="text-muted small">
+                    <i class="fas fa-info-circle me-1"></i> Kéo thả để điều chỉnh cột
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <!-- AG Grid Container -->  
+            <div id="ordersGrid" class="ag-theme-alpine"></div>
+            
+            <!-- Message when no data or grid fails -->
+            <div id="noDataMessage" class="alert alert-info m-3" style="display: none;">
+                <i class="fas fa-info-circle me-2"></i> Không có đơn hàng nào cho điều kiện lọc hiện tại.
+            </div>
+            
+            <!-- Fallback Table -->
+            <div id="fallbackTable" class="table-responsive m-3" style="display: none;">
+                <table class="table table-hover order-table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders)
+                        {
+                            <tr>
+                                <td>#@order.OrderId</td>
+                                <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@(order.User?.PhoneNumber ?? "N/A")</td>
+                                <td>@order.PhoneNumber</td>
+                                <td>@order.TotalAmount.ToString("N0") VNĐ</td>
+                                <td>
+                                    <span class="badge @GetStatusBadgeClass(order.OrderStatus)">@GetStatusText(order.OrderStatus)</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a asp-area="Admin" asp-controller="OrderManagement" asp-action="Details" asp-route-id="@order.OrderId" 
+                                           class="btn btn-sm btn-outline-info" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" onclick="confirmDeleteOrder(@order.OrderId)" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        
+                        @if (!Model.Orders.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">Không có đơn hàng nào</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        @if (Model.Pagination.TotalPages > 1)
+        {
+            <div class="card-footer">
+                <div class="d-flex justify-content-center">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination mb-0">
+                            @if (Model.Pagination.CurrentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-area="Admin" asp-controller="OrderManagement" asp-action="Index" asp-route-page="1"
+                                       asp-route-statusFilter="@Model.StatusFilter"
+                                       asp-route-searchQuery="@Model.SearchQuery"
+                                       asp-route-startDate="@(Model.StartDate?.ToString("yyyy-MM-dd"))"
+                                       asp-route-endDate="@(Model.EndDate?.ToString("yyyy-MM-dd"))">
+                                        «
+                                    </a>
+                                </li>
+                            }
+
+                            @for (var i = Math.Max(1, Model.Pagination.CurrentPage - 2); i <= Math.Min(Model.Pagination.TotalPages, Model.Pagination.CurrentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                                    <a class="page-link" asp-area="Admin" asp-controller="OrderManagement" asp-action="Index" asp-route-page="@i"
+                                       asp-route-statusFilter="@Model.StatusFilter"
+                                       asp-route-searchQuery="@Model.SearchQuery"
+                                       asp-route-startDate="@(Model.StartDate?.ToString("yyyy-MM-dd"))"
+                                       asp-route-endDate="@(Model.EndDate?.ToString("yyyy-MM-dd"))">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+
+                            @if (Model.Pagination.CurrentPage < Model.Pagination.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-area="Admin" asp-controller="OrderManagement" asp-action="Index" asp-route-page="@Model.Pagination.TotalPages"
+                                       asp-route-statusFilter="@Model.StatusFilter"
+                                       asp-route-searchQuery="@Model.SearchQuery"
+                                       asp-route-startDate="@(Model.StartDate?.ToString("yyyy-MM-dd"))"
+                                       asp-route-endDate="@(Model.EndDate?.ToString("yyyy-MM-dd"))">
+                                        »
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@* Toast notifications *@
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="toast show success-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto"><i class="fas fa-check-circle me-1"></i> Thông báo</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @TempData["SuccessMessage"]
+            </div>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="toast show error-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <strong class="me-auto"><i class="fas fa-exclamation-circle me-1"></i> Lỗi</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @TempData["ErrorMessage"]
+            </div>
+        </div>
+    }
+</div>
+
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "pending" => "bg-warning text-dark",
+            "processing" => "bg-info text-white",
+            "shipping" => "bg-primary text-white",
+            "delivered" => "bg-success text-white",
+            "received" => "bg-success text-white",
+            "cancelled" => "bg-danger text-white",
+            _ => "bg-secondary text-white",
+        };
+    }
+
+    string GetStatusText(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "pending" => "Chờ xử lý",
+            "processing" => "Đang xử lý",
+            "shipping" => "Đang giao hàng",
+            "delivered" => "Đã giao hàng",
+            "received" => "Đã nhận hàng",
+            "cancelled" => "Đã hủy",
+            _ => status,
+        };
+    }
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/dist/ag-grid-community.min.js"></script>
+    <script src="~/lib/moment.js/moment.min.js"></script>
+    <script src="~/js/admin/delete-confirmation.js"></script>
+    <script src="~/js/admin/order-grid-init.js"></script>
+    <script src="~/js/admin/action-buttons.js"></script>
+    <script src="~/js/admin/order-filter-fix.js"></script>
+    <script>
+        // Apply white color to search elements
+        (function() {
+            // Elements to update
+            const elements = [
+                document.querySelector('.search-icon'),
+                document.querySelector('.search-icon i'),
+                document.getElementById('searchQueryInput')
+            ];
+            
+            // Apply white color styling
+            elements.forEach(el => {
+                if (el) {
+                    el.style.color = 'white';
+                }
+            });
+            
+            // Add specific styling for placeholder
+            const searchInput = document.getElementById('searchQueryInput');
+            if (searchInput) {
+                // Force white color on the input
+                searchInput.style.color = 'white';
+                searchInput.style.backgroundColor = 'transparent';
+                
+                // Apply white placeholder using a stylesheet
+                const style = document.createElement('style');
+                style.textContent = `
+                    #searchQueryInput::placeholder {
+                        color: rgba(255, 255, 255, 0.8) !important;
+                    }
+                    #searchQueryInput::-webkit-input-placeholder {
+                        color: rgba(255, 255, 255, 0.8) !important;
+                    }
+                    #searchQueryInput::-moz-placeholder {
+                        color: rgba(255, 255, 255, 0.8) !important;
+                    }
+                    #searchQueryInput:-ms-input-placeholder {
+                        color: rgba(255, 255, 255, 0.8) !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // Make search input group transparent with white border
+            const searchInputGroup = document.querySelector('.search-input-group');
+            if (searchInputGroup) {
+                searchInputGroup.style.backgroundColor = 'transparent';
+                searchInputGroup.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+            }
+        })();
+        
+        // Fix search icon vertical alignment
+        (function() {
+            const fixSearchIconAlignment = () => {
+                const searchIcon = document.querySelector('.search-icon');
+                if (searchIcon) {
+                    // Position the icon absolutely and center it vertically
+                    searchIcon.style.position = 'absolute';
+                    searchIcon.style.left = '0';
+                    searchIcon.style.top = '50%';
+                    searchIcon.style.transform = 'translateY(-50%)';
+                    searchIcon.style.height = '100%';
+                    searchIcon.style.display = 'flex';
+                    searchIcon.style.alignItems = 'center';
+                    searchIcon.style.justifyContent = 'center';
+                    searchIcon.style.width = '2.5rem';
+                    
+                    // Ensure the icon itself is centered
+                    const iconElement = searchIcon.querySelector('i');
+                    if (iconElement) {
+                        iconElement.style.margin = '0';
+                        iconElement.style.lineHeight = '1';
+                        iconElement.style.display = 'flex';
+                        iconElement.style.alignItems = 'center';
+                        iconElement.style.justifyContent = 'center';
+                    }
+                }
+            };
+            
+            // Apply the fix immediately and after a delay
+            fixSearchIconAlignment();
+            setTimeout(fixSearchIconAlignment, 100);
+            setTimeout(fixSearchIconAlignment, 500);
+            
+            // Reapply on window resize
+            window.addEventListener('resize', fixSearchIconAlignment);
+        })();
+        
+        // Fix search icon and input positioning
+        (function() {
+            const searchIcon = document.querySelector('.search-icon');
+            const searchInput = document.getElementById('searchQueryInput');
+            const searchInputGroup = document.querySelector('.search-input-group');
+            
+            if (searchInputGroup) {
+                // Ensure proper positioning context
+                searchInputGroup.style.position = 'relative';
+            }
+            
+            if (searchIcon) {
+                // Position the icon absolutely
+                searchIcon.style.position = 'absolute';
+                searchIcon.style.left = '0';
+                searchIcon.style.top = '50%';
+                searchIcon.style.transform = 'translateY(-50%)';
+                searchIcon.style.height = '100%';
+                searchIcon.style.display = 'flex';
+                searchIcon.style.alignItems = 'center';
+                searchIcon.style.justifyContent = 'center';
+                searchIcon.style.width = '2.5rem';
+                searchIcon.style.zIndex = '2';
+                searchIcon.style.pointerEvents = 'none';
+            }
+            
+            if (searchInput) {
+                // Ensure input text appears after the icon
+                searchInput.style.padding = '0.625rem 0.625rem 0.625rem 2.5rem';
+                searchInput.style.zIndex = '1';
+                searchInput.style.position = 'relative';
+                
+                // Force placeholder text to be visible
+                const placeholder = searchInput.getAttribute('placeholder');
+                searchInput.setAttribute('placeholder', '');
+                setTimeout(() => {
+                    searchInput.setAttribute('placeholder', placeholder);
+                }, 50);
+            }
+        })();
+        
+        // Immediate fix for search placeholder visibility
+        (function() {
+            const searchInput = document.getElementById('searchQueryInput');
+            if (searchInput) {
+                // Force proper styling
+                searchInput.classList.add('search-text-input');
+                
+                // Force placeholder visibility
+                const placeholder = searchInput.getAttribute('placeholder');
+                searchInput.setAttribute('placeholder', '');
+                setTimeout(() => {
+                    searchInput.setAttribute('placeholder', placeholder);
+                }, 50);
+                
+                // Create a safety net for placeholder visibility
+                setInterval(() => {
+                    if (searchInput.style.visibility !== 'visible' || 
+                        !searchInput.getAttribute('placeholder')) {
+                        searchInput.style.visibility = 'visible';
+                        searchInput.setAttribute('placeholder', 'Tìm kiếm theo mã đơn hàng, số điện thoại...');
+                    }
+                    
+                    // Ensure padding is maintained
+                    if (!searchInput.style.paddingLeft || searchInput.style.paddingLeft !== '2.5rem') {
+                        searchInput.style.paddingLeft = '2.5rem';
+                    }
+                }, 1000);
+            }
+        })();
+        
+        // Additional layout fix for horizontal alignment
+        function fixFilterLayout() {
+            const container = document.getElementById('orderSearchContainer');
+            if (container) {
+                container.style.display = 'flex';
+                container.style.flexDirection = 'row';
+                container.style.flexWrap = window.innerWidth <= 992 ? 'wrap' : 'nowrap';
+                container.style.alignItems = 'center';
+                container.style.gap = '1rem';
+                container.style.width = '100%';
+            }
+            
+            const searchGroup = document.querySelector('.search-input-group');
+            if (searchGroup) {
+                searchGroup.style.flex = '2';
+                searchGroup.style.minWidth = '200px';
+                searchGroup.style.maxWidth = window.innerWidth <= 992 ? '100%' : '60%';
+            }
+            
+            const dateGroup = document.querySelector('.date-filter-group');
+            if (dateGroup) {
+                dateGroup.style.flex = '1';
+                dateGroup.style.minWidth = '200px';
+                dateGroup.style.maxWidth = window.innerWidth <= 992 ? '100%' : '40%';
+            }
+        }
+        
+        // Apply layout fix on load and resize
+        window.addEventListener('DOMContentLoaded', fixFilterLayout);
+        window.addEventListener('load', fixFilterLayout);
+        window.addEventListener('resize', fixFilterLayout);
+        
+        // Fix for search input visibility
+        window.addEventListener('DOMContentLoaded', function() {
+            // Ensure search container is visible
+            const searchContainer = document.getElementById('orderSearchContainer');
+            if (searchContainer) {
+                searchContainer.style.display = 'flex';
+                searchContainer.style.visibility = 'visible';
+                searchContainer.style.opacity = '1';
+                searchContainer.style.width = '100%';
+                searchContainer.style.maxWidth = '100%';
+            }
+            
+            // Ensure search input is visible
+            const searchInput = document.getElementById('searchQueryInput');
+            if (searchInput) {
+                searchInput.style.display = 'block';
+                searchInput.style.visibility = 'visible';
+                searchInput.style.opacity = '1';
+                searchInput.style.width = '100%';
+                searchInput.style.minWidth = '200px';
+            }
+            
+            // Force container to be visible again after a slight delay
+            setTimeout(function() {
+                if (searchContainer) {
+                    searchContainer.style.cssText = `
+                        display: flex !important;
+                        flex-direction: row !important;
+                        flex-wrap: ${window.innerWidth <= 992 ? 'wrap' : 'nowrap'} !important;
+                        gap: 1rem !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        width: 100% !important;
+                        max-width: 100% !important;
+                        align-items: center !important;
+                    `;
+                }
+                
+                if (searchInput) {
+                    searchInput.style.cssText = `
+                        display: block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        width: 100% !important;
+                        min-width: 200px !important;
+                    `;
+                }
+            }, 500);
+        });
+        
+        // Ensure DOM is fully loaded before initializing grid
+        document.addEventListener("DOMContentLoaded", function() {
+            // Prepare data
+            const rowData = [];
+            
+            @if (Model.Orders != null && Model.Orders.Any())
+            {
+                foreach (var order in Model.Orders)
+                {
+                    <text>
+                    rowData.push({
+                        orderId: @order.OrderId,
+                        orderDate: '@order.OrderDate.ToString("o")',
+                        userName: @Json.Serialize(order.User?.PhoneNumber ?? "N/A"),
+                        phoneNumber: @Json.Serialize(order.PhoneNumber ?? ""),
+                        totalAmount: @order.TotalAmount.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                        orderStatus: @Json.Serialize(order.OrderStatus ?? "")
+                    });
+                    </text>
+                }
+            }
+            
+            console.log("Total orders:", rowData.length);
+            if (rowData.length === 0) {
+                console.warn("No order data available!");
+                document.getElementById('noDataMessage').style.display = 'block';
+            } else {
+                console.log("First order:", JSON.stringify(rowData[0]));
+            }
+            
+            // URL configuration for action buttons
+            const urlConfig = {
+                detailsUrl: '@Url.Action("Details", "OrderManagement", new { area = "Admin" })',
+                deleteConfirmFn: 'confirmDeleteOrder'
+            };
+            
+            // Override AG Grid options for this specific page
+            const gridOptionsOverride = {
+                // Prevent column virtualization to avoid overflow issues
+                suppressColumnVirtualisation: true,
+                suppressRowVirtualisation: false,
+                
+                // Better row model for stability
+                rowModelType: 'clientSide',
+                
+                // Disable features that might cause layout issues
+                suppressColumnMoveAnimation: true,
+                suppressMovableColumns: true,
+                suppressFieldDotNotation: true,
+                suppressAutoSize: true,
+                
+                // Pagination settings
+                pagination: true,
+                paginationPageSize: 20,
+                paginationAutoPageSize: false,
+                
+                // Force grid to render with fixed dimensions
+                domLayout: 'normal',
+                alwaysShowVerticalScroll: false,
+                suppressHorizontalScroll: true,
+                
+                // Make sure all rows are displayed
+                getRowHeight: function() {
+                    return 56;
+                },
+                
+                // Column definitions with strict widths
+                columnDefs: [
+                    { 
+                        headerName: "Mã đơn hàng", 
+                        field: "orderId",
+                        width: 120,
+                        minWidth: 120,
+                        maxWidth: 120,
+                        cellRenderer: params => `#${params.value}`,
+                        filter: 'agNumberColumnFilter',
+                        cellClass: 'text-center',
+                        suppressSizeToFit: true
+                    },
+                    { 
+                        headerName: "Ngày đặt", 
+                        field: "orderDate", 
+                        width: 180,
+                        minWidth: 180,
+                        maxWidth: 180,
+                        cellRenderer: params => {
+                            if (!params.value) return '';
+                            try {
+                                const date = new Date(params.value);
+                                return date.toLocaleDateString('vi-VN', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            } catch (e) {
+                                return params.value;
+                            }
+                        },
+                        sort: 'desc',
+                        sortable: true,
+                        suppressSizeToFit: true
+                    },
+                    { 
+                        headerName: "Khách hàng", 
+                        field: "userName", 
+                        flex: 1,
+                        minWidth: 120,
+                        hide: window.innerWidth < 768
+                    },
+                    { 
+                        headerName: "Số điện thoại", 
+                        field: "phoneNumber", 
+                        width: 140,
+                        minWidth: 140,
+                        maxWidth: 140,
+                        cellClass: 'text-center',
+                        suppressSizeToFit: true
+                    },
+                    { 
+                        headerName: "Tổng tiền", 
+                        field: "totalAmount", 
+                        width: 160,
+                        minWidth: 160,
+                        maxWidth: 160,
+                        cellRenderer: params => {
+                            if (params.value === undefined || params.value === null) return '';
+                            return params.value.toLocaleString('vi-VN') + ' VNĐ';
+                        },
+                        cellClass: 'text-right',
+                        type: 'numericColumn',
+                        suppressSizeToFit: true
+                    },
+                    { 
+                        headerName: "Trạng thái", 
+                        field: "orderStatus", 
+                        width: 150,
+                        minWidth: 150,
+                        maxWidth: 150,
+                        cellRenderer: params => {
+                            if (!params.value) return '';
+                            
+                            const statusMap = {
+                                'pending': { text: 'Chờ xử lý', class: 'order-status-pending' },
+                                'processing': { text: 'Đang xử lý', class: 'order-status-processing' },
+                                'shipping': { text: 'Đang giao hàng', class: 'order-status-shipping' },
+                                'delivered': { text: 'Đã giao hàng', class: 'order-status-shipped' },
+                                'received': { text: 'Đã nhận hàng', class: 'order-status-delivered' },
+                                'cancelled': { text: 'Đã hủy', class: 'order-status-cancelled' }
+                            };
+                            
+                            const status = params.value.toLowerCase();
+                            const statusInfo = statusMap[status] || { text: params.value, class: '' };
+                            
+                            return `<span class="order-status ${statusInfo.class}">${statusInfo.text}</span>`;
+                        },
+                        cellClass: 'text-center',
+                        suppressSizeToFit: true
+                    },
+                    { 
+                        headerName: "Thao tác", 
+                        field: "thaoTac",
+                        width: 120,
+                        minWidth: 120,
+                        maxWidth: 120,
+                        cellRenderer: params => {
+                            const orderId = params.data.orderId;
+                            
+                            return `<div class="action-buttons">
+                                <a href="${urlConfig.detailsUrl}/${orderId}" 
+                                   class="btn btn-sm btn-outline-info" 
+                                   title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <button type="button" 
+                                        onclick="${urlConfig.deleteConfirmFn}(${orderId})" 
+                                        class="btn btn-sm btn-outline-danger" 
+                                        title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>`;
+                        },
+                        cellClass: ['action-cell', 'text-center'],
+                        headerClass: 'thao-tac-column-header',
+                        suppressMovable: true,
+                        pinned: 'right',
+                        sortable: false,
+                        filter: false,
+                        suppressSizeToFit: true
+                    }
+                ],
+                // Ensure columns don't resize automatically
+                suppressColumnVirtualisation: true,
+                
+                // Enhanced grid ready handler
+                onGridReady: function(params) {
+                    // Force redraw rows
+                    params.api.redrawRows();
+                    
+                    // Force exact column widths
+                    const columnApi = params.columnApi;
+                    const allColumns = columnApi.getAllColumns();
+                    
+                    allColumns.forEach(col => {
+                        const colDef = col.getColDef();
+                        if (colDef.width) {
+                            columnApi.setColumnWidth(col, colDef.width);
+                        }
+                    });
+                    
+                    // Handle resize properly
+                    const gridDiv = document.getElementById('ordersGrid');
+                    if (gridDiv) {
+                        const observer = new ResizeObserver(() => {
+                            setTimeout(() => {
+                                params.api.sizeColumnsToFit();
+                            }, 100);
+                        });
+                        observer.observe(gridDiv);
+                    }
+                }
+            };
+            
+            // Initialize the grid with override options
+            try {
+                const gridOptions = initializeOrderGrid('ordersGrid', 'fallbackTable', 'noDataMessage', rowData, urlConfig, gridOptionsOverride);
+                
+                // Make status cards clickable to filter grid
+                document.querySelectorAll('.status-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const status = this.getAttribute('data-status');
+                        filterByStatus(status);
+                    });
+                });
+                
+                // Make filter buttons clickable
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const status = this.getAttribute('data-status');
+                        filterByStatus(status);
+                    });
+                });
+                
+                // Search button click handler
+                document.getElementById('searchButton').addEventListener('click', function() {
+                    applyFilters();
+                });
+                
+                // Search input enter key handler
+                document.getElementById('searchQueryInput').addEventListener('keyup', function(event) {
+                    if (event.key === 'Enter') {
+                        applyFilters();
+                    }
+                });
+                
+                // Date filter button handler
+                document.getElementById('applyDateFilter').addEventListener('click', function() {
+                    applyFilters();
+                });
+                
+                // Apply additional overflow fixes after render
+                setTimeout(function() {
+                    const gridElement = document.getElementById('ordersGrid');
+                    if (gridElement) {
+                        // Fix all inner containers
+                        const containers = gridElement.querySelectorAll('.ag-root, .ag-root-wrapper, .ag-center-cols-container, .ag-center-cols-viewport, .ag-center-cols-clipper, .ag-header-viewport, .ag-header-container');
+                        containers.forEach(container => {
+                            container.style.width = '100%';
+                            container.style.maxWidth = '100%';
+                            container.style.minWidth = '0';
+                            container.style.overflowX = 'hidden';
+                        });
+                        
+                        // Remove any unwanted elements
+                        const unwantedElements = gridElement.querySelectorAll('.ag-column-drop, .ag-column-drop-wrapper, .ag-column-select, .ag-column-tool-panel');
+                        unwantedElements.forEach(el => {
+                            if (el.parentNode) {
+                                el.parentNode.removeChild(el);
+                            }
+                        });
+                    }
+                }, 500);
+                
+            } catch (error) {
+                console.error("Error initializing grid:", error);
+                document.getElementById('fallbackTable').style.display = 'block';
+                document.getElementById('ordersGrid').style.display = 'none';
+            }
+            
+            // Helper function to filter by status
+            function filterByStatus(status) {
+                // Update all filter buttons to show active state
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    if (btn.getAttribute('data-status') === status) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                
+                // Also update status cards to show active state
+                document.querySelectorAll('.status-card').forEach(card => {
+                    if (card.getAttribute('data-status') === status) {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+                
+                // Navigate to filtered URL
+                const currentUrl = new URL(window.location.href);
+                
+                if (status) {
+                    currentUrl.searchParams.set('statusFilter', status);
+                } else {
+                    currentUrl.searchParams.delete('statusFilter');
+                }
+                
+                // Reset to page 1
+                currentUrl.searchParams.set('page', '1');
+                window.location.href = currentUrl.toString();
+            }
+            
+            // Helper function to apply all filters
+            function applyFilters() {
+                const searchQuery = document.getElementById('searchQueryInput').value;
+                const startDate = document.getElementById('startDateFilter').value;
+                const endDate = document.getElementById('endDateFilter').value;
+                const currentUrl = new URL(window.location.href);
+                
+                // Update URL parameters
+                if (searchQuery) {
+                    currentUrl.searchParams.set('searchQuery', searchQuery);
+                } else {
+                    currentUrl.searchParams.delete('searchQuery');
+                }
+                
+                if (startDate) {
+                    currentUrl.searchParams.set('startDate', startDate);
+                } else {
+                    currentUrl.searchParams.delete('startDate');
+                }
+                
+                if (endDate) {
+                    currentUrl.searchParams.set('endDate', endDate);
+                } else {
+                    currentUrl.searchParams.delete('endDate');
+                }
+                
+                // Reset to page 1
+                currentUrl.searchParams.set('page', '1');
+                
+                // Navigate to new URL
+                window.location.href = currentUrl.toString();
+            }
+        });
+    </script>
+} 

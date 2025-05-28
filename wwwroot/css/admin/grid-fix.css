@@ -1,0 +1,639 @@
+/**
+ * Emergency fixes for AG Grid empty columns issue
+ */
+
+/* Hide empty cells and columns */
+.ag-theme-alpine .ag-cell:empty,
+.ag-theme-alpine .ag-header-cell:empty {
+  display: none !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  max-width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Force proper action column width and alignment */
+.ag-theme-alpine .ag-header-cell[col-id="thaoTac"],
+.ag-theme-alpine .ag-cell[col-id="thaoTac"] {
+  min-width: 120px !important;
+  width: 120px !important;
+  max-width: 120px !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  right: 0 !important;
+  position: sticky !important;
+  background-color: #fff;
+  z-index: 10;
+  overflow: visible !important;
+}
+
+/* Fix for action buttons */
+.action-buttons {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 0.5rem !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+
+/* Fix column sizing */
+.ag-theme-alpine .ag-center-cols-container {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Ensure proper sizing of the grid */
+#ordersGrid {
+  overflow: hidden !important;
+  position: relative !important;
+  max-width: 100% !important;
+  height: 650px !important; /* Increased height to show all 20 rows */
+}
+
+/* Fix table layout */
+.ag-theme-alpine .ag-root-wrapper {
+  overflow: hidden !important;
+  max-width: 100% !important;
+  border-right: none !important;
+}
+
+/* Fix pinned column */
+.ag-theme-alpine .ag-pinned-right-header,
+.ag-theme-alpine .ag-pinned-right-cols-container {
+  background-color: #fff !important;
+  border-left: none !important;
+  overflow: visible !important;
+}
+
+/* Remove all empty cells */
+.ag-theme-alpine .ag-cell:not([role="gridcell"]),
+.ag-theme-alpine .ag-header-cell:not([role="columnheader"]) {
+  display: none !important;
+  width: 0 !important;
+}
+
+/* Fix table width */
+.ag-theme-alpine .ag-root {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fixed column header positions */
+.ag-theme-alpine .ag-header-row {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fix header cell sizing */
+.ag-theme-alpine .ag-header-cell {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Fix ghost cells in IE/Edge */
+.ag-theme-alpine .ag-cell-focus,
+.ag-theme-alpine .ag-cell-no-focus {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Ensure proper positioning */
+.ag-theme-alpine .ag-body-viewport {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+/* Fix column sizing issues */
+.ag-theme-alpine .ag-center-cols-viewport {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+/* Center cells properly */
+.ag-theme-alpine .ag-cell {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Fix for specific column sizing */
+.ag-theme-alpine .ag-header-cell[col-id="orderId"],
+.ag-theme-alpine .ag-cell[col-id="orderId"] {
+  min-width: 140px !important;
+  width: 140px !important;
+  max-width: 140px !important;
+}
+
+.ag-theme-alpine .ag-header-cell[col-id="orderDate"],
+.ag-theme-alpine .ag-cell[col-id="orderDate"] {
+  min-width: 180px !important;
+  width: 180px !important;
+  max-width: 180px !important;
+}
+
+.ag-theme-alpine .ag-header-cell[col-id="phoneNumber"],
+.ag-theme-alpine .ag-cell[col-id="phoneNumber"] {
+  min-width: 140px !important;
+  width: 140px !important;
+  max-width: 140px !important;
+}
+
+.ag-theme-alpine .ag-header-cell[col-id="totalAmount"],
+.ag-theme-alpine .ag-cell[col-id="totalAmount"] {
+  min-width: 160px !important;
+  width: 160px !important;
+  max-width: 160px !important;
+}
+
+.ag-theme-alpine .ag-header-cell[col-id="orderStatus"],
+.ag-theme-alpine .ag-cell[col-id="orderStatus"] {
+  min-width: 140px !important;
+  width: auto !important;
+  max-width: 160px !important;
+  height: auto !important;
+  line-height: normal !important;
+}
+
+.ag-theme-alpine .ag-cell[col-id="orderStatus"] .status-badge-container {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+}
+
+/* Ensure userName column has flex behavior */
+.ag-theme-alpine .ag-header-cell[col-id="userName"],
+.ag-theme-alpine .ag-cell[col-id="userName"] {
+  flex: 1 1 auto !important;
+  min-width: 120px !important;
+}
+
+/* Force layout refresh on hover */
+.ag-theme-alpine .ag-row:hover {
+  z-index: 2 !important;
+}
+
+/* Fix horizontal scroll */
+.ag-theme-alpine .ag-body-horizontal-scroll {
+  min-height: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+}
+
+/* Add some scroll margins */
+.ag-theme-alpine .ag-body-horizontal-scroll-viewport {
+  margin: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+}
+
+/* Fix overlapping issue */
+.ag-theme-alpine .ag-overlay-no-rows-wrapper {
+  z-index: 1 !important;
+}
+
+/* Fix for IE11 specific display issues */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .ag-theme-alpine .ag-cell {
+    float: left !important;
+  }
+}
+
+/* NEW FIX - Limit overall grid width */
+.ag-theme-alpine {
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* NEW FIX - Hide all extra/empty columns */
+.ag-theme-alpine .ag-header-cell:empty,
+.ag-theme-alpine .ag-cell:empty,
+.ag-theme-alpine .ag-header-cell-moving,
+.ag-theme-alpine .ag-column-drop,
+.ag-theme-alpine .ag-column-drop-empty-message,
+.ag-theme-alpine .ag-column-drop-cell {
+  display: none !important;
+  width: 0 !important;
+  max-width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* NEW FIX - Force table container to respect width */
+.order-grid-card .card-body {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+/* NEW FIX - Set container and viewport limits */
+.ag-theme-alpine .ag-center-cols-container,
+.ag-theme-alpine .ag-center-cols-viewport,
+.ag-theme-alpine .ag-center-cols-clipper {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* NEW FIX - Adjust horizontal scrolling container */
+.ag-theme-alpine .ag-body-horizontal-scroll-container {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* NEW FIX - Hide any dynamic columns */
+.ag-theme-alpine .ag-column-moving {
+  display: none !important;
+}
+
+/* NEW FIX - Force proper widths on rows */
+.ag-theme-alpine .ag-row {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* CRITICAL FIX - Prevent horizontal overflow in all containers */
+.ag-theme-alpine .ag-root-wrapper,
+.ag-theme-alpine .ag-root,
+.ag-theme-alpine .ag-body-viewport,
+.ag-theme-alpine .ag-center-cols-viewport,
+.ag-theme-alpine .ag-center-cols-clipper,
+.ag-theme-alpine .ag-center-cols-container,
+.ag-theme-alpine .ag-header-viewport,
+.ag-theme-alpine .ag-header-container,
+.ag-theme-alpine .ag-row,
+.ag-theme-alpine .ag-pinned-left-header,
+.ag-theme-alpine .ag-pinned-right-header,
+.ag-theme-alpine .ag-pinned-left-cols-container,
+.ag-theme-alpine .ag-pinned-right-cols-container {
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+}
+
+/* Force actions column to fixed width */
+.ag-theme-alpine .ag-header-cell[col-id="thaoTac"],
+.ag-theme-alpine .ag-cell[col-id="thaoTac"] {
+  min-width: 120px !important;
+  width: 120px !important;
+  max-width: 120px !important;
+  overflow: visible !important;
+}
+
+/* Remove extra spacers that cause overflow */
+.ag-theme-alpine .ag-horizontal-left-spacer,
+.ag-theme-alpine .ag-horizontal-right-spacer {
+  display: none !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Fix for any absolutely positioned elements inside grid */
+.ag-theme-alpine .ag-absolute {
+  position: static !important;
+}
+
+/* Force all borders to be included in width calculation */
+.ag-theme-alpine * {
+  box-sizing: border-box !important;
+}
+
+/* Hide horizontal scrollbar */
+.ag-theme-alpine .ag-body-horizontal-scroll {
+  height: 0 !important;
+  min-height: 0 !important;
+  display: none !important;
+}
+
+/* Make action buttons properly contained */
+.action-buttons {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+}
+
+/* Ensure proper width calculation for flex columns */
+.ag-theme-alpine .ag-header-cell.ag-header-cell-auto-width,
+.ag-theme-alpine .ag-cell.ag-cell-auto-width {
+  width: auto !important;
+}
+
+/* Ensure thaoTac column properly pinned */
+.ag-pinned-right-header {
+  width: 120px !important;
+}
+
+/* Fix for ghost cells */
+.ag-theme-alpine .ag-cell-ghost,
+.ag-theme-alpine .ag-header-cell-ghost {
+  display: none !important;
+  width: 0 !important;
+}
+
+/* Ensure no scrollbars appear on grid containers */
+#ordersGrid {
+  overflow: hidden !important;
+}
+
+/* NEW FIX - Remove vertical divider lines between cells */
+.ag-theme-alpine .ag-cell {
+  border-right: none !important;
+}
+
+/* NEW FIX - Add subtle bottom border to rows instead */
+.ag-theme-alpine .ag-row {
+  border-bottom: 1px solid #f5f5f5 !important;
+}
+
+/* NEW FIX - Add subtle hover effect for rows */
+.ag-theme-alpine .ag-row:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* NEW FIX - Optimize performance during zoom operations */
+.ag-theme-alpine {
+  contain: layout size !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  perspective: 1000px !important;
+  will-change: transform !important;
+}
+
+/* NEW FIX - Prevent layout shifts during zoom */
+.ag-theme-alpine .ag-header,
+.ag-theme-alpine .ag-body-viewport,
+.ag-theme-alpine .ag-center-cols-container,
+.ag-theme-alpine .ag-center-cols-viewport,
+.ag-theme-alpine .ag-center-cols-clipper {
+  contain: layout size !important;
+  transform: translateZ(0) !important;
+}
+
+/* NEW FIX - Remove border between header cells */
+.ag-theme-alpine .ag-header-cell {
+  border-right: none !important;
+}
+
+/* NEW FIX - Add subtle bottom border to header only */
+.ag-theme-alpine .ag-header {
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+/* NEW FIX - Set a fixed width for the table to prevent recalculation during zoom */
+.ag-theme-alpine .ag-root-wrapper,
+.ag-theme-alpine .ag-root {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  contain: layout size !important;
+}
+
+/* NEW FIX - Set a fixed height for rows to prevent recalculation during zoom */
+.ag-theme-alpine .ag-row {
+  height: 50px !important;
+  min-height: 50px !important;
+  max-height: 50px !important;
+  contain: layout size !important;
+}
+
+/* NEW FIX - Ensure proper alignment within cells without borders */
+.ag-theme-alpine .ag-cell {
+  padding: 0 15px !important;
+  contain: layout style !important;
+}
+
+/* NEW FIX - Remove any double scrollbars */
+.ag-theme-alpine .ag-body-horizontal-scroll-viewport,
+.ag-theme-alpine .ag-body-horizontal-scroll {
+  display: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* NEW FIX - Fix pinned columns for the action buttons */
+.ag-theme-alpine .ag-pinned-right-cols-container,
+.ag-theme-alpine .ag-pinned-right-header {
+  min-width: 120px !important;
+  width: 120px !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+  background-color: #fff;
+  border-left: none !important;
+}
+
+/* NEW FIX - Ensure action column alignment */
+.action-cell {
+  overflow: visible !important;
+  padding: 0 5px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* NEW FIX - Action buttons container */
+.action-buttons .btn {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 2px !important;
+  overflow: visible !important;
+}
+
+/* NEW FIX - Ensure pinned columns stay fixed */
+.ag-theme-alpine .ag-pinned-right-cols-viewport {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+}
+
+/* NEW FIX - Fix clipping issues */
+.ag-theme-alpine .ag-center-cols-clipper {
+  min-width: 0 !important;
+}
+
+/* NEW FIX - Fix horizontal scrolling completely */
+.ag-theme-alpine .ag-horizontal-left-spacer,
+.ag-theme-alpine .ag-horizontal-right-spacer,
+.ag-theme-alpine .ag-body-horizontal-scroll-viewport,
+.ag-theme-alpine .ag-body-horizontal-scroll-container {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* NEW FIX - Optimize rendering performance */
+.ag-theme-alpine .ag-cell,
+.ag-theme-alpine .ag-header-cell {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+/* NEW FIX - Remove vertical gray bar */
+.ag-theme-alpine .ag-pinned-right-cols-container,
+.ag-theme-alpine .ag-pinned-right-header,
+.ag-theme-alpine .ag-pinned-right-cols-viewport {
+  border-left: none !important;
+  box-shadow: none !important;
+}
+
+/* NEW FIX - Fix grid height to show all 20 rows */
+.ag-theme-alpine {
+  height: auto !important;
+}
+
+/* NEW FIX - Remove vertical grid lines */
+.ag-theme-alpine {
+  --ag-row-border-style: solid !important;
+  --ag-row-border-width: 0 0 1px 0 !important;
+  --ag-row-border-color: #f5f5f5 !important;
+  --ag-borders: none !important;
+  --ag-borders-row: none !important;
+  --ag-borders-secondary: none !important;
+  --ag-cell-horizontal-border: none !important;
+}
+
+/* NEW FIX - Remove background color from pinned columns */
+.ag-theme-alpine .ag-pinned-right-header,
+.ag-theme-alpine .ag-pinned-right-cols-container {
+  background-color: transparent !important;
+}
+
+/* Completely remove all borders and vertical lines */
+.ag-theme-alpine * {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove all cell borders */
+.ag-theme-alpine .ag-cell,
+.ag-theme-alpine .ag-header-cell {
+  border: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove all vertical borders from pinned columns */
+.ag-theme-alpine .ag-pinned-right-header,
+.ag-theme-alpine .ag-pinned-right-cols-container,
+.ag-theme-alpine .ag-pinned-right-cols-viewport,
+.ag-theme-alpine .ag-pinned-left-header,
+.ag-theme-alpine .ag-pinned-left-cols-container,
+.ag-theme-alpine .ag-pinned-left-cols-viewport {
+  border: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Remove borders from root wrapper */
+.ag-theme-alpine .ag-root-wrapper {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Only keep subtle bottom borders on rows */
+.ag-theme-alpine .ag-row {
+  border-bottom: 1px solid #f0f0f0 !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* Make header separator subtle */
+.ag-theme-alpine .ag-header {
+  border-bottom: 2px solid #e0e0e0 !important;
+}
+
+/* Set custom variables to override all borders */
+.ag-theme-alpine {
+  --ag-borders: none !important;
+  --ag-borders-row: none !important;
+  --ag-borders-side-button: none !important;
+  --ag-borders-critical: none !important;
+  --ag-borders-secondary: none !important;
+  --ag-header-column-separator-display: none !important;
+  --ag-header-column-resize-handle-display: none !important;
+  --ag-row-border-style: solid !important;
+  --ag-row-border-width: 0 0 1px 0 !important;
+  --ag-row-border-color: #f0f0f0 !important;
+}
+
+/* Remove any dividers from column headers */
+.ag-theme-alpine .ag-header-cell::after,
+.ag-theme-alpine .ag-header-cell::before {
+  display: none !important;
+  width: 0 !important;
+  content: none !important;
+}
+
+/* Ensure proper column sizing */
+.ag-theme-alpine .ag-center-cols-container,
+.ag-theme-alpine .ag-center-cols-viewport,
+.ag-theme-alpine .ag-center-cols-clipper {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
+}
+
+/* Set proper height to show all rows */
+#ordersGrid {
+  height: 700px !important;
+  overflow: hidden !important;
+}
+
+/* Force action column display */
+.action-cell {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* Force even spacing in all cells */
+.ag-theme-alpine .ag-cell {
+  padding: 0 15px !important;
+}
+
+/* Make row height consistent */
+.ag-theme-alpine .ag-row {
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+}
+
+/* Override any native AG Grid styles */
+.ag-theme-alpine [class^="ag-"]:not(.ag-cell-value):not(.ag-group-value) {
+  border: none !important;
+}
+
+/* Force transparent background for pinned columns */
+.ag-pinned-right-header,
+.ag-pinned-right-cols-container,
+.ag-pinned-right-cols-viewport {
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+} 
