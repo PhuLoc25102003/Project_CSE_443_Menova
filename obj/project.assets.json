@@ -4799,23 +4799,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\LOC\\.nuget\\packages\\": {},
+    "C:\\Users\\Admin\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\Menova.csproj",
+      "projectUniqueName": "D:\\CSE441\\Project .Net\\Project_CSE_443_Menova\\Menova.csproj",
       "projectName": "Menova",
-      "projectPath": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\Menova.csproj",
-      "packagesPath": "C:\\Users\\LOC\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\LOC\\OneDrive\\Desktop\\CSE_443_Project\\Menova\\obj\\",
+      "projectPath": "D:\\CSE441\\Project .Net\\Project_CSE_443_Menova\\Menova.csproj",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "outputPath": "D:\\CSE441\\Project .Net\\Project_CSE_443_Menova\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\LOC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
