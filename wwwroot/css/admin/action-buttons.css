@@ -1,0 +1,166 @@
+/* Standardized Action Buttons for Admin Tables */
+
+/* Action Buttons Container */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: 160px;
+    width: 100%;
+    flex-wrap: nowrap;
+}
+
+/* Individual Action Button */
+.action-buttons .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: var(--border-radius, 0.25rem);
+    transition: all 0.2s ease;
+}
+
+/* Order table specific buttons - larger buttons */
+.order-table .action-buttons .btn,
+#ordersGrid .action-buttons .btn {
+    width: 38px;
+    height: 38px;
+}
+
+.order-table .action-buttons,
+#ordersGrid .action-buttons {
+    min-width: 100px;
+    gap: 0.75rem;
+}
+
+.action-buttons .btn i {
+    font-size: 0.875rem;
+}
+
+/* Order table larger icons */
+.order-table .action-buttons .btn i,
+#ordersGrid .action-buttons .btn i {
+    font-size: 1rem;
+}
+
+/* Button icons */
+.action-buttons .btn:hover i {
+    transform: scale(1.1);
+}
+
+/* View/details button */
+.action-buttons .btn-outline-info {
+    color: #36b9cc;
+    border-color: #36b9cc;
+}
+
+.action-buttons .btn-outline-info:hover {
+    color: #fff;
+    background-color: #36b9cc;
+    border-color: #36b9cc;
+    box-shadow: 0 3px 5px rgba(54, 185, 204, 0.3);
+}
+
+/* Edit button */
+.action-buttons .btn-outline-primary {
+    color: #4e73df;
+    border-color: #4e73df;
+}
+
+.action-buttons .btn-outline-primary:hover {
+    color: #fff;
+    background-color: #4e73df;
+    border-color: #4e73df;
+    box-shadow: 0 3px 5px rgba(78, 115, 223, 0.3);
+}
+
+/* Delete button */
+.action-buttons .btn-outline-danger {
+    color: #e74a3b;
+    border-color: #e74a3b;
+}
+
+.action-buttons .btn-outline-danger:hover {
+    color: #fff;
+    background-color: #e74a3b;
+    border-color: #e74a3b;
+    box-shadow: 0 3px 5px rgba(231, 74, 59, 0.3);
+}
+
+/* Add button */
+.action-buttons .btn-outline-success {
+    color: #1cc88a;
+    border-color: #1cc88a;
+}
+
+.action-buttons .btn-outline-success:hover {
+    color: #fff;
+    background-color: #1cc88a;
+    border-color: #1cc88a;
+    box-shadow: 0 3px 5px rgba(28, 200, 138, 0.3);
+}
+
+/* Secondary button (variants) */
+.action-buttons .btn-outline-secondary {
+    color: #858796;
+    border-color: #858796;
+}
+
+.action-buttons .btn-outline-secondary:hover {
+    color: #fff;
+    background-color: #858796;
+    border-color: #858796;
+    box-shadow: 0 3px 5px rgba(133, 135, 150, 0.3);
+}
+
+/* AG Grid specific overrides */
+.ag-theme-alpine .ag-cell-value .action-buttons {
+    justify-content: center;
+    height: 100%;
+}
+
+/* Column header for actions */
+.thao-tac-column-header {
+    text-align: center;
+}
+
+/* Ensure actions cell is center aligned */
+.ag-theme-alpine .ag-cell.ag-cell-last-right-pinned {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Fix for fallback table */
+.table .action-buttons {
+    justify-content: center;
+}
+
+/* Make action column fixed width */
+.ag-column-thao-tac {
+    width: 140px !important;
+    min-width: 140px !important;
+    max-width: 140px !important;
+}
+
+/* Make order table action column wider */
+.order-table .ag-column-thao-tac,
+#ordersGrid .ag-column-thao-tac {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+}
+
+/* Center align text in action header */
+.ag-header-cell.ag-column-thao-tac .ag-header-cell-label {
+    justify-content: center;
+}
+
+/* Override any AG Grid default styling */
+.ag-theme-alpine .action-cell .action-buttons {
+    height: 100%;
+    padding: 8px 0;
+} 

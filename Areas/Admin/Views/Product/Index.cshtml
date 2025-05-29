@@ -5,19 +5,22 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/admin/product-management.css" />
-    <link rel="stylesheet" href="~/css/admin/product-table.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-grid.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-theme-alpine.css" />
+    <link rel="stylesheet" href="~/css/admin/ag-grid-custom.css" />
+    <link rel="stylesheet" href="~/css/admin/page-header.css" />
+    <link rel="stylesheet" href="~/css/admin/card-styling.css" />
+    <link rel="stylesheet" href="~/css/admin/grid-components.css" />
+    <link rel="stylesheet" href="~/css/admin/action-buttons.css" />
+    <link rel="stylesheet" href="~/css/admin/product-management-optimized.css" />
 }
 
-<div class="product-management">
-    <div class="page-header d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3"><i class="fas fa-box-open me-2"></i>Quản lý sản phẩm</h1>
-            <p class="text-muted mb-0">Quản lý tất cả sản phẩm của cửa hàng</p>
+<div class="product-management product-management-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Quản lý sản phẩm</h1>
         </div>
-        <div>
+        <div class="page-actions">
             <a asp-action="Create" class="btn btn-primary">
                 <i class="fas fa-plus me-1"></i> Thêm sản phẩm mới
             </a>
@@ -28,10 +31,10 @@
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div class="d-flex align-items-center flex-wrap gap-2">
-                    <button id="refreshGrid" class="btn btn-sm btn-outline-secondary">
+                    <button id="refreshGrid" class="btn btn-sm btn-outline-light">
                         <i class="fas fa-sync-alt me-1"></i> Làm mới
                     </button>
-                    <button id="exportBtn" class="btn btn-sm btn-outline-success">
+                    <button id="exportBtn" class="btn btn-sm btn-outline-light">
                         <i class="fas fa-file-excel me-1"></i> Xuất Excel
                     </button>
                     <div class="form-check form-switch ms-2">
@@ -101,35 +104,25 @@
                                     <td class="text-center">
                                         @if (product.IsActive)
                                         {
-                                            <div class="status-cell">
-                                               <p>Đang bán</p>
-                                            </div>
+                                            <span class="badge bg-success">Đang bán</span>
                                         }
                                         else
                                         {
-                                            <div class="status-cell">
-                                                <p>Ngừng bán</p>
-                                            </div>
+                                            <span class="badge bg-secondary">Ngừng bán</span>
                                         }
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <form action="@Url.Action("ToggleStatus", "Product", new { area = "Admin" })" method="post" style="display:inline;">
-                                                <input type="hidden" name="id" value="@product.ProductId" />
-                                                <button type="submit" class="btn btn-sm @(product.IsActive ? "btn-outline-warning" : "btn-outline-success")" title="@(product.IsActive ? "Ẩn sản phẩm" : "Hiển thị sản phẩm")">
-                                                    <i class="fas @(product.IsActive ? "fa-eye-slash" : "fa-eye")"></i>
-                                                </button>
-                                            </form>
-                                            <a href="@Url.Action("Edit", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                            <a asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-primary" title="Sửa">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="@Url.Action("Details", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-info" title="Chi tiết">
+                                            <a asp-action="Details" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-info" title="Chi tiết">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="@Url.Action("Variants", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-secondary" title="Biến thể">
+                                            <a asp-action="Variants" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-secondary" title="Biến thể">
                                                 <i class="fas fa-cubes"></i>
                                             </a>
-                                            <a href="@Url.Action("Delete", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                            <a asp-action="Delete" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-danger" title="Xóa">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
@@ -158,33 +151,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/dist/ag-grid-community.min.js"></script>
+    <script src="~/js/admin/delete-confirmation.js"></script>
+    <script src="~/js/admin/product-grid-init.js"></script>
+    <script src="~/js/admin/action-buttons.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            console.log("DOM loaded, initializing grid...");
-            
-            // Initialize grid only if we have the container
-            const gridDiv = document.getElementById('productsGrid');
-            if (!gridDiv) {
-                console.error("Grid container not found!");
-                document.getElementById('fallbackTable').style.display = 'block';
-                return;
-            }
-            
-            // If agGrid is not available, show fallback table
-            if (typeof agGrid === 'undefined') {
-                console.error("AG Grid library not loaded!");
-                document.getElementById('fallbackTable').style.display = 'block';
-                return;
-            }
-            
-            console.log("AG Grid found, preparing data...");
-            
+        // Ensure DOM is fully loaded before initializing grid
+        document.addEventListener("DOMContentLoaded", function() {
             // Prepare data
             const rowData = [];
-            
-            // Safely check if Model exists and has items
-            const hasModelData = @Json.Serialize(Model != null && Model.Any());
-            console.log("Model has data:", hasModelData);
             
             @if (Model != null && Model.Any())
             {
@@ -204,6 +178,7 @@
                         name: @Json.Serialize(product.Name),
                         sku: @Json.Serialize(product.SKU ?? ""),
                         category: @Json.Serialize(product.Category?.Name ?? "Không có danh mục"),
+                        categoryId: @(product.Category?.CategoryId ?? 0),
                         price: @product.Price.ToString(System.Globalization.CultureInfo.InvariantCulture),
                         formattedPrice: @Json.Serialize(product.Price.ToString("N0") + " ₫"),
                         discountPrice: @product.DiscountPrice.ToString(System.Globalization.CultureInfo.InvariantCulture),
@@ -218,358 +193,19 @@
                 }
             }
             
-            // Check if we have data
-            const hasData = rowData.length > 0;
-            console.log("Data loaded:", hasData ? "Yes" : "No", "rowData length:", rowData.length);
-            
-            if (!hasData) {
-                document.getElementById('noDataMessage').style.display = 'block';
-                return;
-            }
-                
-            // Cell renderers
-            const imageCellRenderer = function(params) {
-                return '<img class="product-image-cell" src="' + params.value + '" alt="Product Image" />';
+            // URL configuration for action buttons
+            const urlConfig = {
+                editUrl: '@Url.Action("Edit", "Product", new { area = "Admin" })',
+                detailsUrl: '@Url.Action("Details", "Product", new { area = "Admin" })',
+                variantsUrl: '@Url.Action("Variants", "Product", new { area = "Admin" })',
+                deleteUrl: '@Url.Action("Delete", "Product", new { area = "Admin" })'
             };
             
-            const statusCellRenderer = function(params) {
-                if (params.value === true) {
-                    return '<div class="status-cell"><span class=""> Đang bán</span></div>';
-                } else {
-                    return '<div class="status-cell"><span class=""> Ngừng bán</span></div>';
-                }
-            };
-            
-            const stockCellRenderer = function(params) {
-                const value = params.value;
-                let stockClass = "";
-                let badgeClass = "";
-                let icon = "";
-                
-                if (params.data.stockDanger) {
-                    stockClass = "text-danger fw-bold";
-                    badgeClass = "bg-danger";
-                    icon = '<i class="fas fa-exclamation-circle"></i>';
-                } else if (params.data.stockWarning) {
-                    stockClass = "text-warning fw-bold"; 
-                    badgeClass = "bg-warning text-dark";
-                    icon = '<i class="fas fa-exclamation-triangle"></i>';
-                } else {
-                    badgeClass = "bg-success";
-                    icon = '<i class="fas fa-check-circle"></i>';
-                }
-                
-                if (value <= 0) {
-                    return '<div class="stock-cell"><p class="text-danger mb-0">Hết hàng</p></div>';
-                }
-                
-                return '<div class="stock-cell">' + value + '</div>';
-            };
-            
-            const actionCellRenderer = function(params) {
-                const productId = params.data.productId;
-                const isActive = params.data.isActive;
-                
-                return '<div class="action-buttons">' + 
-                    '<form action="@Url.Action("ToggleStatus", "Product", new { area = "Admin" })" method="post" style="display:inline;">' +
-                    '<input type="hidden" name="id" value="' + productId + '" />' +
-                    '<button type="submit" class="btn btn-sm ' + (isActive ? 'btn-outline-warning' : 'btn-outline-success') + 
-                    '" title="' + (isActive ? 'Ẩn sản phẩm' : 'Hiển thị sản phẩm') + '">' +
-                    '<i class="fas ' + (isActive ? 'fa-eye-slash' : 'fa-eye') + '"></i>' +
-                    '</button></form>' +
-                    '<a href="@Url.Action("Edit", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-primary ms-1" title="Sửa"><i class="fas fa-edit"></i></a>' +
-                    '<a href="@Url.Action("Details", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-info ms-1" title="Chi tiết"><i class="fas fa-eye"></i></a>' +
-                    '<a href="@Url.Action("Variants", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-secondary ms-1" title="Biến thể"><i class="fas fa-cubes"></i></a>' +
-                    '<a href="@Url.Action("Delete", "Product", new { area = "Admin" })/' + productId + 
-                    '" class="btn btn-sm btn-outline-danger ms-1" title="Xóa"><i class="fas fa-trash"></i></a>' +
-                '</div>';
-            };
-            
-            // Column definitions
-            const columnDefs = [
-                { 
-                    field: 'imageUrl', 
-                    headerName: 'Ảnh', 
-                    width: 80,
-                    cellRenderer: imageCellRenderer,
-                    filter: false,
-                    floatingFilter: false,
-                    sortable: false,
-                    cellClass: 'cell-image'
-                },
-                { 
-                    field: 'name', 
-                    headerName: 'Tên sản phẩm', 
-                    minWidth: 180,
-                    filter: 'agTextColumnFilter',
-                    floatingFilter: true
-                },
-                { 
-                    field: 'sku', 
-                    headerName: 'SKU', 
-                    width: 120,
-                    filter: 'agTextColumnFilter',
-                    floatingFilter: true
-                },
-                { 
-                    field: 'category', 
-                    headerName: 'Danh mục', 
-                    width: 150,
-                    filter: 'agTextColumnFilter',
-                    floatingFilter: true
-                },
-                { 
-                    field: 'formattedPrice', 
-                    headerName: 'Giá', 
-                    width: 120,
-                    filter: 'agNumberColumnFilter',
-                    floatingFilter: true
-                },
-                { 
-                    field: 'formattedDiscountPrice', 
-                    headerName: 'Giảm giá', 
-                    width: 120,
-                    filter: 'agNumberColumnFilter',
-                    floatingFilter: true
-                },
-                { 
-                    field: 'stockQuantity', 
-                    headerName: 'Kho hàng', 
-                    width: 120,
-                    filter: 'agNumberColumnFilter',
-                    filterParams: {
-                        buttons: ['apply', 'reset'],
-                        closeOnApply: true
-                    },
-                    floatingFilter: true,
-                    cellRenderer: stockCellRenderer,
-                    cellClass: 'cell-stock',
-                    headerClass: 'text-center'
-                },
-                { 
-                    field: 'isActive', 
-                    headerName: 'Trạng thái', 
-                    width: 130,
-                    filter: 'agSetColumnFilter',
-                    floatingFilter: true,
-                    cellRenderer: statusCellRenderer,
-                    cellClass: 'cell-status',
-                    headerClass: 'text-center',
-                    filterParams: {
-                        values: [true, false],
-                        cellRenderer: params => {
-                            return params.value === true ? 'Đang bán' : 'Ngừng bán';
-                        }
-                    }
-                },
-                { 
-                    field: 'productId', 
-                    headerName: 'Thao tác', 
-                    width: 230, 
-                    cellRenderer: actionCellRenderer,
-                    filter: false,
-                    floatingFilter: false,
-                    sortable: false,
-                    resizable: false,
-                    pinned: 'right',
-                    cellClass: 'cell-actions'
-                }
-            ];
-            
-            // Grid options
-            const gridOptions = {
-                columnDefs: columnDefs,
-                rowData: rowData,
-                defaultColDef: {
-                    flex: 1,
-                    minWidth: 80,
-                    sortable: true,
-                    resizable: true,
-                    filter: true,
-                    wrapText: true,
-                    autoHeight: true,
-                    cellClass: 'align-middle',
-                    suppressAutoSize: false
-                },
-                enableRangeSelection: true,
-                animateRows: true,
-                pagination: true,
-                paginationPageSize: 20,
-                enableCellTextSelection: true,
-                rowSelection: 'multiple',
-                suppressRowClickSelection: true,
-                domLayout: 'normal',
-                suppressScrollOnNewData: true,
-                headerHeight: 40,
-                rowHeight: 60
-            };
-            
-            // Filter by active status if checkbox is checked
-            const showActiveOnly = document.getElementById("showActiveOnly");
-            const applyActiveFilter = function() {
-                if (gridOptions.api) {
-                    if (showActiveOnly.checked) {
-                        gridOptions.api.setFilterModel({
-                            isActive: { 
-                                filterType: 'set', 
-                                values: ['true']
-                            }
-                        });
-                    } else {
-                        gridOptions.api.setFilterModel(null);
-                    }
-                }
-            };
-            
-            if (showActiveOnly) {
-                showActiveOnly.addEventListener('change', applyActiveFilter);
-            }
-            
-            // Export to Excel
-            const exportBtn = document.getElementById("exportBtn");
-            if (exportBtn) {
-                exportBtn.addEventListener('click', function() {
-                    if (gridOptions.api) {
-                        gridOptions.api.exportDataAsExcel({
-                            fileName: 'danh_sach_san_pham_' + new Date().toISOString().slice(0, 10),
-                            skipColumnGroupHeaders: true,
-                            skipColumnHeaders: false,
-                            skipPinnedTop: true,
-                            skipPinnedBottom: true,
-                            allColumns: false,
-                            onlySelected: false,
-                            columnKeys: ['name', 'sku', 'category', 'formattedPrice', 'formattedDiscountPrice', 'stockQuantity']
-                        });
-                    } else {
-                        // Fallback to regular table export if AG Grid API not available
-                        exportTableToExcel("fallbackTable", "danh_sach_san_pham");
-                    }
-                });
-            }
-            
-            // Xử lý lỗi trong quá trình khởi tạo grid
-            try {
-                console.log("Initializing grid...");
-                console.log("Grid div exists:", !!gridDiv);
-                console.log("Grid div dimensions:", gridDiv.offsetWidth + "x" + gridDiv.offsetHeight);
-                console.log("Row data count:", rowData.length);
-                
-                // In dữ liệu row đầu tiên để kiểm tra lỗi
-                if (rowData.length > 0) {
-                    console.log("First row data:", JSON.stringify(rowData[0]));
-                }
-                
-                // Đảm bảo div container có chiều cao cụ thể
-                gridDiv.style.height = "600px";
-                gridDiv.style.width = "100%";
-                
-                // Before grid creation
-                console.log("About to create grid with options:", JSON.stringify({
-                    ...gridOptions,
-                    columnDefs: gridOptions.columnDefs.map(col => ({...col, cellRenderer: col.cellRenderer ? 'function' : undefined}))
-                }));
-
-                // Create grid
-                const grid = new agGrid.Grid(gridDiv, gridOptions);
-                console.log("Grid created:", !!grid);
-                
-                // Apply active filter initially if checkbox is checked
-                setTimeout(function() {
-                    if (showActiveOnly && showActiveOnly.checked) {
-                        applyActiveFilter();
-                    }
-                }, 200);
-                
-                // Size columns to fit
-                setTimeout(function() {
-                    if (gridOptions.api) {
-                        console.log("Sizing columns to fit...");
-                        gridOptions.api.sizeColumnsToFit();
-                    } else {
-                        console.error("Grid API not available after initialization!");
-                        document.getElementById('fallbackTable').style.display = 'block';
-                    }
-                }, 500);
-                
-                // Handle grid size on window resize
-                window.addEventListener('resize', function() {
-                    if (gridOptions.api) {
-                        setTimeout(function() {
-                            // Force redraw entire grid when window resizes
-                            gridOptions.api.redrawRows();
-                            gridOptions.api.sizeColumnsToFit();
-                        }, 100);
-                    }
-                });
-                
-                // Refresh button
-                const refreshBtn = document.getElementById('refreshGrid');
-                if (refreshBtn) {
-                    refreshBtn.addEventListener('click', function() {
-                        if (gridOptions.api) {
-                            gridOptions.api.setFilterModel(null);
-                            if (showActiveOnly && showActiveOnly.checked) {
-                                applyActiveFilter();
-                            }
-                        } else {
-                            window.location.reload();
-                        }
-                    });
-                }
-                
-                console.log("Grid initialization complete!");
-            } catch (error) {
-                console.error("Error initializing AG Grid:", error);
-                console.error("Error details:", error.stack);
-                
-                // Thử tạo một minimal grid để xem có hoạt động không
-                try {
-                    console.log("Trying minimal grid config...");
-                    const minimalGridOptions = {
-                        columnDefs: [{ field: 'name', headerName: 'Tên sản phẩm' }],
-                        rowData: rowData,
-                        defaultColDef: { flex: 1 }
-                    };
-                    new agGrid.Grid(gridDiv, minimalGridOptions);
-                    console.log("Minimal grid created successfully");
-                } catch (minimalError) {
-                    console.error("Even minimal grid failed:", minimalError);
-                }
-                
-                document.getElementById('fallbackTable').style.display = 'block';
-                
-                // Show detailed error
-                const noDataMsg = document.getElementById('noDataMessage');
-                if (noDataMsg) {
-                    noDataMsg.style.display = 'block';
-                    noDataMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> Lỗi khởi tạo bảng: ' + error.message;
-                    noDataMsg.className = 'alert alert-danger m-3';
-                }
-            }
-            
-            // Function to export table to Excel (fallback method)
-            function exportTableToExcel(tableId, fileName) {
-                const wb = XLSX.utils.book_new();
-                const table = document.getElementById(tableId);
-                
-                if (table) {
-                    const clonedTable = table.cloneNode(true);
-                    const rows = clonedTable.querySelectorAll("tr");
-                    rows.forEach(row => {
-                        const cells = row.querySelectorAll("th, td");
-                        if (cells.length > 0) {
-                            cells[cells.length - 1].remove();
-                        }
-                    });
-                    
-                    const ws = XLSX.utils.table_to_sheet(clonedTable);
-                    XLSX.utils.book_append_sheet(wb, ws, "Sản phẩm");
-                    XLSX.writeFile(wb, fileName + "_" + new Date().toISOString().slice(0, 10) + ".xlsx");
-                }
-            }
+            // Initialize the grid - moved outside of the grid-init.js DOMContentLoaded event
+            // so we don't have nested DOMContentLoaded events
+            setTimeout(function() {
+                initializeProductGrid('productsGrid', 'fallbackTable', 'noDataMessage', rowData, urlConfig);
+            }, 0);
         });
     </script>
 }

@@ -1,0 +1,547 @@
+/* AG Grid Container Styling */
+
+/* Product grid container */
+#productsGrid {
+    width: 100% !important;
+    height: 600px !important;
+    min-height: 400px !important;
+    display: block !important;
+    position: relative !important;
+    border-radius: 0.5rem;
+    overflow: hidden !important;
+}
+
+/* Category grid container */
+#categoriesGrid {
+    width: 100% !important;
+    height: 600px !important;
+    min-height: 400px !important;
+    display: block !important;
+    position: relative !important;
+    border-radius: 0.5rem;
+    overflow: hidden !important;
+}
+
+/* Grid Components Styling */
+
+/* Standard Grid Container */
+.ag-theme-alpine {
+  width: 100%;
+  height: 600px;
+  font-family: var(--body-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+}
+
+/* Cell components styling */
+.ag-theme-alpine .ag-cell {
+  padding: 0 12px;
+  line-height: 1.5;
+}
+
+/* Status badges styling */
+.ag-theme-alpine .status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+/* Stock quantity indicator */
+.ag-theme-alpine .stock-cell {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  min-width: 40px;
+  text-align: center;
+  background-color: #e9ecef;
+  font-weight: 500;
+}
+
+.ag-theme-alpine .stock-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.ag-theme-alpine .stock-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Image cell styling */
+.ag-theme-alpine .img-cell {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.ag-theme-alpine .product-image-cell {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Category tree node styling */
+.ag-theme-alpine .category-node {
+  display: flex;
+  align-items: center;
+}
+
+.ag-theme-alpine .category-icon {
+  margin-right: 8px;
+  color: #ffc107;
+}
+
+.ag-theme-alpine .subcategory-icon {
+  margin-right: 8px;
+  color: #6c757d;
+}
+
+/* Table styling (for fallback) */
+.product-table, .category-table, .order-table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.product-table th, .category-table th, .order-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  border-top: none;
+  padding: 0.75rem;
+  white-space: nowrap;
+}
+
+.product-table td, .category-table td, .order-table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+/* Action cell styling */
+.ag-theme-alpine .ag-header-cell[col-id="thaoTac"],
+.ag-theme-alpine .ag-header-cell[col-id="actions"] {
+  text-align: center;
+}
+
+/* Fix for ag-grid misalignment */
+.ag-theme-alpine .ag-header-cell-label,
+.ag-theme-alpine .ag-header-cell-text {
+  justify-content: center;
+  width: 100%;
+  overflow: visible;
+}
+
+.ag-theme-alpine .ag-header-cell:last-child .ag-header-cell-text,
+.ag-theme-alpine .ag-header-cell[col-id="thaoTac"] .ag-header-cell-text,
+.ag-theme-alpine .ag-header-cell[col-id="actions"] .ag-header-cell-text {
+  text-align: center;
+  width: 100%;
+}
+
+/* Fix last column action buttons alignment */
+.ag-theme-alpine .ag-cell:last-child,
+.ag-theme-alpine .ag-cell[col-id="thaoTac"],
+.ag-theme-alpine .ag-cell[col-id="actions"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* Custom cell value alignment */
+.ag-theme-alpine .ag-cell-value {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ag-theme-alpine .ag-cell-value.ag-cell-value-text-left {
+  justify-content: flex-start;
+}
+
+.ag-theme-alpine .ag-cell-value.ag-cell-value-text-right {
+  justify-content: flex-end;
+}
+
+/* Remove Border Lines Between AG Grid Cells */
+.ag-theme-alpine .ag-cell {
+  border-right: none !important;
+}
+
+.ag-theme-alpine .ag-ltr .ag-cell {
+  border-right: none !important;
+}
+
+/* Clean up AG Grid Header */
+.ag-theme-alpine .ag-header-cell {
+  border-right: none !important;
+  background-color: #f8f9fa;
+}
+
+/* AG Grid Row Height Fix */
+.ag-theme-alpine .ag-row {
+  height: 48px !important;
+  transition: background-color 0.2s;
+}
+
+/* Row Hover Effect */
+.ag-theme-alpine .ag-row:hover {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Fix for fallback table action buttons */
+.table td:last-child {
+  text-align: center;
+}
+
+.table td:last-child .action-buttons {
+  justify-content: center;
+}
+
+/* Unified Status Styling for All Tables */
+.status-badge-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-align: center;
+    min-width: auto;
+    width: auto;
+    max-width: fit-content;
+    margin: 0 auto;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    line-height: 1.2;
+    height: auto;
+}
+
+/* Status colors - modern style with opacity */
+.status-active, .status-success, .status-completed, .status-confirmed, .status-published {
+    background-color: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.status-active::before, .status-success::before, .status-completed::before, .status-confirmed::before, .status-published::before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #28a745;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.status-pending, .status-waiting, .status-inprogress {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-pending::before, .status-waiting::before, .status-inprogress::before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #ffc107;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.status-shipping {
+    background-color: rgba(121, 85, 72, 0.15);
+    color: #795548;
+    border: 1px solid rgba(121, 85, 72, 0.3);
+    /* Additional properties to ensure visibility */
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-align: center;
+    min-width: auto;
+    width: auto;
+    max-width: fit-content;
+    margin: 0 auto;
+}
+
+.status-shipping::before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #795548;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.status-processing {
+    background-color: rgba(23, 162, 184, 0.15);
+    color: #17a2b8;
+    border: 1px solid rgba(23, 162, 184, 0.3);
+}
+
+.status-processing::before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #17a2b8;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.status-success, .status-shipped {
+    background-color: rgba(102, 16, 242, 0.15);
+    color: #6610f2;
+    border: 1px solid rgba(102, 16, 242, 0.3);
+}
+
+.status-success::before, .status-shipped::before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #6610f2;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.status-warning, .status-partial, .status-backorder, .status-lowstock {
+    background-color: rgba(246, 194, 62, 0.15);
+    color: #f6c23e;
+    border: 1px solid rgba(246, 194, 62, 0.3);
+}
+
+.status-warning::before, .status-partial::before, .status-backorder::before, .status-lowstock::before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #f6c23e;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.status-inactive, .status-error, .status-cancelled, .status-rejected, .status-failed, .status-outofstock, .status-danger {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.status-inactive::before, .status-error::before, .status-cancelled::before, .status-rejected::before, .status-failed::before, .status-outofstock::before, .status-danger::before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #dc3545;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.status-draft, .status-onhold, .status-archived, .status-info {
+    background-color: rgba(78, 115, 223, 0.15);
+    color: #4e73df;
+    border: 1px solid rgba(78, 115, 223, 0.3);
+}
+
+.status-draft::before, .status-onhold::before, .status-archived::before, .status-info::before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #4e73df;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.status-default, .status-unknown {
+    background-color: rgba(133, 135, 150, 0.15);
+    color: #858796;
+    border: 1px solid rgba(133, 135, 150, 0.3);
+}
+
+.status-default::before, .status-unknown::before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #858796;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+/* Hover effect for status badges */
+.status-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* AG Grid status cell styling */
+.ag-theme-alpine .status-badge-container .status-badge {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    padding-left: 16px; /* Add space for the color bar */
+}
+
+/* Table-specific status styling */
+.product-table .status-badge,
+.category-table .status-badge {
+    font-size: 0.75rem;
+    padding: 3px 8px 3px 14px; /* Add space for the color bar */
+    min-width: 70px;
+}
+
+/* Order table specific styling - more compact */
+.order-table .status-badge,
+#ordersGrid .status-badge-container .status-badge {
+    font-size: 0.75rem;
+    padding: 4px 10px 4px 14px;
+    min-width: 120px;
+    width: auto !important;
+    max-width: 150px !important;
+    white-space: nowrap;
+    display: inline-block !important;
+    margin: 0 auto;
+    line-height: 1.2;
+    height: auto;
+    text-overflow: ellipsis;
+}
+
+/* Compact badge styles */
+.badge {
+    display: inline-block !important;
+    width: auto !important;
+    white-space: nowrap !important;
+    padding: 0.25em 0.6em !important;
+    font-size: 0.75em !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Table-specific badge styles */
+.category-table .badge,
+.product-table .badge {
+    font-size: 0.7rem !important;
+    padding: 0.2em 0.5em !important;
+    font-weight: 500 !important;
+    min-width: 0 !important;
+    max-width: fit-content !important;
+}
+
+/* AG Grid badge styles */
+.ag-theme-alpine .badge,
+.ag-cell .badge {
+    max-width: fit-content !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+}
+
+/* Status cell renderer for AG Grid */
+.ag-cell .status-badge-container .status-badge {
+    width: auto !important;
+    max-width: fit-content !important;
+}
+
+/* Category name cell styling */
+.category-name-cell {
+    display: flex;
+    align-items: center;
+}
+
+.category-parent-badge {
+    display: inline-block;
+    background-color: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+    font-size: 0.85rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    border: 1px solid rgba(78, 115, 223, 0.2);
+}
+
+/* Stock quantity styling */
+.stock-cell {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    min-width: 60px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    padding-left: 16px; /* Add space for the color bar */
+}
+
+.stock-normal {
+    background-color: rgba(28, 200, 138, 0.15);
+    color: #1cc88a;
+    border: 1px solid rgba(28, 200, 138, 0.3);
+}
+
+.stock-normal::before {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 100%;
+    background-color: #1cc88a;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.stock-warning {
+    background-color: rgba(246, 194, 62, 0.15);
+    color: #f6c23e;
+    border: 1px solid rgba(246, 194, 62, 0.3);
+}
+
+.stock-warning::before {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 100%;
+    background-color: #f6c23e;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+}
+
+.stock-danger {
+    background-color: rgba(231, 74, 59, 0.15);
+    color: #e74a3b;
+    border: 1px solid rgba(231, 74, 59, 0.3);
+}
+
+.stock-danger::before {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 100%;
+    background-color: #e74a3b;
+    left: 0;
+    top: 0;
+    opacity: 0.8;
+} 

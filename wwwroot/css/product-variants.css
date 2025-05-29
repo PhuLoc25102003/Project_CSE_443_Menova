@@ -1,88 +1,521 @@
-/* CSS cho trang quản lý biến thể sản phẩm */
-.color-option {
-    width: 25px;
-    height: 25px;
-    display: inline-block;
-    margin-right: 5px;
-    border-radius: 4px;
-    border: 1.5px solid #bbb;
-    vertical-align: middle;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-}
-.color-select-option {
-    display: flex;
-    align-items: center;
-}
-.size-option {
-    padding: 7px 16px;
-    border: 1.5px solid #bbb;
-    border-radius: 6px;
-    margin: 0 8px 8px 0;
-    display: inline-block;
-    cursor: pointer;
-    background: #f8f9fa;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-.size-option.selected {
-    background-color: #4e73df;
-    color: white;
-    border-color: #3a5ccc;
-}
-.card.variant-form {
-    border: 1.5px solid #4e73df;
-    box-shadow: 0 2px 12px rgba(78,115,223,0.08);
-    border-radius: 12px;
-}
-.card.variant-form .card-header {
-    background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
-    color: #fff;
-    border-radius: 12px 12px 0 0;
-    padding: 14px 24px;
-}
-.card.variant-form .card-body {
-    padding: 24px 24px 16px 24px;
-}
-.form-label {
-    font-weight: 600;
-    color: #224abe;
-}
-.form-control, .form-select {
-    border-radius: 6px;
-    border: 1.5px solid #bbb;
-    min-height: 38px;
-}
-.btn-primary {
-    background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
+/* CSS cho trang quản lý biến thể sản phẩm - Phiên bản cải thiện */
+
+/* Không override container-fluid để tránh conflict */
+
+/* Card Styles - Chỉ áp dụng cho card biến thể */
+.card.mb-4 {
     border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: visible; /* Không ẩn overflow */
+    max-width: 100% !important; /* Đảm bảo không bị overflow */
+}
+
+.card.mb-4:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 24px 32px;
+    color: white;
+    max-width: 100% !important; /* Đảm bảo không bị overflow */
+}
+
+.card-header h5 {
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+}
+
+.card-header p {
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.card-body {
+    padding: 32px;
+    max-width: 100% !important; /* Đảm bảo không bị overflow */
+    overflow: visible !important; /* Cho phép nội dung hiển thị */
+    box-sizing: border-box !important;
+}
+
+/* Product Summary Section */
+.product-summary {
+    background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.product-image {
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.product-image:hover {
+    transform: scale(1.05);
+}
+
+.product-placeholder {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    border: 2px dashed #90a4ae;
+}
+
+/* Badge Styles */
+.badge {
+    font-size: 0.85rem;
     font-weight: 600;
-    padding: 10px 28px;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(78,115,223,0.08);
-    transition: background 0.2s;
+    padding: 8px 16px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
 }
-.btn-primary:hover {
-    background: linear-gradient(90deg, #224abe 0%, #4e73df 100%);
+
+.badge.bg-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 }
-.variant-list-table th, .variant-list-table td {
-    vertical-align: middle;
+
+.badge.bg-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+}
+
+.badge.bg-danger {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+}
+
+.badge.bg-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+    color: #333 !important;
+    font-size: 0.9rem;
+    padding: 10px 20px;
+    display: inline-block;
+    width: 100%;
     text-align: center;
 }
-.variant-list-table th {
-    background: #f4f6fb;
-    color: #224abe;
-    font-weight: 700;
+
+/* Form Section */
+.variant-form {
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+    max-width: 100% !important;
+    overflow: hidden !important;
 }
-.variant-list-table tr {
-    transition: background 0.15s;
+
+.variant-form .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: -2px -2px 0 -2px;
+    border-radius: 14px 14px 0 0;
 }
-.variant-list-table tr:hover {
-    background: #f0f4ff;
+
+.variant-form .card-body {
+    padding: 32px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
 }
+
+/* Alert Styles */
+.alert {
+    border: none;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    color: #1565c0;
+    border-left: 4px solid #42a5f5;
+}
+
+/* Form Controls - Sửa tăng cường */
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e1e8ed;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #fafbfc;
+    width: 100% !important;  /* Đảm bảo chiều rộng đúng */
+    max-width: 100% !important; /* Đảm bảo không bị overflow */
+    box-sizing: border-box !important; /* Đảm bảo padding và border nằm trong kích thước */
+    overflow: hidden !important; /* Ngăn nội dung tràn ra */
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: white;
+    outline: none;
+}
+
+/* Row và Columns */
+.row.g-3 {
+    margin-left: -10px !important;
+    margin-right: -10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.row.g-3 > .col-md-3, .row.g-3 > .col-12 {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    box-sizing: border-box !important;
+}
+
+/* Color Options */
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+#colorPreview {
+    padding: 12px 16px;
+    background: #f8f9ff;
+    border-radius: 8px;
+    border: 1px solid #e1e8ed;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
 #colorPreview .d-inline-block {
-    border: 2px solid #4e73df;
+    border: 3px solid #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
 }
-/* Sửa lỗi đè lên footer */
-.card.variant-form {
-    margin-bottom: 32px;
-} 
+
+/* Button Styles */
+.btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.btn-outline-secondary {
+    border: 2px solid #8492a6;
+    color: #8492a6;
+    background: transparent;
+}
+
+.btn-outline-secondary:hover {
+    background: #8492a6;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    box-shadow: 0 4px 16px rgba(17, 153, 142, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    box-shadow: 0 4px 16px rgba(255, 65, 108, 0.3);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #8492a6 0%, #3c4858 100%);
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+}
+
+/* Table Styles */
+.table-responsive {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 100% !important; /* Đảm bảo không bị overflow */
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+    color: #2c3e50;
+    font-weight: 700;
+    border: none;
+    padding: 16px 12px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.table tbody td {
+    padding: 16px 12px;
+    vertical-align: middle;
+    text-align: center;
+    border-color: #f1f5f9;
+    max-width: 250px !important; /* Giới hạn chiều rộng cột */
+    overflow: hidden !important;
+}
+
+.table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+    transform: scale(1.01);
+}
+
+/* Form Switch */
+.form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    border-radius: 2rem;
+    background-color: #e1e8ed;
+    border: none;
+}
+
+.form-check-input:checked {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.form-check-label {
+    margin-left: 0.5rem;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* Input Group */
+.input-group-sm .form-control {
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    min-width: 70px !important;
+    flex: 1 !important;
+}
+
+.input-group-sm .btn {
+    padding: 8px 12px;
+}
+
+.input-group {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-wrap: nowrap !important;
+    box-sizing: border-box !important;
+}
+
+.input-group .form-control {
+    width: 1% !important;
+    flex: 1 1 auto !important;
+    min-width: 50px !important;
+    max-width: 100% !important;
+}
+
+/* Responsive Design - Chỉ điều chỉnh cần thiết */
+@media (max-width: 768px) {
+    .variant-form .card-body {
+        padding: 20px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .color-option {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .badge.bg-info {
+        font-size: 0.8rem;
+        padding: 8px 16px;
+    }
+
+    /* Cải thiện responsive cho form */
+    .form-check.form-switch {
+        margin-top: 0 !important;
+    }
+
+    /* Đảm bảo các input không bị tràn */
+    .input-group {
+        flex-wrap: nowrap;
+        width: 100%;
+    }
+    
+    .input-group .form-control {
+        width: 1%;
+        flex: 1 1 auto;
+    }
+    
+    /* Fix cho form-select trên mobile */
+    select.form-select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Giảm padding cho các col */
+    .row.g-3 > .col-md-3, .row.g-3 > .col-12 {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+    
+    /* Điều chỉnh khoảng cách của row */
+    .row.g-3 {
+        margin-left: -5px !important;
+        margin-right: -5px !important;
+    }
+}
+
+/* Di chuyển margin top của nút ra khỏi media query */
+.text-end {
+    margin-top: 100px !important;
+}
+
+@media (max-width: 576px) {
+    .card-header {
+        padding: 16px 20px;
+    }
+    
+    .card-header h5 {
+        font-size: 1.2rem;
+    }
+    
+    .row.g-3 > .col-md-3 {
+        margin-bottom: 16px;
+    }
+
+    /* Thêm khoảng cách cho mobile */
+    .container-fluid.py-4 {
+        padding-bottom: 120px !important; /* Tăng khoảng cách dưới khi màn hình nhỏ */
+    }
+    
+    /* Đảm bảo các form control không bị overflow */
+    .form-control, .form-select {
+        font-size: 0.9rem;
+        padding: 10px 14px;
+        width: 100% !important;
+    }
+    
+    /* Đảm bảo các button không bị quá lớn */
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+    
+    /* Fix cho input number trong bảng */
+    .input-group-sm .form-control {
+        min-width: 70px; /* Đảm bảo kích thước tối thiểu */
+    }
+    
+    /* Giảm padding cho các cột */
+    .col-12, .col-md-3 {
+        padding-left: 5px !important;
+        padding-right: 5px !important; 
+    }
+    
+    /* Giảm padding cho card body */
+    .card-body {
+        padding: 15px !important;
+    }
+}
+
+/* Loại bỏ animation có thể gây conflict */
+
+/* Loading States */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Custom Scrollbar */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+/* Fix cho footer đè lên nội dung - Tăng cường hơn nữa */
+.container-fluid.py-4 {
+    padding-bottom: 250px !important; /* Tăng khoảng cách giữa nội dung và footer */
+    min-height: 100vh !important; /* Đảm bảo chiều cao tối thiểu */
+}
+
+@media (min-width: 1200px) {
+    /* Fix cho màn hình lớn với zoom cao */
+    .container-fluid.py-4 {
+        padding-bottom: 300px !important;
+    }
+}
+
+/* Đảm bảo footer không đè lên nội dung */
+.footer {
+    position: relative !important; 
+    bottom: 0 !important;
+    margin-top: 50px !important;
+}
+
+.Variant-input-item{
+    margin-bottom: 10px !important;
+}

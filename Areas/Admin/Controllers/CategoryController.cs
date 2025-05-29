@@ -17,7 +17,7 @@ namespace Menova.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var categories = await _categoryService.GetAllCategoriesAsync();
+            var categories = await _categoryService.GetAllActiveCategoriesAsync();
             return View(categories);
         }
 
@@ -45,6 +45,13 @@ namespace Menova.Areas.Admin.Controllers
                 var parentCategory = await _categoryService.GetCategoryByIdAsync(parentId.Value);
                 if (parentCategory != null)
                 {
+                    // Kiểm tra nếu danh mục cha đã là danh mục con (có ParentCategoryId)
+                    if (parentCategory.ParentCategoryId.HasValue)
+                    {
+                        TempData["ErrorMessage"] = "Không thể tạo danh mục con cho danh mục đã là danh mục con. Hệ thống chỉ hỗ trợ tối đa 2 cấp danh mục.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    
                     model.ParentCategoryId = parentId;
                     ViewBag.ParentCategoryName = parentCategory.Name;
                     ViewBag.IsChildCategory = true;
@@ -275,32 +282,57 @@ namespace Menova.Areas.Admin.Controllers
             return View(category);
         }
 
-        public async Task<IActionResult> Delete(int id)
-        {
-            var category = await _categoryService.GetCategoryWithChildrenAsync(id);
-
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
-        }
-
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                // Change to soft delete instead of hard delete
+                var category = await _categoryService.GetCategoryByIdAsync(id);
+                if (category == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy danh mục" });
+                }
+                
+                // Use soft delete instead of permanent delete
                 await _categoryService.SoftDeleteCategoryAsync(id);
-                TempData["SuccessMessage"] = "Danh mục đã được ẩn thành công.";
+                return Json(new { 
+                    success = true, 
+                    message = $"Danh mục '{category.Name}' đã được ẩn thành công" 
+                });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Lỗi khi ẩn danh mục: {ex.Message}";
-                Console.WriteLine($"ERROR in Delete action: {ex.Message}");
+                return Json(new { 
+                    success = false, 
+                    message = $"Lỗi khi ẩn danh mục: {ex.Message}" 
+                });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            try
+            {
+                var category = await _categoryService.GetCategoryByIdAsync(id);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+
+                // Toggle the active status
+                category.IsActive = !category.IsActive;
+                await _categoryService.UpdateCategoryAsync(category);
+
+                string statusMessage = category.IsActive ? "hiển thị" : "ẩn";
+                TempData["SuccessMessage"] = $"Danh mục '{category.Name}' đã được {statusMessage} thành công.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi khi thay đổi trạng thái danh mục: {ex.Message}";
+                Console.WriteLine($"ERROR in ToggleStatus action: {ex.Message}");
             }
             return RedirectToAction(nameof(Index));
         }

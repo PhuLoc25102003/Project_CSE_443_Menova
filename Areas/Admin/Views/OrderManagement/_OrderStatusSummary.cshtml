@@ -1,0 +1,73 @@
+@model Dictionary<string, int>
+
+<div class="row status-summary-container mb-4">
+    <!-- First Row: 3 cards -->
+    <div class="col-12 mb-3">
+        <div class="status-card-wrapper d-flex justify-content-between">
+            <div class="status-card pending flex-grow-1 mx-1" data-status="Pending">
+                <div class="card-content">
+                    <div class="card-value">@(Model.TryGetValue("Pending", out int pendingCount) ? pendingCount : 0)</div>
+                    <div class="card-label">Chờ xử lý</div>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+            
+            <div class="status-card processing flex-grow-1 mx-1" data-status="Processing">
+                <div class="card-content">
+                    <div class="card-value">@(Model.TryGetValue("Processing", out int processingCount) ? processingCount : 0)</div>
+                    <div class="card-label">Đang xử lý</div>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+            </div>
+            
+            <div class="status-card shipping flex-grow-1 mx-1" data-status="Shipping">
+                <div class="card-content">
+                    <div class="card-value">@(Model.TryGetValue("Shipping", out int shippingCount) ? shippingCount : 0)</div>
+                    <div class="card-label">Đang giao hàng</div>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Second Row: 2 cards -->
+    <div class="col-12">
+        <div class="status-card-wrapper d-flex justify-content-between">
+            <div class="status-card shipped flex-grow-1 mx-1" data-status="Delivered">
+                <div class="card-content">
+                    <div class="card-value">@(Model.TryGetValue("Delivered", out int deliveredCount) ? deliveredCount : 0)</div>
+                    <div class="card-label">Đã giao hàng</div>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+            </div>
+            
+            <div class="status-card delivered flex-grow-1 mx-1" data-status="Received">
+                <div class="card-content">
+                    <div class="card-value">@(Model.TryGetValue("Received", out int receivedCount) ? receivedCount : 0)</div>
+                    <div class="card-label">Đã nhận hàng</div>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            
+            <div class="status-card cancelled flex-grow-1 mx-1" data-status="Cancelled">
+                <div class="card-content">
+                    <div class="card-value">@(Model.TryGetValue("Cancelled", out int cancelledCount) ? cancelledCount : 0)</div>
+                    <div class="card-label">Đã hủy</div>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

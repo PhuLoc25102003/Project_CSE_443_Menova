@@ -1,0 +1,75 @@
+/* Card Styling for Admin Area */
+
+/* Common card styles */
+.product-management .card,
+.category-management .card {
+    border-radius: .75rem !important;
+    box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1) !important;
+    border: none !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 1 !important;
+    height: auto !important;
+    min-height: auto !important;
+    transition: box-shadow 0.3s ease;
+}
+
+.product-management .card:hover,
+.category-management .card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+}
+
+/* Card body styling */
+.product-management .card-body,
+.category-management .card-body {
+    padding: 1.5rem !important;
+    position: relative !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* AG Grid Specific card-body padding */
+.card-body.p-0 {
+    padding: 0 !important;
+}
+
+/* Card body for form cards */
+.category-form-card .card-body,
+.product-form-card .card-body {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+}
+
+/* Card header styling */
+.category-form-card .card-header,
+.product-form-card .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.category-form-card .card-header .btn-sm,
+.product-form-card .card-header .btn-sm {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.category-form-card .card-header .text-muted,
+.product-form-card .card-header .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.product-form-card .card-header .form-check-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Fix to ensure table is always displayed properly */
+.table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    max-width: 100% !important;
+} 

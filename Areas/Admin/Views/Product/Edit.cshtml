@@ -5,175 +5,373 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/admin/category-management.css" />
+    <link rel="stylesheet" href="~/css/admin/product-create.css" />
+    <link rel="stylesheet" href="~/css/admin/product-details.css" />
+    <style>
+        .product-details-page .header-content h1 {
+            font-size: 1.8rem;
+            /* Increased from 1.4rem in product-details.css */
+        }
+
+        /* Enhanced form styling */
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group-text {
+            min-width: 40px;
+            justify-content: center;
+        }
+
+        textarea.form-control {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        /* Fix for margin issues */
+        .row {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Make sure col-6 takes full width */
+        .col-6 {
+            width: 50%;
+        }
+
+        /* Custom input styles */
+        .product-input {
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .product-input:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .product-area-input {
+            min-height: 120px;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+        }
+
+        /* Hide validation messages initially */
+        .validation-message {
+            display: none;
+        }
+
+        /* Show validation messages only when form is submitted and invalid */
+        .was-validated .invalid-feedback {
+            display: none;
+        }
+
+        .was-validated .form-control:invalid ~ .invalid-feedback,
+        .was-validated .form-select:invalid ~ .invalid-feedback {
+            display: block;
+        }
+        
+        /* Image upload styles */
+        .image-upload-container {
+            border: 2px dashed #ced4da;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .image-upload-container.drag-over {
+            border-color: #80bdff;
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        .image-upload-container .upload-icon {
+            font-size: 3rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .image-upload-container .upload-text {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .btn-remove-image {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            display: none;
+            z-index: 10;
+        }
+        
+        .current-image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
 }
 
-<div class="category-management category-form-page">
-    <div class="page-header d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3"><i class="fas fa-edit me-2"></i>Chỉnh sửa sản phẩm</h1>
-            <p class="text-muted mb-0">Cập nhật thông tin sản phẩm trong hệ thống</p>
+<!-- Page Header -->
+<div class="product-details-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Chỉnh sửa sản phẩm</h1>
         </div>
-        <div>
+        <div class="page-actions">
+             <a asp-action="Variants" asp-route-id="@Model.ProductId" class="btn btn-primary">
+                                <i class="fas fa-cubes me-2"></i> Quản lý biến thể
+                            </a>
             <a asp-action="Index" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
             </a>
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-lg-12">
-            <div class="card category-form-card">
-                <div class="card-body">
-                    <form asp-action="Edit" method="post" class="category-form needs-validation" novalidate>
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4 border-start border-danger border-4 ps-3 py-2 bg-light"></div>
-                        <input type="hidden" asp-for="ProductId" />
-                        
-                        @if (TempData["ValidationErrors"] != null)
+    <div class="main-card">
+        <form asp-action="Edit" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
+            <div asp-validation-summary="ModelOnly"
+                class="text-danger mb-4 border-start border-danger border-4 ps-3 py-2 bg-light"></div>
+            <input type="hidden" asp-for="ProductId" />
+            <input type="hidden" name="IsEditing" value="true" id="isEditingField" />
+
+            @if (TempData["ValidationErrors"] != null)
+            {
+                <div class="alert alert-danger mb-4">
+                    <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Lỗi xác thực dữ liệu</h6>
+                    <ul class="mb-0 ps-3">
+                        @foreach (var error in TempData["ValidationErrors"] as IEnumerable<string>)
                         {
-                            <div class="alert alert-danger mb-4">
-                                <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Lỗi xác thực dữ liệu</h6>
-                                <ul class="mb-0 ps-3">
-                                    @foreach (var error in TempData["ValidationErrors"] as IEnumerable<string>)
-                                    {
-                                        <li>@error</li>
-                                    }
-                                </ul>
-                            </div>
+                            <li>@error</li>
                         }
-                        
-                        <div class="row g-4">
-                            <div class="col-md-8">
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <div class="mb-4">
-                                            <label asp-for="Name" class="form-label required">Tên sản phẩm</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
-                                                <input asp-for="Name" class="form-control" placeholder="Ví dụ: Áo phông nam, Giày thể thao..." required />
-                                            </div>
-                                            <div class="invalid-feedback">
-                                                Vui lòng nhập tên sản phẩm.
-                                            </div>
-                                            <span asp-validation-for="Name" class="text-danger d-block mt-1"></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-4">
-                                            <label asp-for="SKU" class="form-label required">Mã SKU</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="fas fa-barcode"></i></span>
-                                                <input asp-for="SKU" class="form-control" placeholder="Ví dụ: SP001, AOPN001..." required />
-                                            </div>
-                                            <div class="invalid-feedback">
-                                                Vui lòng nhập mã SKU.
-                                            </div>
-                                            <span asp-validation-for="SKU" class="text-danger d-block mt-1"></span>
-                                        </div>
-                                    </div>
-                                </div>
+                    </ul>
+                </div>
+            }
+
+            <!-- Thông tin cơ bản -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Thông tin cơ bản
+                </h3>
+                <div class="fundamental-infomation-content">
+                    <!-- Tên sản phẩm & Mã SKU -->
+                    <div class="row">
+                        <div class="col-6">
+                            <label asp-for="Name" class="form-label required">Tên sản phẩm</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input asp-for="Name" class="form-control product-input"
+                                    placeholder="Ví dụ: Áo phông nam, Giày thể thao..." required />
+                            </div>
+                            <div class="invalid-feedback">
+                                Vui lòng nhập tên sản phẩm.
+                            </div>
+                            <span asp-validation-for="Name" class="text-danger d-block mt-1 validation-message"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="SKU" class="form-label required">Mã SKU</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                                <input asp-for="SKU" class="form-control product-input" placeholder="Ví dụ: SP001, AOPN001..."
+                                    required />
+                            </div>
+                            <div class="invalid-feedback">
+                                Vui lòng nhập mã SKU.
+                            </div>
+                            <span asp-validation-for="SKU" class="text-danger d-block mt-1 validation-message"></span>
+                        </div>
+
+                        <!-- Danh mục & Hình ảnh sản phẩm -->
+
+                        <div class="col-6">
+                            <label asp-for="CategoryId" class="form-label required">Danh mục</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                                <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select product-input"
+                                    required>
+                                    <option value="">-- Chọn danh mục --</option>
+                                </select>
+                            </div>
+                            <div class="invalid-feedback">
+                                Vui lòng chọn danh mục.
+                            </div>
+                            <span asp-validation-for="CategoryId" class="text-danger d-block mt-1 validation-message"></span>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Hình ảnh sản phẩm</label>
+                            <div class="input-group mb-2">
                                 
-                                <div class="mb-4">
-                                    <label asp-for="Description" class="form-label required">Mô tả sản phẩm</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="align-self: flex-start;"><i class="fas fa-align-left"></i></span>
-                                        <textarea asp-for="Description" class="form-control" rows="6" placeholder="Mô tả chi tiết về sản phẩm của bạn" required></textarea>
-                                    </div>
-                                    <div class="invalid-feedback">
-                                        Vui lòng nhập mô tả sản phẩm.
-                                    </div>
-                                    <span asp-validation-for="Description" class="text-danger d-block mt-1"></span>
-                                    <small class="form-text text-muted">Mô tả chi tiết giúp khách hàng hiểu rõ hơn về sản phẩm của bạn.</small>
-                                </div>
-                                
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <div class="mb-4">
-                                            <label asp-for="Price" class="form-label required">Giá bán</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
-                                                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" required placeholder="Ví dụ: 150000" />
-                                                <span class="input-group-text">₫</span>
-                                            </div>
-                                            <div class="invalid-feedback">
-                                                Vui lòng nhập giá bán sản phẩm.
-                                            </div>
-                                            <span asp-validation-for="Price" class="text-danger d-block mt-1"></span>
+                                <input type="hidden" asp-for="ImageUrl" id="imageUrlInput" />
+                                <div class="image-upload-container w-100" id="imageUploadContainer">
+                                    <button type="button" class="btn-remove-image" id="removeImageBtn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    
+                                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                    {
+                                        <img src="@Model.ImageUrl" alt="@Model.Name" class="current-image-preview" id="currentImagePreview" />
+                                        <div class="upload-text" id="uploadText">
+                                            Kéo thả ảnh mới vào đây hoặc nhấn để thay đổi ảnh
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-4">
-                                            <label asp-for="DiscountPrice" class="form-label">Giá khuyến mãi</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="fas fa-percent"></i></span>
-                                                <input asp-for="DiscountPrice" class="form-control" type="number" step="0.01" min="0" placeholder="Ví dụ: 130000" />
-                                                <span class="input-group-text">₫</span>
-                                            </div>
-                                            <span asp-validation-for="DiscountPrice" class="text-danger d-block mt-1"></span>
-                                            <small class="form-text text-muted">Để trống hoặc bằng với giá bán nếu không có giá khuyến mãi.</small>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-cloud-upload-alt upload-icon" id="uploadIcon"></i>
+                                        <div class="upload-text" id="uploadText">
+                                            Kéo thả ảnh vào đây hoặc nhấn để chọn ảnh
                                         </div>
-                                    </div>
+                                    }
+                                    
+                                    <img src="#" alt="Preview" class="image-preview" id="imagePreview" />
+                                    <input type="file" name="ProductImage" id="productImageInput" class="file-input" accept="image/*" />
                                 </div>
                             </div>
-                            
-                            <div class="col-md-4">
-                                <div class="card border mb-4">
-                                    <div class="card-header bg-light">
-                                        <h6 class="mb-0">Thông tin phân loại</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-4">
-                                            <label asp-for="CategoryId" class="form-label required">Danh mục</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                                <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select" required>
-                                                    <option value="">-- Chọn danh mục --</option>
-                                                </select>
-                                            </div>
-                                            <div class="invalid-feedback">
-                                                Vui lòng chọn danh mục.
-                                            </div>
-                                            <span asp-validation-for="CategoryId" class="text-danger d-block mt-1"></span>
-                                        </div>
-                                        
-                                        <div class="mb-4">
-                                            <label asp-for="ImageUrl" class="form-label">URL hình ảnh chính</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="fas fa-image"></i></span>
-                                                <input asp-for="ImageUrl" class="form-control" placeholder="URL hình ảnh sản phẩm" />
-                                            </div>
-                                            <span asp-validation-for="ImageUrl" class="text-danger d-block mt-1"></span>
-                                            <small class="form-text text-muted">Đường dẫn URL đến hình ảnh chính của sản phẩm.</small>
-                                        </div>
-                                        
-                                        <div class="mb-4">
-                                            <div class="form-check form-switch">
-                                                <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" id="productIsActiveSwitch" />
-                                                <label class="form-check-label" for="productIsActiveSwitch">Kích hoạt sản phẩm này?</label>
-                                                <small class="form-text text-muted d-block">Bỏ chọn nếu bạn muốn ẩn sản phẩm này khỏi trang web.</small>
-                                            </div>
-                                        </div>
-                                        
-                                        <a asp-action="Variants" asp-route-id="@Model.ProductId" class="btn btn-info btn-sm w-100 mt-3">
-                                            <i class="fas fa-cubes me-1"></i> Quản lý biến thể sản phẩm
-                                        </a>
-                                    </div>
-                                </div>
+                            <span asp-validation-for="ImageUrl" class="text-danger d-block mt-1 validation-message"></span>
+                            <small class="form-text">Định dạng hỗ trợ: JPG, JPEG, PNG, GIF. Kích thước tối đa: 5MB.</small>
+                        </div>
+
+
+                        <!-- Mô tả sản phẩm -->
+
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label required">Mô tả sản phẩm</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                                <textarea asp-for="Description" class="form-control product-area-input" rows="6"
+                                    placeholder="Mô tả chi tiết về sản phẩm của bạn" required></textarea>
                             </div>
+                            <div class="invalid-feedback">
+                                Vui lòng nhập mô tả sản phẩm.
+                            </div>
+                            <span asp-validation-for="Description" class="text-danger d-block mt-1 validation-message"></span>
+                            <small class="form-text">Mô tả chi tiết giúp khách hàng hiểu rõ hơn về sản phẩm của
+                                bạn.</small>
+
                         </div>
-                        
-                        <div class="d-flex justify-content-end border-top pt-4 mt-4">
-                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
-                                <i class="fas fa-times me-1"></i> Hủy bỏ
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> Lưu thay đổi
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <!-- Giá và kho hàng -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-dollar-sign me-2"></i>
+                    Giá và kho hàng
+                </h3>
+                <div class="price-stock-content">
+                    <div class="row">
+                        <div class="col-6">
+                            <label asp-for="Price" class="form-label required">Giá bán</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input asp-for="Price" class="form-control product-input" type="number" step="0.01" min="0" required
+                                    placeholder="Ví dụ: 150000" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <div class="invalid-feedback">
+                                Vui lòng nhập giá bán sản phẩm.
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger d-block mt-1 validation-message"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="DiscountPrice" class="form-label">Giá khuyến mãi</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-percent"></i></span>
+                                <input asp-for="DiscountPrice" class="form-control product-input" type="number" step="0.01" min="0"
+                                    placeholder="Ví dụ: 130000" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <span asp-validation-for="DiscountPrice" class="text-danger d-block mt-1 validation-message"></span>
+                            <small class="form-text">Để trống hoặc bằng với giá bán nếu không có giá khuyến mãi.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cài đặt -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-cog me-2"></i>
+                    Cài đặt
+                </h3>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card p-3 h-100">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch"
+                                    id="productIsActiveSwitch" />
+                                <label class="form-check-label" for="productIsActiveSwitch">
+                                    <i class="fas fa-eye me-2"></i> Hiển thị sản phẩm trên website
+                                </label>
+                                <small class="form-text d-block mt-2">Bỏ chọn nếu bạn muốn ẩn sản phẩm này khỏi
+                                    trang web.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card p-3 h-100">                 
+                            <small class="form-text d-block mt-2 text-center">Thêm và chỉnh sửa kích thước, màu
+                                sắc, số lượng tồn kho của sản phẩm này.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons mt-4 pt-4 border-top">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i> Hủy bỏ
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i> Lưu thay đổi
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -185,14 +383,13 @@
             'use strict';
             window.addEventListener('load', function () {
                 // Adjust input groups if needed
-                document.querySelectorAll('.input-group-text').forEach(function(el) {
+                document.querySelectorAll('.input-group-text').forEach(function (el) {
                     if (el.nextElementSibling && el.nextElementSibling.tagName === 'TEXTAREA') {
                         el.style.alignSelf = 'flex-start';
                         el.style.height = 'auto';
-                        el.style.borderRight = 'none';
                     }
                 });
-                
+
                 var forms = document.getElementsByClassName('needs-validation');
                 Array.prototype.filter.call(forms, function (form) {
                     form.addEventListener('submit', function (event) {
@@ -205,5 +402,199 @@
                 });
             }, false);
         })();
+
+        // Image upload functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageUploadContainer = document.getElementById('imageUploadContainer');
+            const productImageInput = document.getElementById('productImageInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const uploadIcon = document.getElementById('uploadIcon');
+            const uploadText = document.getElementById('uploadText');
+            const removeImageBtn = document.getElementById('removeImageBtn');
+            const currentImagePreview = document.getElementById('currentImagePreview');
+            const imageUrlInput = document.getElementById('imageUrlInput');
+            
+            // Store original image URL to preserve it when form is submitted without image changes
+            const originalImageUrl = imageUrlInput.value;
+            
+            // If there's a current image, show the remove button
+            if (currentImagePreview) {
+                removeImageBtn.style.display = 'flex';
+            }
+            
+            // Preview selected image
+            function previewImage(file) {
+                if (file) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        // Hide current image preview if it exists
+                        if (currentImagePreview) {
+                            currentImagePreview.style.display = 'none';
+                        }
+                        
+                        // Show new image preview
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        
+                        // Hide upload icon if it exists
+                        if (uploadIcon) {
+                            uploadIcon.style.display = 'none';
+                        }
+                        
+                        uploadText.style.display = 'none';
+                        removeImageBtn.style.display = 'flex';
+                        
+                        // Since a new image is being uploaded, we'll no longer need the original URL
+                        // This indicates to the form submission handler that we should use the new file
+                        imageUrlInput.value = '';
+                    }
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+            
+            // Handle file input change
+            productImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    // Check file type
+                    const acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                    if (!acceptedTypes.includes(file.type)) {
+                        alert('Vui lòng chọn file hình ảnh (JPG, JPEG, PNG, GIF)');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // Check file size (5MB limit)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Kích thước file không được vượt quá 5MB');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    previewImage(file);
+                }
+            });
+            
+            // Handle drag-and-drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                imageUploadContainer.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                imageUploadContainer.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                imageUploadContainer.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                imageUploadContainer.classList.add('drag-over');
+            }
+            
+            function unhighlight() {
+                imageUploadContainer.classList.remove('drag-over');
+            }
+            
+            imageUploadContainer.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const file = dt.files[0];
+                
+                if (file) {
+                    // Check file type
+                    const acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                    if (!acceptedTypes.includes(file.type)) {
+                        alert('Vui lòng chọn file hình ảnh (JPG, JPEG, PNG, GIF)');
+                        return;
+                    }
+                    
+                    // Check file size (5MB limit)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Kích thước file không được vượt quá 5MB');
+                        return;
+                    }
+                    
+                    productImageInput.files = dt.files;
+                    previewImage(file);
+                }
+            }
+            
+            // Remove selected image
+            removeImageBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Restore the UI
+                if (currentImagePreview) {
+                    currentImagePreview.style.display = 'none';
+                    uploadText.textContent = 'Kéo thả ảnh vào đây hoặc nhấn để chọn ảnh';
+                } 
+                
+                if (uploadIcon) {
+                    uploadIcon.style.display = 'block';
+                }
+                uploadText.style.display = 'block';
+                imagePreview.src = '';
+                imagePreview.style.display = 'none';
+                productImageInput.value = '';
+                
+                // Set hidden ImageUrl field to empty to indicate image should be deleted
+                imageUrlInput.value = '';
+                console.log('Image URL input set to empty string:', imageUrlInput.value);
+                
+                // Keep the remove button visible to indicate image will be deleted on save
+                removeImageBtn.style.display = 'flex';
+                removeImageBtn.title = 'Ảnh sẽ bị xóa khi lưu thay đổi';
+                
+                // Add visual indicator that image will be deleted when saved
+                uploadText.innerHTML = 'Ảnh sẽ bị xóa khi cập nhật sản phẩm<br>Hoặc kéo thả ảnh mới vào đây';
+            });
+            
+            // Make the container clickable
+            imageUploadContainer.addEventListener('click', function(e) {
+                if (e.target !== productImageInput) {
+                    productImageInput.click();
+                }
+            });
+            
+            // Fix for form submission: ensure original image URL is preserved if no new image is uploaded
+            document.querySelector('form').addEventListener('submit', function() {
+                // Check if user has uploaded a new image or explicitly clicked remove button
+                const hasNewImage = productImageInput.files.length > 0;
+                const hasExplicitlyRemoved = uploadText.textContent === 'Ảnh sẽ bị xóa khi cập nhật sản phẩm';
+                
+                console.log('Form submission check:');
+                console.log('- Has new image:', hasNewImage);
+                console.log('- Original URL:', originalImageUrl);
+                console.log('- Current URL input value:', imageUrlInput.value);
+                console.log('- Has explicitly removed:', hasExplicitlyRemoved);
+                
+                // If no new image was uploaded and image wasn't explicitly removed,
+                // restore the original image URL
+                if (!hasNewImage && !hasExplicitlyRemoved && originalImageUrl) {
+                    console.log('Restoring original image URL:', originalImageUrl);
+                    imageUrlInput.value = originalImageUrl;
+                    
+                    // Always add the keeping existing image flag when not changing the image
+                    // This helps the server know we want to keep the existing image
+                    const keepExistingImageField = document.createElement('input');
+                    keepExistingImageField.type = 'hidden';
+                    keepExistingImageField.name = 'KeepExistingImage';
+                    keepExistingImageField.value = 'true';
+                    document.querySelector('form').appendChild(keepExistingImageField);
+                    
+                    console.log('Added KeepExistingImage flag to form');
+                }
+            });
+        });
     </script>
-} 
+}

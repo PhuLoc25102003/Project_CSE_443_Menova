@@ -4,155 +4,592 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/product-details.css" />
+    <style>
+        /* Card body cải thiện - tự động điều chỉnh chiều cao */
+        .card-body {
+            overflow: visible;
+            padding: 1.25rem;
+            min-height: auto;
+            height: auto;
+        }
+        
+        /* Card chính có height tự động */
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: none;
+            margin-bottom: 1.5rem;
+            height: auto;
+            min-height: fit-content;
+        }
+        
+        /* Container chính cải thiện */
+        .product-details-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            width: 100%;
+            align-items: flex-start;
+            min-height: calc(100vh - 200px);
+        }
+        
+        /* Cột thông tin sản phẩm */
+        .product-info-column {
+            flex: 1.5;
+            min-width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Cột hình ảnh */
+        .product-image-column {
+            flex: 1;
+            min-width: 350px;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Card detail cải thiện */
+        .product-detail-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-detail-card .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Pricing details cải thiện - kết hợp CSS cũ */
+        .pricing-details {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            border: 2px solid #20c997;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(32, 201, 151, 0.1);
+            overflow: visible;
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-details .row {
+            align-items: center;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(108, 117, 125, 0.2);
+            margin: 0;
+        }
+        
+        .pricing-details .row:last-child {
+            border-bottom: none;
+        }
+        
+        /* Đồng bộ style cho icon và text - kết hợp CSS cũ */
+        .fw-bold.text-dark {
+            font-weight: 600 !important;
+            display: flex;
+            align-items: center;
+        }
+        
+        .fw-bold.text-dark i {
+            width: 20px;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+        
+        .price-original {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+        
+        .price-discount {
+            font-size: 1.2rem;
+            color: #198754;
+            font-weight: bold;
+        }
+        
+        .discount-badge {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+        }
+        
+        /* Description box cải thiện - kết hợp CSS cũ */
+        .description-box {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            border-left: 4px solid #0d6efd;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            word-break: break-word;
+            min-height: 120px;
+            max-height: none;
+            overflow-y: visible;
+            flex: 1;
+        }
+        
+        /* Section content cải thiện */
+        .section-content {
+            padding-top: 0.75rem;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Info container cải thiện - kết hợp CSS cũ */
+        .info-container {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        
+        /* Phần còn lại giữ nguyên kết hợp CSS cũ */
+        .info-col {
+            width: 50%;
+            padding: 0 15px;
+        }
+        
+        .detail-col {
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .detail-col:hover {
+            background-color: rgba(13, 110, 253, 0.05);
+            border-color: rgba(13, 110, 253, 0.1);
+        }
+        
+        .detail-item {
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+        
+        .detail-label {
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-value {
+            padding-left: 0.5rem;
+            word-break: break-word;
+        }
+
+        .set-p-m{
+            padding: 5px !important;
+        }
+        
+        /* Main card cải thiện */
+        .main-card {
+            margin-bottom: 2rem;
+            position: relative;
+            flex: 1;
+        }
+        
+        /* Product details page cải thiện */
+        .product-details-page {
+            position: relative;
+            padding-bottom: 2rem;
+            min-height: calc(100vh - 150px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Page header cố định */
+        .page-header {
+            flex-shrink: 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Section divider cải thiện */
+        .section-divider {
+            border-top: 2px solid #e9ecef;
+            margin: 1rem 0;
+            width: 100%;
+            flex-shrink: 0;
+        }
+        
+        /* Status badge cải thiện */
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 1.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Category link styling */
+        .category-link {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-link:hover {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0a58ca;
+        }
+        
+        /* Time display improvement */
+        .time-info {
+            background-color: rgba(108, 117, 125, 0.1);
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border-left: 3px solid #6c757d;
+        }
+        
+        .time-info div {
+            margin-bottom: 0.25rem;
+        }
+        
+        .time-info div:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Responsive cải thiện */
+        @@media (max-width: 992px) {
+            .product-details-container {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .product-info-column,
+            .product-image-column {
+                min-width: 100%;
+                max-width: 100%;
+            }
+            
+            .info-col {
+                width: 100% !important;
+                padding: 0 5px;
+            }
+            
+            .description-box {
+                min-height: 100px;
+                max-height: 250px;
+                overflow-y: auto;
+            }
+            
+            /* Giữ nguyên responsive cho image */
+            .product-image-container img {
+                max-height: 400px;
+            }
+            
+            .product-image-column .card {
+                max-height: none;
+            }
+        }
+        
+        @@media (max-width: 768px) {
+            .info-col {
+                width: 100% !important;
+                padding: 0;
+            }
+            
+            .product-details-page {
+                min-height: auto;
+                padding-bottom: 1rem;
+            }
+            
+            .description-box {
+                min-height: 80px;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+            
+            .pricing-details {
+                padding: 1rem;
+            }
+            
+            /* Giữ nguyên responsive cho image */
+            .product-image-container img {
+                max-height: 300px;
+            }
+        }
+        
+        /* Footer spacing cải thiện */
+        .product-details-page::after {
+            content: '';
+            height: 50px;
+            display: block;
+        }
+        
+        /* Giữ nguyên CSS gốc cho image container - chỉ thêm max-height để không bị lòi */
+        .product-image-column .card {
+            max-height: calc(100vh - 300px);
+            overflow: hidden;
+        }
+        
+        .product-image-container {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-image-container img {
+            max-height: 450px;
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        .product-image-container img:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Đồng bộ style cho row */
+        .row {
+            margin-right: 0;
+            margin-left: 0;
+        }
+        
+        .row > [class^="col-"] {
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+        }
+    </style>
+}
+
 <div class="product-details-page">
     <div class="page-header">
         <div class="header-content">
-            <h1><i class="fas fa-info-circle me-2"></i>Chi tiết sản phẩm</h1>
-            <p class="text-muted">Xem thông tin chi tiết sản phẩm</p>
+            <h1>Chi tiết sản phẩm</h1>
         </div>
         <div class="page-actions">
+            <a asp-action="Variants" asp-route-id="@Model.ProductId" class="btn btn-primary">
+                <i class="fas fa-cubes me-2"></i> Quản lý biến thể
+            </a>
             <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-primary">
-                <i class="fas fa-edit"></i> Sửa sản phẩm
+                <i class="fas fa-edit me-2"></i> Sửa sản phẩm
             </a>
             <a asp-action="Index" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
             </a>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-8">
-                    <!-- Product Information -->
-                    <div class="product-info mb-4">
-                        <h4>Thông tin sản phẩm</h4>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-3 fw-bold">ID:</div>
-                            <div class="col-md-9">@Model.ProductId</div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-3 fw-bold">Tên sản phẩm:</div>
-                            <div class="col-md-9">@Model.Name</div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-3 fw-bold">Mã SKU:</div>
-                            <div class="col-md-9">@Model.SKU</div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-3 fw-bold">Danh mục:</div>
-                            <div class="col-md-9">@(Model.Category?.Name ?? "Không có danh mục")</div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-3 fw-bold">Trạng thái:</div>
-                            <div class="col-md-9">
-                                @if (Model.IsActive)
-                                {
-                                    <span class="badge bg-success">Đang bán</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">Ngừng bán</span>
-                                }
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-3 fw-bold">Ngày tạo:</div>
-                            <div class="col-md-9">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-3 fw-bold">Cập nhật:</div>
-                            <div class="col-md-9">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</div>
-                        </div>
+    <div class="main-card">
+        <div class="product-details-container">
+            <!-- Cột chứa thông tin sản phẩm -->
+            <div class="product-info-column">
+                <div class="card product-detail-card">
+                    <div class="card-header bg-primary bg-gradient text-white">
+                        <h5 class="set-p-m"><i class="fas fa-box-open me-2"></i>Thông tin sản phẩm</h5>
                     </div>
-                    
-                    <div class="product-description mb-4">
-                        <h4>Mô tả sản phẩm</h4>
-                        <div class="p-3 border rounded">
-                            @Html.Raw(Model.Description)
-                        </div>
-                    </div>
-                    
-                    @if (Model.ProductVariants != null && Model.ProductVariants.Any())
-                    {
-                        <div class="product-variants mb-4">
-                            <h4>Biến thể sản phẩm</h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Màu sắc</th>
-                                            <th>Kích cỡ</th>
-                                            <th>Số lượng</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var variant in Model.ProductVariants)
-                                        {
-                                            <tr>
-                                                <td>@(variant.Color?.Name ?? "-")</td>
-                                                <td>@(variant.Size?.Name ?? "-")</td>
-                                                <td>@variant.StockQuantity</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="text-end mt-2">
-                                <a asp-action="Variants" asp-route-id="@Model.ProductId" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-cubes"></i> Quản lý biến thể
-                                </a>
-                            </div>
-                        </div>
-                    }
-                </div>
-                
-                <div class="col-md-4">
-                    <!-- Product Image -->
-                    <div class="product-image mb-4">
-                        <h4>Hình ảnh sản phẩm</h4>
-                        <div class="text-center p-3 border rounded">
-                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                            {
-                                <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Name" style="max-height:200px" />
-                            }
-                            else if (Model.Images != null && Model.Images.Any(i => i.IsPrimary))
-                            {
-                                <img src="@Model.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl" class="img-fluid rounded" alt="@Model.Name" style="max-height:200px" />
-                            }
-                            else
-                            {
-                                <img src="/images/placeholder.png" class="img-fluid rounded" alt="Placeholder" style="max-height:200px" />
-                            }
-                        </div>
-                    </div>
-                    
-                    <!-- Pricing Information -->
-                    <div class="product-pricing mb-4">
-                        <h4>Thông tin giá</h4>
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row mb-2">
-                                    <div class="col-6 fw-bold">Giá gốc:</div>
-                                    <div class="col-6 text-end">@Model.Price.ToString("N0") ₫</div>
+                    <div class="card-body">
+                        <!-- Thông tin cơ bản -->
+                        <div class="info-container">
+                            <!-- Cột thông tin bên trái -->
+                            <div class="info-col">
+                                <!-- ID sản phẩm -->
+                                <div class="detail-col">
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-fingerprint me-2"></i> ID sản phẩm
+                                        </div>
+                                        <div class="detail-value">
+                                            <strong class="fs-4 text-primary">#@Model.ProductId</strong>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 fw-bold">Giá khuyến mãi:</div>
-                                    <div class="col-6 text-end">@Model.DiscountPrice.ToString("N0") ₫</div>
+                                
+                                <!-- SKU -->
+                                <div class="detail-col">
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-barcode me-2"></i> Mã SKU
+                                        </div>
+                                        <div class="detail-value">
+                                            <code class="bg-light p-2 rounded">@Model.SKU</code>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Trạng thái -->
+                                <div class="detail-col">
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-toggle-on me-2"></i> Trạng thái
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Cột thông tin bên phải -->
+                            <div class="info-col">
+                                <!-- Tên sản phẩm -->
+                                <div class="detail-col">
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-tag me-2"></i> Tên sản phẩm
+                                        </div>
+                                        <div class="detail-value">
+                                            <h4 class="text-primary mb-0">@Model.Name</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Danh mục -->
+                                <div class="detail-col">
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-folder me-2"></i> Danh mục
+                                        </div>
+                                        <div class="detail-value">
+                                            @if (Model.Category != null)
+                                            {
+                                                <a asp-area="Admin" asp-controller="Category" asp-action="Details" 
+                                                   asp-route-id="@Model.Category.CategoryId" class="category-link">
+                                                    <i class="fas fa-external-link-alt me-1"></i>@Model.Category.Name
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted fst-italic">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>Không có danh mục
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Thời gian -->
+                                <div class="detail-col">
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-calendar-alt me-2"></i> Thời gian
+                                        </div>
+                                        <div class="detail-value">
+                                            <div class="time-info">
+                                                <div>
+                                                    <i class="fas fa-plus-circle me-2 text-success"></i>
+                                                    <small class="text-muted">Ngày tạo:</small>
+                                                    <strong class="ms-2">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</strong>
+                                                </div>
+                                                <div>
+                                                    <i class="fas fa-edit me-2 text-warning"></i>
+                                                    <small class="text-muted">Cập nhật:</small>
+                                                    <strong class="ms-2">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- Thông tin giá - Cải thiện -->
+                        <div class="section-content">
+                            <div class="detail-label mb-3">
+                                <i class="fas fa-dollar-sign me-2"></i> Thông tin giá bán
+                            </div>
+                            <div class="pricing-details">
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <span class="fw-bold text-dark">
+                                            <i class="fas fa-tag me-2"></i>Giá gốc:
+                                        </span>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <span class="price-original">
+                                            @Model.Price.ToString("N0") ₫
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <span class="fw-bold text-dark">
+                                            <i class="fas fa-tags me-2"></i>Giá khuyến mãi:
+                                        </span>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <span class="price-discount">
+                                            @Model.DiscountPrice.ToString("N0") ₫
+                                        </span>
+                                    </div>
                                 </div>
                                 @if (Model.Price > Model.DiscountPrice && Model.DiscountPrice > 0)
                                 {
                                     var discountPercent = Math.Round((1 - (decimal)Model.DiscountPrice / Model.Price) * 100, 0);
+                                    var savedAmount = Model.Price - Model.DiscountPrice;
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <span class="fw-bold text-dark">
+                                                <i class="fas fa-percentage me-2"></i>Giảm giá:
+                                            </span>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <span class="discount-badge">-@discountPercent%</span>
+                                        </div>
+                                    </div>
                                     <div class="row">
-                                        <div class="col-6 fw-bold">Giảm giá:</div>
-                                        <div class="col-6 text-end text-danger">-@discountPercent%</div>
+                                        <div class="col-6">
+                                            <span class="fw-bold text-dark">
+                                                <i class="fas fa-piggy-bank me-2"></i>Tiết kiệm:
+                                            </span>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <span class="text-success fw-bold">
+                                                @savedAmount.ToString("N0") ₫
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <span class="text-info fst-italic">
+                                                <i class="fas fa-info-circle me-2"></i>Không có khuyến mãi
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- Mô tả sản phẩm - Cải thiện -->
+                        <div class="section-content">
+                            <div class="detail-label mb-3">
+                                <i class="fas fa-align-left me-2"></i> Mô tả sản phẩm
+                            </div>
+                            <div class="description-box">
+                                @if (!string.IsNullOrEmpty(Model.Description))
+                                {
+                                    @Html.Raw(Model.Description)
+                                }
+                                else
+                                {
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted fst-italic mb-0">Chưa có mô tả cho sản phẩm này</p>
+                                        <small class="text-muted">Vui lòng cập nhật mô tả để cung cấp thông tin chi tiết</small>
                                     </div>
                                 }
                             </div>
@@ -160,18 +597,36 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="mt-4 border-top pt-4">
-                <div class="btn-group">
-                    <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-primary">
-                        <i class="fas fa-edit"></i> Sửa sản phẩm
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@Model.ProductId" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Xóa sản phẩm
-                    </a>
+
+            <!-- Cột chứa hình ảnh - Cải thiện -->
+            <div class="product-image-column">
+                <div class="card">
+                    <div class="card-header bg-primary bg-gradient text-white">
+                        <h5 class="set-p-m"><i class="fas fa-image me-2"></i>Hình ảnh sản phẩm</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="product-image-container">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" alt="@Model.Name" title="@Model.Name" loading="lazy" />
+                            }
+                            else if (Model.Images != null && Model.Images.Any(i => i.IsPrimary))
+                            {
+                                <img src="@Model.Images.FirstOrDefault(i => i.IsPrimary).ImageUrl" 
+                                     alt="@Model.Name" title="@Model.Name" loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="text-center py-5">
+                                    <i class="fas fa-image fa-4x text-muted mb-3"></i>
+                                    <p class="text-muted mb-0">Không có hình ảnh</p>
+                                    <small class="text-muted">Vui lòng thêm hình ảnh cho sản phẩm</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
-                <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
             </div>
         </div>
     </div>
-</div> 
+</div>

@@ -6,7 +6,9 @@ namespace Menova.Data.Repositories
     {
         Task<IEnumerable<Order>> GetUserOrdersAsync(int userId);
         Task<Order> GetOrderWithDetailsAsync(int orderId, int userId);
+        Task<Order> GetOrderWithDetailsForAdminAsync(int orderId);
         Task<Order> CreateOrderFromCartAsync(int userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes);
         Task UpdateOrderStatusAsync(int orderId, string status);
+        Task<IEnumerable<Order>> GetAllWithDetailsAsync();
     }
 }

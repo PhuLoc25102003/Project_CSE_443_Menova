@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
 
 namespace Menova.Models.ViewModels
 {
@@ -17,10 +18,10 @@ namespace Menova.Models.ViewModels
 
         [Required(ErrorMessage = "Vui lòng nhập giá sản phẩm.")]
         [Range(0, double.MaxValue, ErrorMessage = "Giá sản phẩm phải lớn hơn hoặc bằng 0.")]
-        public Decimal Price { get; set; }
+        public decimal Price { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Giá khuyến mãi phải lớn hơn hoặc bằng 0.")]
-        public Decimal DiscountPrice { get; set; }
+        public decimal DiscountPrice { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn danh mục sản phẩm.")]
         public int CategoryId { get; set; }
@@ -30,7 +31,11 @@ namespace Menova.Models.ViewModels
         public string SKU { get; set; }
 
         [StringLength(200, ErrorMessage = "URL hình ảnh không được vượt quá 200 ký tự.")]
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = string.Empty;
+
+        [NotMapped]
+        [Required(ErrorMessage = "Vui lòng tải lên hình ảnh sản phẩm.")]
+        public IFormFile ProductImage { get; set; }
 
         public bool IsActive { get; set; } = true;
 
@@ -55,7 +60,8 @@ namespace Menova.Models.ViewModels
         // Phương thức để tạo ViewModel từ Product
         public static ProductCreateEditViewModel FromProduct(Product product)
         {
-            return new ProductCreateEditViewModel
+            // Lưu ý: Không gán ProductImage do đây là trường bắt buộc nhưng không có trong model Product
+            var viewModel = new ProductCreateEditViewModel
             {
                 ProductId = product.ProductId,
                 Name = product.Name,
@@ -67,6 +73,8 @@ namespace Menova.Models.ViewModels
                 ImageUrl = product.ImageUrl,
                 IsActive = product.IsActive
             };
+            
+            return viewModel;
         }
     }
 } 

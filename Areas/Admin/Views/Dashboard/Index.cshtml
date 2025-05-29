@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    string selectedDateRange = ViewData["SelectedDateRange"]?.ToString() ?? "week";
 }
 
 <div class="admin-dashboard">
@@ -11,10 +12,10 @@
         <div class="date-selector">
             <span>Hiển thị dữ liệu: </span>
             <select id="date-range">
-                <option value="today">Hôm nay</option>
-                <option value="week" selected>Tuần này</option>
-                <option value="month">Tháng này</option>
-                <option value="year">Năm nay</option>
+                <option value="today" selected="@(selectedDateRange == "today")">Hôm nay</option>
+                <option value="week" selected="@(selectedDateRange == "week")">Tuần này</option>
+                <option value="month" selected="@(selectedDateRange == "month")">Tháng này</option>
+                <option value="year" selected="@(selectedDateRange == "year")">Năm nay</option>
             </select>
         </div>
     </div>
@@ -68,11 +69,16 @@
             <div class="card-header">
                 <h3>Doanh số bán hàng</h3>
                 <div class="card-actions">
-                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                    <button class="btn-icon" id="download-chart"><i class="fas fa-download"></i></button>
                     <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
                 </div>
             </div>
             <div class="card-body">
+                <div id="chart-loading" class="text-center d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
                 <canvas id="salesChart"></canvas>
             </div>
         </div>
@@ -159,28 +165,42 @@
     <!-- Low Stock Alert -->
     <div class="low-stock-alert">
         <div class="card-header">
-            <h3>Cảnh báo hết hàng</h3>
+            <h3>Cảnh báo tồn kho</h3>
             <a href="@Url.Action("LowStock", "Product", new { area = "Admin" })" class="view-all">Xem tất cả</a>
         </div>
         <div class="card-body">
             <div class="low-stock-items">
-                @foreach (var product in Model.LowStockProducts)
+                @if (Model.LowStockProducts.Any())
                 {
-                    <div class="low-stock-item">
-                        <img src="@product.ImageUrl" alt="@product.Name" />
-                        <div class="item-info">
-                            <h4>@product.Name</h4>
-                            <div class="stock-status">
-                                @{
-                                    int totalStock = product.ProductVariants.Sum(v => v.StockQuantity);
-                                    string colorClass = totalStock < 5 ? "danger" : "warning";
-                                }
-                                <span class="stock-@colorClass">@totalStock sản phẩm còn lại</span>
+                    @foreach (var product in Model.LowStockProducts)
+                    {
+                        var activeVariants = product.ProductVariants.Where(v => v.IsActive).ToList();
+                        int totalStock = activeVariants.Sum(v => v.StockQuantity);
+                        int lowStockVariants = activeVariants.Count(v => v.StockQuantity < 5);
+                        string colorClass = lowStockVariants > activeVariants.Count * 0.5 ? "danger" : "warning";
+                        
+                        <div class="low-stock-item">
+                            <img src="@product.ImageUrl" alt="@product.Name" />
+                            <div class="item-info">
+                                <h4>@product.Name</h4>
+                                <div class="stock-details">
+                                    <div class="stock-status">
+                                        <span class="stock-@colorClass">@totalStock sản phẩm còn lại</span>
+                                    </div>
+                                </div>
                             </div>
+                            <a href="@Url.Action("Edit", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-primary">
+                                Cập nhật
+                            </a>
                         </div>
-                        <a href="@Url.Action("Edit", "Product", new { area = "Admin", id = product.ProductId })" class="btn btn-primary">
-                            Cập nhật
-                        </a>
+                    }
+                }
+                else
+                {
+                    <div class="empty-state text-center py-5">
+                        <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                        <h4>Tất cả sản phẩm đều có đủ hàng tồn kho</h4>
+                        <p class="text-muted">Không có sản phẩm nào cần bổ sung hàng tồn kho ngay lúc này.</p>
                     </div>
                 }
             </div>
@@ -192,72 +212,131 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            let salesChart;
             // Set up sales chart
             const ctx = document.getElementById('salesChart').getContext('2d');
-
-            const salesChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: @Html.Raw(Json.Serialize(Model.SalesChartData.Labels)),
-                    datasets: [
-                        {
-                            label: 'Doanh thu',
-                            data: @Html.Raw(Json.Serialize(Model.SalesChartData.Sales)),
-                            borderColor: '#4e73df',
-                            backgroundColor: 'rgba(78, 115, 223, 0.05)',
-                            fill: true,
-                            tension: 0.4
-                        },
-                        {
-                            label: 'Đơn hàng',
-                            data: @Html.Raw(Json.Serialize(Model.SalesChartData.Orders)),
-                            borderColor: '#1cc88a',
-                            backgroundColor: 'rgba(28, 200, 138, 0.05)',
-                            fill: true,
-                            tension: 0.4,
-                            yAxisID: 'y1'
-                        }
-                    ]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toLocaleString('vi-VN') + '₫';
-                                }
-                            }
-                        },
-                        y1: {
-                            beginAtZero: true,
-                            position: 'right',
-                            grid: {
-                                display: false
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        }
-                    }
-                }
-            });
+            
+            // Khởi tạo biểu đồ với dữ liệu ban đầu
+            initChartWithData(@Html.Raw(Json.Serialize(Model.SalesChartData.Labels)), 
+                             @Html.Raw(Json.Serialize(Model.SalesChartData.Sales)), 
+                             @Html.Raw(Json.Serialize(Model.SalesChartData.Orders)));
 
             // Date range selector
             document.getElementById('date-range').addEventListener('change', function() {
-                // Implement date range change functionality
-                // This would typically make an AJAX call to update the data
+                const dateRange = this.value;
+                updateChartData(dateRange);
+            });
+            
+            // Tải dữ liệu biểu đồ mới khi thay đổi khoảng thời gian
+            async function updateChartData(dateRange) {
+                try {
+                    showLoading(true);
+                    
+                    // Gọi API để lấy dữ liệu biểu đồ
+                    const response = await fetch(`/Admin/Dashboard/GetChartData?dateRange=${dateRange}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const chartData = await response.json();
+                    
+                    // Cập nhật dữ liệu biểu đồ
+                    updateChart(chartData.labels, chartData.sales, chartData.orders);
+                    
+                } catch (error) {
+                    console.error('Error fetching chart data:', error);
+                } finally {
+                    showLoading(false);
+                }
+            }
+            
+            // Hiển thị hoặc ẩn trạng thái loading
+            function showLoading(show) {
+                const loadingElement = document.getElementById('chart-loading');
+                if (show) {
+                    loadingElement.classList.remove('d-none');
+                } else {
+                    loadingElement.classList.add('d-none');
+                }
+            }
+            
+            // Khởi tạo biểu đồ với dữ liệu
+            function initChartWithData(labels, salesData, ordersData) {
+                salesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Doanh thu',
+                                data: salesData,
+                                borderColor: '#4e73df',
+                                backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Đơn hàng',
+                                data: ordersData,
+                                borderColor: '#1cc88a',
+                                backgroundColor: 'rgba(28, 200, 138, 0.05)',
+                                fill: true,
+                                tension: 0.4,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('vi-VN') + '₫';
+                                    }
+                                }
+                            },
+                            y1: {
+                                beginAtZero: true,
+                                position: 'right',
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Cập nhật dữ liệu biểu đồ
+            function updateChart(labels, salesData, ordersData) {
+                salesChart.data.labels = labels;
+                salesChart.data.datasets[0].data = salesData;
+                salesChart.data.datasets[1].data = ordersData;
+                salesChart.update();
+            }
+            
+            // Xử lý chức năng tải xuống biểu đồ
+            document.getElementById('download-chart').addEventListener('click', function() {
+                const link = document.createElement('a');
+                link.download = 'menova-sales-chart.png';
+                link.href = salesChart.toBase64Image();
+                link.click();
             });
         });
     </script>

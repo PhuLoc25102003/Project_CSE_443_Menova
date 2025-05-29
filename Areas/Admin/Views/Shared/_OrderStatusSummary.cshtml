@@ -1,0 +1,57 @@
+@model Dictionary<string, int>
+
+<div class="summary-cards">
+    <div class="summary-card blue">
+        <div class="card-content">
+            <div class="card-value">@Model.Sum(x => x.Value).ToString("N0")</div>
+            <div class="card-label">Tổng đơn hàng</div>
+        </div>
+        <div class="card-icon">
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+    </div>
+    
+    <div class="summary-card yellow">
+        <div class="card-content">
+            <div class="card-value">
+                @(Model.TryGetValue("Pending", out var pendingCount) ? pendingCount.ToString("N0") : "0")
+            </div>
+            <div class="card-label">Chờ xử lý</div>
+        </div>
+        <div class="card-icon">
+            <i class="fas fa-clock"></i>
+        </div>
+    </div>
+    
+    <div class="summary-card green">
+        <div class="card-content">
+            <div class="card-value">
+                @{
+                    // Count both Delivered and Received as completed orders
+                    int completedCount = 0;
+                    if (Model.TryGetValue("Delivered", out var deliveredCount))
+                        completedCount += deliveredCount;
+                    if (Model.TryGetValue("Received", out var receivedCount))
+                        completedCount += receivedCount;
+                }
+                @completedCount.ToString("N0")
+            </div>
+            <div class="card-label">Đã hoàn thành</div>
+        </div>
+        <div class="card-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+    </div>
+    
+    <div class="summary-card red">
+        <div class="card-content">
+            <div class="card-value">
+                @(Model.TryGetValue("Cancelled", out var cancelledCount) ? cancelledCount.ToString("N0") : "0")
+            </div>
+            <div class="card-label">Đã hủy</div>
+        </div>
+        <div class="card-icon">
+            <i class="fas fa-times-circle"></i>
+        </div>
+    </div>
+</div> 

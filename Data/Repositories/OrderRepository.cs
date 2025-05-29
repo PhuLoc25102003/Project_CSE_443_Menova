@@ -28,7 +28,35 @@ namespace Menova.Data.Repositories
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.ProductVariant)
                         .ThenInclude(v => v.Color)
+                .Include(o => o.User)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId && o.UserId == userId);
+        }
+
+        public async Task<Order> GetOrderWithDetailsForAdminAsync(int orderId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.ProductVariant)
+                        .ThenInclude(v => v.Size)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.ProductVariant)
+                        .ThenInclude(v => v.Color)
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+        }
+
+        public async Task<IEnumerable<Order>> GetAllWithDetailsAsync()
+        {
+            return await _context.Orders
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.ProductVariant)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
         }
 
         public async Task<Order> CreateOrderFromCartAsync(int userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes)

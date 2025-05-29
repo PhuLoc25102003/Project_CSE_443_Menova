@@ -20,15 +20,26 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
 body {
     background-color: #f8f9fc;
     color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Admin Layout */
 .admin-layout {
     display: flex;
     min-height: 100vh;
+    width: 100%;
 }
 
 /* Sidebar */
@@ -44,6 +55,9 @@ body {
     bottom: 0;
     z-index: 100;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
     .sidebar.collapsed {
@@ -188,16 +202,17 @@ body {
 
 /* Main Content */
 .main-content {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     margin-left: var(--sidebar-width);
     transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
+    min-height: 100vh;
 }
 
-    .main-content.expanded {
-        margin-left: var(--sidebar-width-collapsed);
-    }
+.main-content.expanded {
+    margin-left: var(--sidebar-width-collapsed);
+}
 
 /* Top Navbar */
 .top-navbar {
@@ -350,17 +365,34 @@ body {
 
 /* Content */
 .content {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
-    flex: 1;
 }
 
 /* Footer */
 .footer {
-    padding: 15px 20px;
+    flex-shrink: 0;
+    background-color: white;
+    padding: 15px 0;
     text-align: center;
+    border-top: 1px solid #e3e6f0;
+    margin-top: auto;
+    width: 100%;
+}
+
+.footer .container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.footer p {
+    margin: 0;
     color: var(--secondary-color);
     font-size: 14px;
-    border-top: 1px solid #eee;
 }
 
 /* Responsive */
@@ -614,6 +646,8 @@ body {
         background-color: #f8f9fc;
     }
 
+/* Removing old status-badge styling that conflicts with grid-components.css */
+/*
 .status-badge {
     display: inline-block;
     padding: 5px 10px;
@@ -622,6 +656,7 @@ body {
     font-weight: 500;
     color: white;
 }
+*/
 
 .product-cell {
     display: flex;
@@ -734,4 +769,16 @@ body {
         align-items: flex-start;
         gap: 10px;
     }
+}
+
+/* Make sure product-details-page has proper structure */
+.product-details-page {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%;
+}
+
+.main-card {
+    margin-bottom: 40px;
 }

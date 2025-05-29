@@ -1,0 +1,567 @@
+/* AG Grid Pagination and Display Fixes */
+
+/* Ensure AG Grid container takes up proper space */
+.ag-theme-alpine {
+  width: 100% !important;
+  height: 650px !important; /* Đặt lại chiều cao cố định */
+  display: block !important;
+  position: relative !important;
+  overflow: visible !important; /* Thay đổi từ hidden sang visible */
+  margin-bottom: 1rem !important;
+}
+
+/* Make sure the grid body viewport shows all content */
+.ag-body-viewport {
+  overflow: auto !important;
+  min-height: 400px !important;
+}
+
+/* Center columns container fix */
+.ag-center-cols-container {
+  min-height: 100% !important;
+  width: 100% !important;
+}
+
+/* Center columns viewport fix */
+.ag-center-cols-viewport {
+  overflow: auto !important;
+  min-height: 500px !important;
+}
+
+/* Row containers */
+.ag-center-cols-clipper {
+  min-height: 500px !important;
+}
+
+/* Fix for pinned columns */
+.ag-pinned-right-cols-container {
+  height: auto !important;
+  min-height: 100% !important;
+}
+
+/* Row styling fixes */
+.ag-row-even, .ag-row-odd {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 0 !important;
+}
+
+.ag-row {
+  display: flex !important;
+  flex-direction: row !important;
+  min-height: 56px !important;
+  width: 100% !important;
+  clear: both !important;
+}
+
+.ag-row:hover {
+  background-color: #f5f5f5 !important;
+}
+
+/* Fix cell display */
+.ag-cell {
+  display: block !important;
+  overflow: hidden !important; /* Thay đổi từ visible sang hidden */
+  min-height: 56px !important;
+  padding: 0 15px !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
+  line-height: 56px !important; /* Thêm line height để nội dung căn giữa */
+}
+
+/* Fix pagination panel display */
+.ag-paging-panel {
+  height: auto !important;
+  min-height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: #f8f9fa !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 8px 16px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  bottom: 0 !important;
+  z-index: 5 !important;
+}
+
+/* Style pagination buttons */
+.ag-paging-button {
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  margin: 0 2px !important;
+}
+
+.ag-paging-button:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Style pagination number inputs */
+.ag-paging-page-summary-panel {
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 8px !important;
+}
+
+.ag-paging-panel input {
+  width: 40px !important;
+  text-align: center !important;
+  padding: 4px !important;
+  border: 1px solid #ced4da !important;
+  border-radius: 4px !important;
+  height: 30px !important;
+}
+
+/* Always display row count text */
+.ag-paging-row-summary-panel {
+  display: flex !important;
+  align-items: center !important;
+  visibility: visible !important;
+}
+
+/* Fix table header */
+.ag-header {
+  overflow: visible !important;
+  height: auto !important;
+  min-height: 48px !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  background-color: #f8f9fa !important;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.ag-header-row {
+  display: flex !important;
+  width: 100% !important;
+  height: 48px !important;
+}
+
+.ag-header-cell {
+  display: flex !important;
+  align-items: center !important;
+  height: 48px !important;
+  overflow: hidden !important;
+  padding: 0 15px !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix for action column positioning */
+.ag-cell.cell-actions {
+  overflow: visible !important;
+  z-index: 10 !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Fix for button rendering in action column */
+.cell-actions .action-buttons {
+  white-space: nowrap !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* No data overlay styling */
+.ag-overlay-no-rows-center {
+  padding: 24px !important;
+  font-size: 16px !important;
+  color: #6c757d !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Footer spacing fix */
+.order-grid-card {
+  margin-bottom: 3rem !important;
+}
+
+/* Overall grid fixes */
+.ag-root-wrapper {
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.ag-root {
+  overflow: visible !important; /* Thay đổi từ hidden sang visible */
+  width: 100% !important;
+}
+
+/* AG Grid specific text alignment fixes */
+.text-center {
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+.text-end {
+  text-align: right !important;
+  justify-content: flex-end !important;
+}
+
+/* Fix for align-middle class */
+.align-middle {
+  vertical-align: middle !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Responsive height adjustments */
+@media (max-height: 900px) {
+  .ag-theme-alpine {
+    max-height: 500px !important;
+  }
+  
+  .ag-body-viewport {
+    max-height: 400px !important;
+  }
+}
+
+@media (max-height: 700px) {
+  .ag-theme-alpine {
+    max-height: 400px !important;
+  }
+  
+  .ag-body-viewport {
+    max-height: 300px !important;
+  }
+}
+
+/* AG Grid Overrides for Admin panel */
+
+/* Better styling for the grid theme */
+.ag-theme-alpine {
+    --ag-foreground-color: #212529;
+    --ag-background-color: #fff;
+    --ag-header-foreground-color: #495057;
+    --ag-header-background-color: #f8f9fa;
+    --ag-odd-row-background-color: #fbfbfd;
+    --ag-header-column-separator-color: rgba(33, 37, 41, 0.1);
+    --ag-row-border-color: rgba(33, 37, 41, 0.1);
+    --ag-disabled-foreground-color: rgba(33, 37, 41, 0.5);
+    --ag-input-border-color: #ced4da;
+    --ag-border-color: #dee2e6;
+    --ag-cell-horizontal-padding: 16px;
+    --ag-range-selection-border-color: rgba(13, 110, 253, 0.5);
+    --ag-range-selection-background-color: rgba(13, 110, 253, 0.1);
+    --ag-selected-row-background-color: rgba(13, 110, 253, 0.05);
+    --ag-row-hover-color: rgba(33, 37, 41, 0.03);
+    --ag-column-hover-color: rgba(33, 37, 41, 0.02);
+    --ag-input-focus-border-color: #86b7fe;
+    --ag-modal-overlay-background-color: rgba(0, 0, 0, 0.5);
+    
+    font-family: var(--bs-body-font-family);
+    font-size: var(--bs-body-font-size);
+    font-weight: var(--bs-body-font-weight);
+    line-height: var(--bs-body-line-height);
+}
+
+/* Nicer header styling */
+.ag-theme-alpine .ag-header {
+    border-bottom: 2px solid var(--ag-border-color);
+}
+
+.ag-theme-alpine .ag-header-cell {
+    font-weight: 600;
+}
+
+/* Better row hover effect */
+.ag-theme-alpine .ag-row:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Nicer scrollbars */
+.ag-theme-alpine ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.ag-theme-alpine ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.ag-theme-alpine ::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.ag-theme-alpine ::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Improved pagination controls */
+.ag-theme-alpine .ag-paging-panel {
+    display: flex !important;
+    visibility: visible !important;
+    height: auto !important;
+    min-height: 40px !important;
+    padding: 8px 16px !important;
+    color: var(--ag-foreground-color);
+    font-weight: 500;
+    border-top: 1px solid var(--ag-border-color);
+    background-color: #f8f9fa;
+    z-index: 10;
+    position: relative;
+}
+
+.ag-theme-alpine .ag-paging-button {
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.125rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.ag-theme-alpine .ag-paging-button:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.ag-theme-alpine .ag-disabled .ag-paging-button {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.ag-theme-alpine .ag-paging-button-wrapper.ag-disabled:hover {
+    background-color: transparent;
+}
+
+.ag-theme-alpine span.ag-paging-page-summary-panel {
+    margin: 0 0.5rem;
+}
+
+.ag-theme-alpine .ag-paging-page-summary-panel {
+    display: flex;
+    align-items: center;
+}
+
+.ag-theme-alpine .ag-paging-row-summary-panel {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+/* Fix for no data display */
+.ag-theme-alpine .ag-overlay-no-rows-center {
+    background-color: rgba(248, 249, 250, 0.9);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--ag-border-color);
+    font-weight: 500;
+    color: #6c757d;
+}
+
+/* Better styling for cell renderers */
+.ag-theme-alpine .ag-cell-value {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* Fix overlapping content */
+.ag-theme-alpine .ag-header-cell-label {
+    overflow: visible;
+}
+
+/* Ensure the grid renders properly */
+.ag-theme-alpine .ag-root-wrapper {
+    overflow: visible;
+}
+
+.ag-theme-alpine .ag-center-cols-container {
+    width: 100% !important;
+}
+
+.ag-theme-alpine .ag-pinned-left-cols-container,
+.ag-theme-alpine .ag-pinned-right-cols-container {
+    min-height: auto !important;
+}
+
+/* Remove bottom margin from ag-root-wrapper to prevent overlapping with pagination */
+.ag-theme-alpine .ag-root-wrapper {
+    margin-bottom: 0;
+}
+
+/* Ensure the center container stays the right size */
+.ag-theme-alpine .ag-center-cols-viewport,
+.ag-theme-alpine .ag-center-cols-container {
+    min-height: 100px !important;
+}
+
+/* Grid Container */
+.ag-theme-alpine {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+/* Make sure the grid root has no min-height that could cause overflow issues */
+.ag-theme-alpine .ag-root {
+    min-height: 0;
+}
+
+/* Row Adjustments */
+.ag-theme-alpine .ag-row {
+    transition: background-color 0.2s;
+}
+
+/**
+ * AG Grid Overrides for Fixing Common Issues
+ */
+
+/* Fix for empty cells - hide completely */
+.ag-theme-alpine .ag-cell:empty,
+.ag-theme-alpine .ag-header-cell:empty {
+  display: none !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* Fix pagination display */
+.ag-theme-alpine .ag-paging-panel {
+  height: 40px !important;
+  min-height: 40px !important;
+  display: flex !important;
+  visibility: visible !important;
+  padding: 0 16px;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Order grid specific fixes */
+#ordersGrid .ag-header-viewport,
+#ordersGrid .ag-center-cols-viewport {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
+/* Fix horizontal scrolling */
+.ag-theme-alpine .ag-body-horizontal-scroll {
+  min-height: 15px !important;
+  height: 15px !important;
+}
+
+/* Ensure proper size for the container */
+.ag-theme-alpine .ag-root-wrapper {
+  border: 1px solid #dee2e6 !important;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Fix for overlapping content */
+.ag-theme-alpine .ag-cell-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+/* Fix issue with header vertical alignment */
+.ag-theme-alpine .ag-header-cell-label {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Center the header text better */
+.ag-theme-alpine .ag-header-cell-text {
+  text-align: center;
+  margin: 0 auto;
+}
+
+/* Make status badges more consistent */
+.ag-theme-alpine .status-badge-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.ag-theme-alpine .status-badge {
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Override cell focus styles */
+.ag-theme-alpine .ag-cell:focus {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Fix for row height consistency */
+.ag-theme-alpine .ag-row {
+  height: 56px !important;
+}
+
+/* Remove extra spacing in tables */
+.ag-theme-alpine .ag-center-cols-container {
+  width: 100% !important;
+  min-width: 100% !important;
+}
+
+/* Fix for cell alignment issues */
+.ag-theme-alpine .ag-cell-wrapper.ag-row-group {
+  align-items: center;
+}
+
+/* Fix for large text content */
+.ag-theme-alpine .ag-cell-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Better responsive handling */
+@media (max-width: 991px) {
+  .ag-theme-alpine .ag-header-cell,
+  .ag-theme-alpine .ag-cell {
+    padding: 0 8px !important;
+  }
+  
+  .ag-theme-alpine .ag-header-cell[col-id="orderDate"],
+  .ag-theme-alpine .ag-cell[col-id="orderDate"] {
+    min-width: 130px !important;
+  }
+}
+
+/* Fix for order status cell alignment */
+.ag-theme-alpine .ag-cell[col-id="orderStatus"] {
+    padding: 0 4px !important;
+    overflow: visible !important;
+    text-align: center;
+    width: auto !important;
+    max-width: 120px !important;
+}
+
+/* Ensure the content stays within its cell */
+.ag-theme-alpine .ag-cell[col-id="orderStatus"] .status-badge-container {
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.ag-theme-alpine .ag-cell[col-id="orderStatus"] .status-badge {
+    max-width: fit-content !important;
+    width: auto !important;
+    min-width: auto !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.75rem;
+    padding: 3px 8px 3px 12px;
+    text-align: center;
+    margin: 0 auto;
+    display: inline-block !important;
+    white-space: nowrap;
+    line-height: 1.2;
+    height: auto;
+} 

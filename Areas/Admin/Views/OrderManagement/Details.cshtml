@@ -1,0 +1,465 @@
+@using Menova.Areas.Admin.Models
+@model OrderDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.Order.OrderId;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    
+    // Define which status can be transitioned to from the current status
+    var currentStatus = Model.Order.OrderStatus?.ToLower() ?? "";
+    var allowedNextStatuses = new Dictionary<string, List<string>>();
+    
+    allowedNextStatuses["pending"] = new List<string> { "processing", "cancelled" };
+    allowedNextStatuses["processing"] = new List<string> { "shipping", "cancelled" };
+    allowedNextStatuses["shipping"] = new List<string> { "delivered" };
+    allowedNextStatuses["delivered"] = new List<string> { "received" };
+    
+    // Get the available next statuses for the current order
+    var nextStatuses = allowedNextStatuses.ContainsKey(currentStatus) 
+        ? allowedNextStatuses[currentStatus] 
+        : new List<string>();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/order-detail.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+}
+
+<div class="order-container">
+    <!-- Header -->
+    <div class="order-header">
+        <div class="order-header-content">
+            <div class="order-title">
+                <h1>Chi Tiết Đơn Hàng</h1>
+                <span class="order-id">#@Model.Order.OrderId</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                @{
+                    string statusClass = Model.Order.OrderStatus?.ToLower() switch
+                    {
+                        "pending" => "status-badge--confirmed",
+                        "processing" => "status-badge--processing",
+                        "shipping" => "status-badge--shipping",
+                        "delivered" or "received" => "status-badge--delivered",
+                        "cancelled" => "status-badge--cancelled",
+                        _ => "status-badge--processing"
+                    };
+
+                    string statusIcon = Model.Order.OrderStatus?.ToLower() switch
+                    {
+                        "pending" => "fa-hourglass-start",
+                        "processing" => "fa-clock",
+                        "shipping" => "fa-truck",
+                        "delivered" => "fa-box",
+                        "received" => "fa-box-check",
+                        "cancelled" => "fa-times",
+                        _ => "fa-clock"
+                    };
+
+                    string statusText = GetStatusText(Model.Order.OrderStatus);
+                }
+                <span class="status-badge @statusClass">
+                    <i class="fas @statusIcon"></i>
+                    @statusText
+                </span>
+                
+                <!-- Status Action Buttons in Header -->
+                @if (nextStatuses.Any())
+                {
+                    <div class="action-buttons status-action-buttons">
+                        @foreach (var nextStatus in nextStatuses)
+                        {
+                            if (nextStatus == "processing" || nextStatus == "shipping")
+                            {
+                                string buttonText = nextStatus.ToLower() switch {
+                                    "processing" => "Xác nhận đơn hàng",
+                                    "shipping" => "Đã giao cho đơn vị vận chuyển",
+                                    _ => $"Chuyển sang {GetStatusText(nextStatus)}"
+                                };
+                                
+                                string statusTitle = nextStatus.ToLower() switch {
+                                    "processing" => "Xác nhận đơn hàng",
+                                    "shipping" => "Xác nhận giao cho đơn vị vận chuyển",
+                                    _ => $"Chuyển trạng thái đơn hàng"
+                                };
+                                
+                                string statusMessage = nextStatus.ToLower() switch {
+                                    "processing" => "Bạn có chắc chắn muốn xác nhận đơn hàng này? Đơn hàng sẽ được chuyển sang trạng thái \"Đang xử lý\".",
+                                    "shipping" => "Bạn có chắc chắn muốn xác nhận đơn hàng đã được giao cho đơn vị vận chuyển? Đơn hàng sẽ được chuyển sang trạng thái \"Đang giao hàng\".",
+                                    _ => $"Bạn có chắc chắn muốn {buttonText}?"
+                                };
+                                
+                                <form id="form-@nextStatus" asp-area="Admin" asp-controller="OrderManagement" asp-action="UpdateStatus" 
+                                      method="post" style="display: inline-block;">
+                                    <input type="hidden" name="id" value="@Model.Order.OrderId" />
+                                    <input type="hidden" name="status" value="@nextStatus" />
+                                    <button type="button" class="btn btn--primary" 
+                                            onclick="confirmStatusChange('@statusTitle', '@statusMessage', '@nextStatus')">
+                                        <i class="fas @(nextStatus == "processing" ? "fa-check" : "fa-truck")"></i>
+                                        @buttonText
+                                    </button>
+                                </form>
+                            }
+                        }
+                    </div>
+                }
+                
+                <div class="action-buttons">
+                    <button class="btn btn--outline" onclick="printOrder()">
+                        <i class="fas fa-print"></i>
+                        In đơn hàng
+                    </button>
+                    <a asp-area="Admin" asp-controller="OrderManagement" asp-action="Index" class="btn btn--outline">
+                        <i class="fas fa-arrow-left"></i>
+                        Quay lại
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-main-content">
+        <!-- Chi tiết sản phẩm -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-shopping-bag" style="color: var(--icon-blue);"></i>
+                <h3>Sản phẩm đã đặt</h3>
+            </div>
+            <div class="card-body">
+                <div class="order-items">
+                    @foreach (var item in Model.Order.OrderDetails)
+                    {
+                        <div class="item">
+                            <img src="@(item.Product?.ImageUrl ?? "https://via.placeholder.com/80")" 
+                                 alt="@item.Product?.Name" 
+                                 class="item-image">
+                            <div class="item-info">
+                                <div class="item-name">@item.Product?.Name</div>
+                                <div class="item-variant">
+                                    @if (item.ProductVariant != null)
+                                    {
+                                        <span>
+                                            Màu: @item.ProductVariant.Color?.Name | 
+                                            Size: @item.ProductVariant.Size?.Name
+                                        </span>
+                                    }
+                                </div>
+                                <div class="item-price">
+                                    @{
+                                        decimal originalPrice = item.UnitPrice;
+                                        decimal salePrice = item.UnitPrice - item.Discount;
+                                    }
+                                    
+                                    @if (item.Discount > 0)
+                                    {
+                                        <span class="original-price">@originalPrice.ToString("N0")₫</span>
+                                    }
+                                    <span class="sale-price">@salePrice.ToString("N0")₫</span>
+                                </div>
+                            </div>
+                            <div class="item-quantity">x@item.Quantity</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="summary-section">
+                    <div class="summary-row">
+                        <span>Tạm tính:</span>
+                        <span>@((Model.Order.TotalAmount - Model.Order.ShippingFee).ToString("N0"))₫</span>
+                    </div>
+                    @{
+                        // Discount logic - check if there's any discount
+                        decimal totalDiscount = Model.Order.OrderDetails?.Sum(od => od.Discount * od.Quantity) ?? 0;
+                    }
+                    @if (totalDiscount > 0)
+                    {
+                        <div class="summary-row">
+                            <span>Giảm giá:</span>
+                            <span style="color: var(--danger-color);">-@totalDiscount.ToString("N0")₫</span>
+                        </div>
+                    }
+                    <div class="summary-row">
+                        <span>Phí vận chuyển:</span>
+                        <span>@Model.Order.ShippingFee.ToString("N0")₫</span>
+                    </div>
+                    <div class="summary-row summary-row--total">
+                        <span>Tổng cộng:</span>
+                        <span style="color: var(--primary-color);">@Model.Order.TotalAmount.ToString("N0")₫</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin đơn hàng -->
+        <div>
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-header">
+                    <i class="fas fa-info-circle" style="color: var(--icon-green);"></i>
+                    <h3>Thông tin đơn hàng</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-row">
+                            <span class="info-label">
+                                <i class="fas fa-calendar"></i>
+                                Ngày đặt:
+                            </span>
+                            <span class="info-value">@Model.Order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">
+                                <i class="fas fa-user"></i>
+                                Khách hàng:
+                            </span>
+                            <span class="info-value">@Model.Order.User?.FullName</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">
+                                <i class="fas fa-envelope"></i>
+                                Email:
+                            </span>
+                            <span class="info-value">@Model.Order.User?.Email</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">
+                                <i class="fas fa-phone"></i>
+                                Số điện thoại:
+                            </span>
+                            <span class="info-value">
+                                <span class="phone-number">@Model.Order.PhoneNumber</span>
+                                <button class="btn btn--outline call-button" 
+                                        onclick="contactCustomer('@Model.Order.PhoneNumber')">
+                                    <i class="fas fa-phone-alt"></i>
+                                </button>
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Địa chỉ giao hàng:
+                            </span>
+                            <span class="info-value">@Model.Order.ShippingAddress</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Order.Notes))
+                        {
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="fas fa-sticky-note"></i>
+                                    Ghi chú:
+                                </span>
+                                <span class="info-value">@Model.Order.Notes</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="payment-info">
+                        <div class="payment-method">
+                            <i class="fas @(Model.Order.PaymentMethod?.ToLower() == "credit_card" ? "fa-credit-card" : "fa-money-bill-wave")"></i>
+                            @GetPaymentMethodText(Model.Order.PaymentMethod)
+                        </div>
+                        <div style="margin-top: 8px; color: var(--info-color); font-size: 0.9rem;">
+                            Trạng thái: @(Model.Order.PaymentStatus?.ToLower() == "paid" ? "Đã thanh toán" : "Chưa thanh toán")
+                        </div>
+                    </div>
+
+                    <!-- Status action buttons -->
+                    <div style="margin-top: 25px;">
+                        <div class="info-label" style="margin-bottom: 15px;">
+                            <i class="fas fa-tasks"></i>
+                            Cập nhật trạng thái đơn hàng:
+                        </div>
+                        <div class="status-action-buttons">
+                            @foreach (var nextStatus in nextStatuses)
+                            {
+                                // Skip buttons we already added to the header
+                                if (nextStatus != "processing" && nextStatus != "shipping")
+                                {
+                                    string buttonText = nextStatus.ToLower() switch {
+                                        "delivered" => "Đánh dấu đã giao hàng",
+                                        "received" => "Đánh dấu đã nhận hàng",
+                                        "cancelled" => "Hủy đơn hàng",
+                                        _ => $"Chuyển sang {GetStatusText(nextStatus)}"
+                                    };
+                                    
+                                    string buttonClass = nextStatus.ToLower() == "cancelled" ? "btn--danger" : "btn--primary";
+                                    
+                                    <form asp-area="Admin" asp-controller="OrderManagement" asp-action="UpdateStatus" 
+                                        method="post" style="display: inline-block; margin-right: 10px; margin-bottom: 10px;">
+                                        <input type="hidden" name="id" value="@Model.Order.OrderId" />
+                                        <input type="hidden" name="status" value="@nextStatus" />
+                                        <button type="submit" class="btn @buttonClass" 
+                                                onclick="return confirm('Bạn có chắc chắn muốn @buttonText?')">
+                                            @buttonText
+                                        </button>
+                                    </form>
+                                }
+                            }
+                            
+                            @if (!nextStatuses.Any())
+                            {
+                                <div class="status-info">
+                                    @if (currentStatus == "cancelled")
+                                    {
+                                        <span>Đơn hàng đã bị hủy và không thể thay đổi trạng thái.</span>
+                                    }
+                                    else if (currentStatus == "received")
+                                    {
+                                        <span>Đơn hàng đã hoàn thành.</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Không có hành động nào có thể thực hiện cho trạng thái hiện tại.</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Automatic status simulation -->
+                    @if (currentStatus == "shipping")
+                    {
+                        <div class="auto-status-info" style="margin-top: 15px; padding: 10px; background-color: var(--info-bg); border-radius: 8px; color: var(--info-color);">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Hệ thống sẽ tự động chuyển trạng thái sang "Đã giao hàng" sau 5 phút.</span>
+                        </div>
+                        
+                        <script>
+                            // Simulate auto status update after 5 minutes
+                            setTimeout(function() {
+                                if (confirm('Đơn hàng đã được giao đến khách hàng. Cập nhật trạng thái?')) {
+                                    // Create form and submit
+                                    var form = document.createElement('form');
+                                    form.method = 'post';
+                                    form.action = '@Url.Action("UpdateStatus", "OrderManagement", new { area = "Admin" })';
+                                    
+                                    var idInput = document.createElement('input');
+                                    idInput.type = 'hidden';
+                                    idInput.name = 'id';
+                                    idInput.value = '@Model.Order.OrderId';
+                                    
+                                    var statusInput = document.createElement('input');
+                                    statusInput.type = 'hidden';
+                                    statusInput.name = 'status';
+                                    statusInput.value = 'Delivered';
+                                    
+                                    form.appendChild(idInput);
+                                    form.appendChild(statusInput);
+                                    document.body.appendChild(form);
+                                    form.submit();
+                                }
+                            }, 5 * 60 * 1000); // 5 minutes
+                        </script>
+                    }
+                </div>
+            </div>
+
+            <!-- Trạng thái đơn hàng -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-truck" style="color: var(--icon-orange);"></i>
+                    <h3>Trạng thái đơn hàng</h3>
+                </div>
+                <div class="card-body" style="position: relative;">
+                    @{
+                        var currentStatusLower = Model.Order.OrderStatus?.ToLower() ?? "";
+                        bool isCancelled = currentStatusLower == "cancelled";
+                    }
+                    
+                    <div class="timeline">
+                        @{
+                            var orderStatusList = new List<(string Status, string Label, string Icon, DateTime? Date)>
+                            {
+                                ("pending", "Chờ xử lý", "fa-hourglass-start", Model.Order.OrderDate),
+                                ("processing", "Đang chuẩn bị hàng", "fa-box-open", Model.Order.OrderDate.AddHours(4)),
+                                ("shipping", "Đang giao hàng", "fa-truck", Model.Order.OrderDate.AddDays(1)),
+                                ("delivered", "Đã giao hàng", "fa-box", Model.Order.OrderDate.AddDays(2)),
+                                ("received", "Đã nhận hàng", "fa-box-check", Model.Order.OrderDate.AddDays(2).AddHours(12))
+                            };
+                            
+                            // Map the status to the timeline
+                            var statusMap = new Dictionary<string, int> {
+                                {"pending", 0},
+                                {"processing", 1},
+                                {"shipping", 2},
+                                {"delivered", 3},
+                                {"received", 4}
+                            };
+                            
+                            var statusIndex = statusMap.ContainsKey(currentStatusLower) ? statusMap[currentStatusLower] : -1;
+                            
+                            for (int i = 0; i < orderStatusList.Count; i++)
+                            {
+                                var status = orderStatusList[i];
+                                bool isActive = !isCancelled && i <= statusIndex;
+                                bool isFuture = !isCancelled && i > statusIndex;
+                                
+                                <div class="timeline-item @(isActive ? "timeline-item--active" : "")" data-status="@status.Status">
+                                    <div class="timeline-content">
+                                        <i class="fas @status.Icon" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
+                                        <div class="timeline-title">@status.Label</div>
+                                        <div class="timeline-date">
+                                            @if (isFuture)
+                                            {
+                                                <span>Dự kiến: @status.Date?.ToString("dd/MM/yyyy")</span>
+                                            }
+                                            else if (isActive)
+                                            {
+                                                <span>@status.Date?.ToString("dd/MM/yyyy - HH:mm")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    
+                    @if (isCancelled)
+                    {
+                        <div class="timeline-cancelled-overlay">
+                            <div class="timeline-cancelled-badge">
+                                <i class="fas fa-ban"></i>
+                                Đơn hàng đã bị hủy (@Model.Order.OrderDate.ToString("dd/MM/yyyy - HH:mm"))
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusText(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "pending" => "Chờ xử lý",
+            "processing" => "Đang xử lý",
+            "shipping" => "Đang giao hàng",
+            "delivered" => "Đã giao hàng",
+            "received" => "Đã nhận hàng",
+            "cancelled" => "Đã hủy",
+            _ => status
+        };
+    }
+
+    string GetPaymentMethodText(string method)
+    {
+        return method?.ToLower() switch
+        {
+            "cod" => "Thanh toán khi nhận hàng",
+            "credit_card" => "Thanh toán bằng thẻ tín dụng",
+            "bank_transfer" => "Chuyển khoản ngân hàng",
+            "momo" => "Ví MoMo",
+            "zalopay" => "ZaloPay",
+            _ => method
+        };
+    }
+}
+
+@section Scripts {
+    <script src="~/js/admin/order-detail.js" asp-append-version="true"></script>
+} 

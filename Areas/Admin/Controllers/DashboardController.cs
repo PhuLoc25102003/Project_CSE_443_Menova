@@ -21,7 +21,7 @@ namespace Menova.Areas.Admin.Controllers
             _userService = userService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string dateRange = "week")
         {
             // Tạo view model cho dashboard
             var viewModel = new DashboardViewModel
@@ -33,20 +33,137 @@ namespace Menova.Areas.Admin.Controllers
                 RecentOrders = await _orderService.GetRecentOrdersAsync(5),
                 TopSellingProducts = await _productService.GetTopSellingProductsAsync(5),
                 LowStockProducts = await _productService.GetLowStockProductsAsync(5),
-
-                // Demo data cho biểu đồ
-                SalesChartData = new ChartData
-                {
-                    Labels = new List<string> { "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6" },
-                    Sales = new List<decimal> { 12000000, 19000000, 15000000, 25000000, 22000000, 30000000 },
-                    Orders = new List<int> { 100, 150, 120, 180, 160, 200 }
-                }
+                SalesChartData = await GetSalesChartDataAsync(dateRange),
+                OrderStatistics = await GetOrderStatisticsAsync()
             };
 
+            ViewData["SelectedDateRange"] = dateRange;
             return View(viewModel);
         }
+
+        [HttpGet]
+        public async Task<JsonResult> GetChartData(string dateRange = "week")
+        {
+            var chartData = await GetSalesChartDataAsync(dateRange);
+            return Json(chartData);
+        }
+
+        private async Task<Dictionary<string, int>> GetOrderStatisticsAsync()
+        {
+            return await _orderService.GetOrderCountsByStatusAsync();
+        }
+
+        private async Task<ChartData> GetSalesChartDataAsync(string dateRange)
+        {
+            DateTime startDate;
+            DateTime endDate = DateTime.Now;
+            List<string> labels = new List<string>();
+            List<decimal> sales = new List<decimal>();
+            List<int> orders = new List<int>();
+
+            // Xác định khoảng thời gian dựa trên dateRange
+            switch (dateRange)
+            {
+                case "today":
+                    startDate = DateTime.Today;
+                    // Lấy tất cả đơn hàng trong ngày hôm nay
+                    var todayOrders = await _orderService.GetOrdersInDateRangeAsync(startDate, endDate);
+                    
+                    // Lấy dữ liệu theo giờ trong ngày
+                    for (int hour = 0; hour < 24; hour++)
+                    {
+                        var hourStart = startDate.AddHours(hour);
+                        var hourEnd = hourStart.AddHours(1);
+                        
+                        var hourOrders = todayOrders
+                            .Where(o => o.OrderDate.Hour == hour)
+                            .ToList();
+                        
+                        labels.Add($"{hour}h");
+                        sales.Add(hourOrders.Sum(o => o.TotalAmount));
+                        orders.Add(hourOrders.Count);
+                    }
+                    break;
+
+                case "week":
+                    startDate = DateTime.Today.AddDays(-6);
+                    // Lấy tất cả đơn hàng trong tuần
+                    var weekOrders = await _orderService.GetOrdersInDateRangeAsync(startDate, endDate);
+                    
+                    // Lấy dữ liệu theo ngày trong tuần
+                    for (int day = 0; day < 7; day++)
+                    {
+                        var dayDate = startDate.AddDays(day);
+                        var nextDay = dayDate.AddDays(1);
+                        
+                        var dayOrders = weekOrders
+                            .Where(o => o.OrderDate.Date == dayDate.Date)
+                            .ToList();
+                        
+                        labels.Add(dayDate.ToString("dd/MM"));
+                        sales.Add(dayOrders.Sum(o => o.TotalAmount));
+                        orders.Add(dayOrders.Count);
+                    }
+                    break;
+
+                case "month":
+                    startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                    var daysInMonth = DateTime.DaysInMonth(startDate.Year, startDate.Month);
+                    
+                    // Lấy tất cả đơn hàng trong tháng
+                    var monthOrders = await _orderService.GetOrdersInDateRangeAsync(startDate, endDate);
+                    
+                    // Lấy dữ liệu theo ngày trong tháng
+                    for (int day = 0; day < daysInMonth; day++)
+                    {
+                        var dayDate = startDate.AddDays(day);
+                        if (dayDate > endDate) break;
+                        
+                        var dayOrders = monthOrders
+                            .Where(o => o.OrderDate.Date == dayDate.Date)
+                            .ToList();
+                        
+                        labels.Add(dayDate.ToString("dd"));
+                        sales.Add(dayOrders.Sum(o => o.TotalAmount));
+                        orders.Add(dayOrders.Count);
+                    }
+                    break;
+
+                case "year":
+                    startDate = new DateTime(DateTime.Now.Year, 1, 1);
+                    
+                    // Lấy tất cả đơn hàng trong năm
+                    var yearOrders = await _orderService.GetOrdersInDateRangeAsync(startDate, endDate);
+                    
+                    // Lấy dữ liệu theo tháng trong năm
+                    for (int month = 1; month <= 12; month++)
+                    {
+                        var monthStart = new DateTime(startDate.Year, month, 1);
+                        var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+                        if (monthStart > endDate) break;
+                        if (monthEnd > endDate) monthEnd = endDate;
+                        
+                        var monthOrdersData = yearOrders
+                            .Where(o => o.OrderDate.Month == month)
+                            .ToList();
+                        
+                        labels.Add($"T{month}");
+                        sales.Add(monthOrdersData.Sum(o => o.TotalAmount));
+                        orders.Add(monthOrdersData.Count);
+                    }
+                    break;
+
+                default:
+                    // Mặc định là tuần
+                    return await GetSalesChartDataAsync("week");
+            }
+
+            return new ChartData
+            {
+                Labels = labels,
+                Sales = sales,
+                Orders = orders
+            };
+        }
     }
-
-
-
 }

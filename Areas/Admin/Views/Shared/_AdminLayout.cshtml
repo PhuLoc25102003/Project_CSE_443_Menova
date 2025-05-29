@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/admin/admin-layout.css" />
     <link rel="stylesheet" href="~/css/admin/admin-dashboard.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -53,8 +54,8 @@
                             <span>Danh mục</span>
                         </a>
                     </li>
-                    <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Order" ? "active" : "")">
-                        <a href="@Url.Action("Index", "Order", new { area = "Admin" })">
+                    <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "OrderManagement" ? "active" : "")">
+                        <a href="@Url.Action("Index", "OrderManagement", new { area = "Admin" })">
                             <i class="fas fa-shopping-cart"></i>
                             <span>Đơn hàng</span>
                         </a>
@@ -137,18 +138,78 @@
 
             <!-- Content -->
             <div class="content">
+                @Html.AntiForgeryToken()
                 @RenderBody()
             </div>
 
             <!-- Footer -->
-            <div class="footer">
-                <p>&copy; @DateTime.Now.Year - Polomanor Admin Panel</p>
-            </div>
+            <footer class="footer">
+                <div class="container">
+                    <p>&copy; @DateTime.Now.Year - Menova Admin Panel</p>
+                </div>
+            </footer>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script>
+        // Kiểm tra SweetAlert2 đã tải chưa
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('SweetAlert2 available:', typeof Swal !== 'undefined');
+            if (typeof Swal === 'undefined') {
+                console.error('SweetAlert2 is not loaded!');
+            } else {
+                console.log('SweetAlert2 version:', Swal.version);
+            }
+        });
+    </script>
+    <script src="~/js/admin/sweet-alert-utils.js"></script>
     <script src="~/js/admin/admin-layout.js"></script>
     @RenderSection("Scripts", required: false)
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var successMessage = '@TempData["SuccessMessage"]';
+                var decodedMessage = $('<div/>').html(successMessage).text();
+                showSuccess(decodedMessage);
+            });
+        </script>
+    }
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var errorMessage = '@TempData["ErrorMessage"]';
+                var decodedMessage = $('<div/>').html(errorMessage).text();
+                showError(decodedMessage);
+            });
+        </script>
+    }
+    
+    @if (TempData["WarningMessage"] != null)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var warningMessage = '@TempData["WarningMessage"]';
+                var decodedMessage = $('<div/>').html(warningMessage).text();
+                showWarning(decodedMessage);
+            });
+        </script>
+    }
+    
+    @if (TempData["InfoMessage"] != null)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var infoMessage = '@TempData["InfoMessage"]';
+                var decodedMessage = $('<div/>').html(infoMessage).text();
+                showInfo(decodedMessage);
+            });
+        </script>
+    }
 </body>
 </html>

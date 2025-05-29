@@ -1,0 +1,147 @@
+  /* Order Status Summary Component Styles */
+
+.status-summary-container {
+  margin-bottom: 1.5rem;
+}
+
+.status-card-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+  scrollbar-width: none;  /* Hide scrollbar for Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.status-card-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.status-card {
+  flex: 1 0 19%;
+  min-width: 180px;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.status-card.active {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+}
+
+.status-card .card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-card .card-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+
+.status-card .card-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.status-card .card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  font-size: 1.25rem;
+}
+
+/* Status card specific colors */
+.status-card.pending {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  color: #fff;
+}
+
+.status-card.processing {
+  background: linear-gradient(135deg, #5ee7df 0%, #4fadf7 100%);
+  color: #fff;
+}
+
+.status-card.shipping {
+  background: linear-gradient(135deg, #c8b6a6 0%, #a68a64 100%);
+  color: #fff;
+  border-bottom: 3px solid #8c7050;
+}
+
+.status-card.shipped {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: #fff;
+}
+
+.status-card.delivered {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: #fff;
+}
+
+.status-card.cancelled {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+  color: #fff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .status-card {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 992px) {
+  .status-card-wrapper {
+    padding-bottom: 1rem;
+  }
+  
+  .status-card {
+    min-width: 150px;
+  }
+  
+  .status-card .card-value {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .status-card-wrapper {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  
+  .status-card {
+    min-width: 140px;
+    scroll-snap-align: start;
+    flex: 0 0 30%;
+  }
+}
+
+@media (max-width: 576px) {
+  .status-card {
+    min-width: 130px;
+    flex: 0 0 45%;
+  }
+} 
