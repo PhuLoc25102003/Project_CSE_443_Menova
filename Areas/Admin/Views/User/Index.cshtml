@@ -1,0 +1,205 @@
+@model IEnumerable<ApplicationUser>
+@{
+    ViewData["Title"] = "Quản lý khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-grid.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/styles/ag-theme-alpine.css" />
+    <link rel="stylesheet" href="~/css/admin/ag-grid-custom.css" />
+    <link rel="stylesheet" href="~/css/admin/page-header.css" />
+    <link rel="stylesheet" href="~/css/admin/card-styling.css" />
+    <link rel="stylesheet" href="~/css/admin/grid-components.css" />
+    <link rel="stylesheet" href="~/css/admin/action-buttons.css" />
+}
+
+<div class="user-management user-management-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Quản lý khách hàng</h1>
+        </div>
+    </div>
+
+    <div class="card user-form-card mb-4">
+        <div class="card-header py-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <button id="refreshGrid" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-sync-alt me-1"></i> Làm mới
+                    </button>
+                    <button id="exportBtn" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-file-excel me-1"></i> Xuất Excel
+                    </button>
+                    <div class="form-check form-switch ms-2">
+                        <input class="form-check-input" type="checkbox" id="showActiveOnly" checked>
+                        <label class="form-check-label small" for="showActiveOnly">Chỉ hiện tài khoản đang hoạt động</label>
+                    </div>
+                </div>
+                <div class="text-muted small">
+                    <i class="fas fa-info-circle me-1"></i> Kéo thả để điều chỉnh cột
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body p-0">
+            <!-- AG Grid Container -->
+            <div id="usersGrid" class="ag-theme-alpine" style="width: 100%; height: 600px; display: block;"></div>
+            
+            <!-- Message when no data or grid fails -->
+            <div id="noDataMessage" class="alert alert-info m-3" style="display: none;">
+                <i class="fas fa-info-circle me-2"></i> Không có khách hàng nào.
+            </div>
+            
+            <!-- Fallback Table -->
+            @if (Model != null && Model.Any())
+            {
+                <div id="fallbackTable" class="table-responsive m-3" style="display: none;">
+                    <table class="table table-hover user-table">
+                        <thead>
+                            <tr>
+                                <th>Họ và tên</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Vai trò</th>
+                                <th>Ngày tạo</th>
+                                <th>Trạng thái</th>
+                                <th style="width:160px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                <tr class="@(!user.IsActive ? "table-secondary" : "") align-middle">
+                                    <td>@user.FullName</td>
+                                    <td>@user.Email</td>
+                                    <td>@user.PhoneNumber</td>
+                                    <td>@(ViewBag.UserRoles?[user.Id] ?? "Khách hàng")</td>
+                                    <td>@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-center">
+                                        @if (user.IsActive)
+                                        {
+                                            <span class="badge bg-success">Đang hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Đã khóa</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" 
+                                                    onclick="confirmDeleteUser('@user.Id')" 
+                                                    class="btn btn-sm btn-outline-danger" 
+                                                    title="Xóa"
+                                                    @(user.Email == "admin@menova.com" ? "disabled" : "")>
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (!Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="alert alert-info mb-0">
+                                            <i class="fas fa-info-circle me-2"></i> Không có khách hàng nào
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@30.2.1/dist/ag-grid-community.min.js"></script>
+    <script src="~/js/admin/delete-confirmation.js"></script>
+    <script src="~/js/admin/user-grid-init.js"></script>
+    <script>
+        function confirmDeleteUser(userId) {
+            Swal.fire({
+                title: 'Xác nhận xóa',
+                text: "Bạn có chắc chắn muốn xóa người dùng này?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Gửi yêu cầu xóa
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '@Url.Action("Delete", "User", new { area = "Admin" })';
+                    
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'id';
+                    idInput.value = userId;
+                    
+                    const antiForgeryToken = document.createElement('input');
+                    antiForgeryToken.type = 'hidden';
+                    antiForgeryToken.name = '__RequestVerificationToken';
+                    antiForgeryToken.value = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                    
+                    form.appendChild(idInput);
+                    form.appendChild(antiForgeryToken);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+        
+        // Ensure DOM is fully loaded before initializing grid
+        document.addEventListener("DOMContentLoaded", function() {
+            // Prepare data
+            const rowData = [];
+            
+            @if (Model != null && Model.Any())
+            {
+                foreach (var user in Model)
+                {
+                    string roleName = ViewBag.UserRoles != null && ViewBag.UserRoles.ContainsKey(user.Id) 
+                        ? ViewBag.UserRoles[user.Id] 
+                        : "Khách hàng";
+                    
+                    <text>
+                    rowData.push({
+                        userId: @Json.Serialize(user.Id),
+                        fullName: @Json.Serialize(user.FullName),
+                        email: @Json.Serialize(user.Email),
+                        phoneNumber: @Json.Serialize(user.PhoneNumber ?? ""),
+                        role: @Json.Serialize(roleName),
+                        createdAt: @Json.Serialize(user.CreatedAt.ToString("dd/MM/yyyy")),
+                        isActive: @Json.Serialize(user.IsActive),
+                        isAdminAccount: @Json.Serialize(user.Email == "admin@menova.com")
+                    });
+                    </text>
+                }
+            }
+            
+            // URL configuration for action buttons
+            const urlConfig = {
+                editUrl: '@Url.Action("Edit", "User", new { area = "Admin" })',
+                deleteUrl: '@Url.Action("Delete", "User", new { area = "Admin" })'
+            };
+            
+            // Initialize the grid
+            setTimeout(function() {
+                initializeUserGrid('usersGrid', 'fallbackTable', 'noDataMessage', rowData, urlConfig);
+            }, 0);
+        });
+    </script>
+} 

@@ -8,7 +8,7 @@ namespace Menova.Models
         [Key]
         public int CartId { get; set; }
 
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
@@ -16,7 +16,7 @@ namespace Menova.Models
 
         // Navigation properties
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
         public virtual ICollection<CartItem> CartItems { get; set; }
     }

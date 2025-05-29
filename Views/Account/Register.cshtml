@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="auth-container">
+    <div class="auth-form">
+        <h2 class="auth-title">Create an Account</h2>
+        
+        <form method="post" asp-action="Register" asp-controller="Account">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+            
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" name="fullName" id="fullName" class="form-control" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control" required 
+                       minlength="8" title="Password must be at least 8 characters long with uppercase, lowercase, number, and special character" />
+                <small class="form-text text-muted">Must be at least 8 characters with uppercase, lowercase, number, and special character</small>
+            </div>
+            
+            <button type="submit" class="btn btn--primary btn--full">Create Account</button>
+            
+            <div class="auth-links">
+                <p>Already have an account? <a asp-action="Login" asp-controller="Account">Login</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" />
+} 

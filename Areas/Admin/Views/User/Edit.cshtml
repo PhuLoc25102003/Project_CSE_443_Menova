@@ -1,0 +1,226 @@
+@model ApplicationUser
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin người dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var roles = ViewBag.Roles as List<Microsoft.AspNetCore.Identity.IdentityRole>;
+    var userRoles = ViewBag.UserRoles as IList<string>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/page-header.css" />
+    <link rel="stylesheet" href="~/css/admin/card-styling.css" />
+    <style>
+        .user-edit-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .user-edit-form .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-edit-form .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #dde2e6;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
+        }
+        
+        .user-edit-form .form-control:focus {
+            background-color: #fff;
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+        }
+        
+        .user-edit-form .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .user-edit-form .role-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .user-edit-form .role-option {
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: 1rem;
+            flex: 1;
+            min-width: 200px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .user-edit-form .role-option:hover {
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+        }
+        
+        .user-edit-form .role-option .form-check-label {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-edit-form .role-option .role-description {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        .user-edit-form .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .user-edit-form .btn-cancel {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .user-edit-form .btn-cancel:hover {
+            background-color: #e2e8f0;
+        }
+        
+        .user-edit-form .btn-save {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .user-edit-form .btn-save:hover {
+            background-color: #5a67d8;
+            transform: translateY(-1px);
+        }
+    </style>
+}
+
+<div class="user-edit-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Chỉnh sửa thông tin người dùng</h1>
+        </div>
+        <div class="page-actions">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-action="Edit" method="post" class="user-edit-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Họ và tên</label>
+                            <input type="text" class="form-control" name="fullName" value="@Model.FullName" required />
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="@Model.Email" required />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" name="phoneNumber" value="@Model.PhoneNumber" />
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" name="isActive" id="isActive" value="true" @(Model.IsActive ? "checked" : "") />
+                                <label class="form-check-label" for="isActive">Tài khoản đang hoạt động</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Vai trò</label>
+                    <div class="role-options">
+                        @foreach (var role in roles)
+                        {
+                            bool isInRole = userRoles.Contains(role.Name);
+                            string description = role.Name == "Admin" 
+                                ? "Quyền quản trị đầy đủ trên hệ thống" 
+                                : "Quyền truy cập cơ bản dành cho khách hàng";
+                            
+                            <div class="role-option">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="roles" id="role-@role.Id" value="@role.Name" @(isInRole ? "checked" : "") @(Model.Email == "admin@menova.com" && role.Name == "Admin" ? "disabled onclick='return false;'" : "") />
+                                    <label class="form-check-label" for="role-@role.Id">
+                                        @role.Name
+                                    </label>
+                                </div>
+                                <div class="role-description">@description</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a asp-action="Index" class="btn btn-cancel">Hủy</a>
+                    <button type="submit" class="btn btn-save">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Ensure the admin account always has Admin role
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.user-edit-form');
+            const email = document.querySelector('input[name="email"]').value;
+            
+            if (email === 'admin@menova.com') {
+                form.addEventListener('submit', function(e) {
+                    // Find the Admin role checkbox
+                    const adminRoleCheckbox = Array.from(document.querySelectorAll('input[name="roles"]'))
+                        .find(checkbox => checkbox.value === 'Admin');
+                    
+                    if (adminRoleCheckbox && !adminRoleCheckbox.checked) {
+                        e.preventDefault();
+                        Swal.fire({
+                            title: 'Không thể xóa quyền Admin',
+                            text: 'Tài khoản admin@menova.com phải luôn có quyền Admin',
+                            icon: 'warning',
+                            confirmButtonColor: '#667eea'
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+} 

@@ -4,10 +4,10 @@ namespace Menova.Data.Repositories
 {
     public interface IOrderRepository : IRepository<Order>
     {
-        Task<IEnumerable<Order>> GetUserOrdersAsync(int userId);
-        Task<Order> GetOrderWithDetailsAsync(int orderId, int userId);
+        Task<IEnumerable<Order>> GetUserOrdersAsync(string userId);
+        Task<Order> GetOrderWithDetailsAsync(int orderId, string userId);
         Task<Order> GetOrderWithDetailsForAdminAsync(int orderId);
-        Task<Order> CreateOrderFromCartAsync(int userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes);
+        Task<Order> CreateOrderFromCartAsync(string userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes);
         Task UpdateOrderStatusAsync(int orderId, string status);
         Task<IEnumerable<Order>> GetAllWithDetailsAsync();
     }

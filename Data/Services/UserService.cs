@@ -1,15 +1,16 @@
 ﻿using Menova.Models;
-using System.Security.Cryptography;
-using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Menova.Data.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserService(IUnitOfWork unitOfWork)
+        public UserService(UserManager<ApplicationUser> userManager)
         {
+<<<<<<< HEAD
             _unitOfWork = unitOfWork;
         }
 
@@ -106,13 +107,14 @@ namespace Menova.Data.Services
             }
 
             return true;
+=======
+            _userManager = userManager;
+>>>>>>> 7b3ad8b78d24752f4a90a38723536cabba0310ea
         }
 
         public async Task<int> GetTotalUserCountAsync()
         {
-            var users = await _unitOfWork.Users.GetAllAsync();
-            return users.Count();
+            return await _userManager.Users.CountAsync();
         }
     }
-
 }

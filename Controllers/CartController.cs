@@ -6,36 +6,45 @@ using Menova.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Menova.Data.Services;
-
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Menova.Controllers
 {
+    [Authorize]
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CartController(ICartService cartService)
+        public CartController(ICartService cartService, UserManager<ApplicationUser> userManager)
         {
             _cartService = cartService;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            // For demonstration purposes - normally would use user authentication
-            // and get user ID from claims
-            int userId = 1; // Placeholder for actual user ID from auth
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            var viewModel = await _cartService.GetCartAsync(userId);
+            var viewModel = await _cartService.GetCartAsync(user.Id);
             return View(viewModel);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId, int variantId, int quantity)
         {
-            // For demonstration purposes - normally would use user authentication
-            int userId = 1; // Placeholder for actual user ID from auth
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            await _cartService.AddToCartAsync(userId, productId, variantId, quantity);
+            await _cartService.AddToCartAsync(user.Id, productId, variantId, quantity);
             return RedirectToAction("Index");
         }
 
@@ -55,12 +64,14 @@ namespace Menova.Controllers
 
         public async Task<IActionResult> Checkout()
         {
-            // For demonstration purposes - normally would use user authentication
-            int userId = 1; // Placeholder for actual user ID from auth
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            ViewBag.Cart = await _cartService.GetCartAsync(userId);
+            ViewBag.Cart = await _cartService.GetCartAsync(user.Id);
             return View();
         }
-
     }
 }

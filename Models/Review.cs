@@ -10,7 +10,7 @@ namespace Menova.Models
 
         public int ProductId { get; set; }
 
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         public int Rating { get; set; }
 
@@ -24,6 +24,6 @@ namespace Menova.Models
         public virtual Product Product { get; set; }
 
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public virtual ApplicationUser User { get; set; }
     }
 }

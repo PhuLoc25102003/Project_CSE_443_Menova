@@ -11,12 +11,12 @@ namespace Menova.Data.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<CartViewModel> GetCartAsync(int userId)
+        public async Task<CartViewModel> GetCartAsync(string userId)
         {
             return await _unitOfWork.Carts.GetCartViewModelAsync(userId);
         }
 
-        public async Task AddToCartAsync(int userId, int productId, int variantId, int quantity)
+        public async Task AddToCartAsync(string userId, int productId, int variantId, int quantity)
         {
             await _unitOfWork.Carts.AddItemToCartAsync(userId, productId, variantId, quantity);
         }
@@ -31,10 +31,9 @@ namespace Menova.Data.Services
             await _unitOfWork.Carts.RemoveCartItemAsync(cartItemId);
         }
 
-        public async Task ClearCartAsync(int userId)
+        public async Task ClearCartAsync(string userId)
         {
             await _unitOfWork.Carts.ClearCartAsync(userId);
         }
     }
-
 }
