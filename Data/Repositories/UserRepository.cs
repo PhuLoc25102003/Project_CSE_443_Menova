@@ -37,7 +37,7 @@ namespace Menova.Data.Repositories
 
             existingUser.FullName = user.FullName;
             existingUser.PhoneNumber = user.PhoneNumber;
-            existingUser.UpdateAt = DateTime.Now;
+            existingUser.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
         }

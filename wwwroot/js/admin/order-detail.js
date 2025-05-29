@@ -7,11 +7,31 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPrintButton();
     setupPhoneButton();
     
+    // Debug logging for order items
+    console.log("Debugging order items:");
+    const orderItemsContainer = document.querySelector('.order-items');
+    const items = document.querySelectorAll('.item');
+    console.log("Order items container:", orderItemsContainer);
+    console.log("Number of items found:", items.length);
+    
+    items.forEach((item, index) => {
+        console.log(`Item ${index}:`, item);
+        console.log(`Item ${index} visibility:`, window.getComputedStyle(item).display);
+        console.log(`Item ${index} height:`, window.getComputedStyle(item).height);
+        console.log(`Item ${index} children:`, item.children.length);
+    });
+    
+    // Check for empty container with no items
+    if (items.length === 0) {
+        console.warn("No order items found in container!");
+        const cardBody = document.querySelector('.card-body');
+        console.log("Card body content:", cardBody?.innerHTML);
+    }
+    
     // Đánh dấu trạng thái hiện tại trong timeline - cải tiến
     highlightCurrentStatus();
 
     // Animation for items when page loads
-    const items = document.querySelectorAll('.item');
     items.forEach((item, index) => {
         item.style.opacity = '0';
         item.style.transform = 'translateY(20px)';

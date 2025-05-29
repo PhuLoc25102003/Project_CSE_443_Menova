@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Menova.Data;
 using Menova.Data.Services;
 using Menova.Models;
 using Menova.Areas.Admin.Models;
@@ -58,7 +57,6 @@ namespace Menova.Areas.Admin.Controllers
                         CurrentPage = page,
                         ItemsPerPage = pageSize,
                         TotalItems = totalItems
-                        // TotalPages được tính toán tự động trong PaginationInfo
                     }
                 };
                 
@@ -140,6 +138,48 @@ namespace Menova.Areas.Admin.Controllers
             TempData["ErrorMessage"] = "Không được phép xóa đơn hàng.";
             return RedirectToAction("Index");
         }
+        
+        // Diagnostic action to troubleshoot order details
+        public async Task<IActionResult> DiagnosticDetails(int id)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderDetailsForAdminAsync(id);
+                
+                if (order == null)
+                {
+                    return Content("Order not found");
+                }
+
+                var orderDetailCount = order.OrderDetails?.Count() ?? 0;
+                var hasNullProducts = order.OrderDetails?.Any(od => od.Product == null) ?? false;
+                
+                string diagnosticInfo = $"Order ID: {order.OrderId}\n" +
+                                      $"Order Status: {order.OrderStatus}\n" +
+                                      $"Order Details Count: {orderDetailCount}\n" +
+                                      $"Has Null Products: {hasNullProducts}\n\n";
+                
+                if (orderDetailCount > 0)
+                {
+                    diagnosticInfo += "Order Details:\n";
+                    foreach (var detail in order.OrderDetails)
+                    {
+                        diagnosticInfo += $"- Detail ID: {detail.OrderDetailId}\n" +
+                                         $"  Product ID: {detail.ProductId}\n" +
+                                         $"  Product Name: {detail.Product?.Name ?? "NULL"}\n" +
+                                         $"  Variant ID: {detail.VariantId}\n" +
+                                         $"  Quantity: {detail.Quantity}\n" +
+                                         $"  Unit Price: {detail.UnitPrice}\n\n";
+                    }
+                }
+                
+                return Content(diagnosticInfo, "text/plain");
+            }
+            catch (Exception ex)
+            {
+                return Content($"Error: {ex.Message}\n{ex.StackTrace}", "text/plain");
+            }
+        }
 
         private async Task<List<Order>> GetFilteredOrdersAsync(string statusFilter, string searchQuery, 
             DateTime? startDate, DateTime? endDate)
@@ -202,4 +242,5 @@ namespace Menova.Areas.Admin.Controllers
             };
         }
     }
-} 
+}
+

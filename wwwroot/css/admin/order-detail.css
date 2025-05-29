@@ -203,6 +203,8 @@
 
 .order-items {
     margin-bottom: 20px;
+    display: block;
+    width: 100%;
 }
 
 .item {
@@ -212,6 +214,9 @@
     padding: 20px 0;
     border-bottom: 1px solid var(--border-color);
     transition: background 0.3s ease;
+    min-height: 100px;
+    opacity: 1;
+    visibility: visible;
 }
 
 .item:hover {
@@ -596,6 +601,22 @@
         flex-direction: column;
         text-align: center;
         gap: 15px;
+        padding: 15px;
+        margin-bottom: 10px;
+        background-color: var(--hover-color);
+        border-radius: 8px;
+        min-height: auto;
+    }
+    
+    .item-image {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+    }
+    
+    .item-info {
+        width: 100%;
+        text-align: center;
     }
     
     .info-row {

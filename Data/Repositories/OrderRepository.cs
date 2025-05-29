@@ -19,7 +19,7 @@ namespace Menova.Data.Repositories
 
         public async Task<Order> GetOrderWithDetailsAsync(int orderId, int userId)
         {
-            return await _context.Orders
+            var order = await _context.Orders
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product)
                 .Include(o => o.OrderDetails)
@@ -29,12 +29,33 @@ namespace Menova.Data.Repositories
                     .ThenInclude(od => od.ProductVariant)
                         .ThenInclude(v => v.Color)
                 .Include(o => o.User)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OrderId == orderId && o.UserId == userId);
+
+            // Ensure Product is not null for display
+            if (order?.OrderDetails != null)
+            {
+                foreach (var orderDetail in order.OrderDetails)
+                {
+                    if (orderDetail.Product == null)
+                    {
+                        // Create a placeholder product for display purposes
+                        orderDetail.Product = new Product
+                        {
+                            Name = "Sản phẩm không tồn tại",
+                            ImageUrl = "https://via.placeholder.com/80",
+                            ProductId = orderDetail.ProductId
+                        };
+                    }
+                }
+            }
+
+            return order;
         }
 
         public async Task<Order> GetOrderWithDetailsForAdminAsync(int orderId)
         {
-            return await _context.Orders
+            var order = await _context.Orders
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product)
                 .Include(o => o.OrderDetails)
@@ -44,19 +65,68 @@ namespace Menova.Data.Repositories
                     .ThenInclude(od => od.ProductVariant)
                         .ThenInclude(v => v.Color)
                 .Include(o => o.User)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            // Ensure Product is not null for display
+            if (order?.OrderDetails != null)
+            {
+                foreach (var orderDetail in order.OrderDetails)
+                {
+                    if (orderDetail.Product == null)
+                    {
+                        // Create a placeholder product for display purposes
+                        orderDetail.Product = new Product
+                        {
+                            Name = "Sản phẩm không tồn tại",
+                            ImageUrl = "https://via.placeholder.com/80",
+                            ProductId = orderDetail.ProductId
+                        };
+                    }
+                }
+            }
+
+            return order;
         }
 
         public async Task<IEnumerable<Order>> GetAllWithDetailsAsync()
         {
-            return await _context.Orders
+            var orders = await _context.Orders
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product)
                 .Include(o => o.User)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.ProductVariant)
+                        .ThenInclude(v => v.Color)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.ProductVariant)
+                        .ThenInclude(v => v.Size)
+                .AsNoTracking()
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
+
+            // Ensure Product is not null for display
+            foreach (var order in orders)
+            {
+                if (order.OrderDetails != null)
+                {
+                    foreach (var orderDetail in order.OrderDetails)
+                    {
+                        if (orderDetail.Product == null)
+                        {
+                            // Create a placeholder product for display purposes
+                            orderDetail.Product = new Product
+                            {
+                                Name = "Sản phẩm không tồn tại",
+                                ImageUrl = "https://via.placeholder.com/80",
+                                ProductId = orderDetail.ProductId
+                            };
+                        }
+                    }
+                }
+            }
+
+            return orders;
         }
 
         public async Task<Order> CreateOrderFromCartAsync(int userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes)
@@ -75,10 +145,10 @@ namespace Menova.Data.Repositories
             }
 
             // Calculate total
-            //decimal subtotal = cart.CartItems.Sum(ci =>
-            //    (ci.Product.DiscountPrice ?? ci.Product.Price + (ci.ProductVariant.AdditionalPrice ?? 0)) * ci.Quantity);
-            decimal shippingFee = 30000; // Default shipping fee
-            decimal totalAmount = 1 + shippingFee;
+             decimal subtotal = cart.CartItems.Sum(ci =>
+                (ci.Product.DiscountPrice > 0 ? ci.Product.DiscountPrice : ci.Product.Price + (ci.ProductVariant?.AdditionalPrice ?? 0)) * ci.Quantity);
+            decimal shippingFee = 40000; // Shipping fee as shown in the screenshot
+            decimal totalAmount = subtotal + shippingFee;
 
             // Create order
             var order = new Order
@@ -99,8 +169,10 @@ namespace Menova.Data.Repositories
             // Create order details
             foreach (var item in cart.CartItems)
             {
-                var unitPrice = 1; 
-                //item.Product.DiscountPrice ?? item.Product.Price + (item.ProductVariant.AdditionalPrice ?? 0);
+                var unitPrice = item.Product.DiscountPrice > 0 
+                    ? item.Product.DiscountPrice 
+                    : item.Product.Price + (item.ProductVariant?.AdditionalPrice ?? 0);
+                    
                 var orderDetail = new OrderDetail
                 {
                     OrderId = order.OrderId,

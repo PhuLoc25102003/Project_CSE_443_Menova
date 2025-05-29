@@ -17,6 +17,8 @@
     var nextStatuses = allowedNextStatuses.ContainsKey(currentStatus) 
         ? allowedNextStatuses[currentStatus] 
         : new List<string>();
+
+    var orderDetailsCount = Model.Order.OrderDetails?.Count() ?? 0;
 }
 
 @section Styles {
@@ -126,37 +128,64 @@
             </div>
             <div class="card-body">
                 <div class="order-items">
-                    @foreach (var item in Model.Order.OrderDetails)
+                    @if (orderDetailsCount > 0)
                     {
-                        <div class="item">
-                            <img src="@(item.Product?.ImageUrl ?? "https://via.placeholder.com/80")" 
-                                 alt="@item.Product?.Name" 
-                                 class="item-image">
-                            <div class="item-info">
-                                <div class="item-name">@item.Product?.Name</div>
-                                <div class="item-variant">
-                                    @if (item.ProductVariant != null)
-                                    {
-                                        <span>
-                                            Màu: @item.ProductVariant.Color?.Name | 
-                                            Size: @item.ProductVariant.Size?.Name
-                                        </span>
-                                    }
+                        @foreach (var item in Model.Order.OrderDetails)
+                        {
+                            <div class="item">
+                                @{
+                                    // Ensure Product is loaded with Include() in the controller
+                                    var product = item.Product;
+                                    var productName = product?.Name ?? "Sản phẩm không tồn tại";
+                                    var imageUrl = !string.IsNullOrEmpty(product?.ImageUrl) 
+                                        ? product.ImageUrl 
+                                        : "https://via.placeholder.com/80";
+                                }
+                                <img src="@imageUrl" 
+                                     alt="@productName" 
+                                     class="item-image">
+                                <div class="item-info">
+                                    <div class="item-name">@productName</div>
+                                    <div class="item-variant">
+                                        @if (item.ProductVariant != null)
+                                        {
+                                            <span>
+                                                @if (item.ProductVariant.Color != null)
+                                                {
+                                                    <text>Màu: @item.ProductVariant.Color.Name</text>
+                                                }
+                                                @if (item.ProductVariant.Size != null)
+                                                {
+                                                    if (item.ProductVariant.Color != null)
+                                                    {
+                                                        <text> | </text>
+                                                    }
+                                                    <text>Size: @item.ProductVariant.Size.Name</text>
+                                                }
+                                            </span>
+                                        }
+                                    </div>
+                                    <div class="item-price">
+                                        @{
+                                            decimal originalPrice = item.UnitPrice;
+                                            decimal salePrice = item.UnitPrice - item.Discount;
+                                        }
+                                        
+                                        @if (item.Discount > 0)
+                                        {
+                                            <span class="original-price">@originalPrice.ToString("N0")₫</span>
+                                        }
+                                        <span class="sale-price">@salePrice.ToString("N0")₫</span>
+                                    </div>
                                 </div>
-                                <div class="item-price">
-                                    @{
-                                        decimal originalPrice = item.UnitPrice;
-                                        decimal salePrice = item.UnitPrice - item.Discount;
-                                    }
-                                    
-                                    @if (item.Discount > 0)
-                                    {
-                                        <span class="original-price">@originalPrice.ToString("N0")₫</span>
-                                    }
-                                    <span class="sale-price">@salePrice.ToString("N0")₫</span>
-                                </div>
+                                <div class="item-quantity">x @item.Quantity</div>
                             </div>
-                            <div class="item-quantity">x@item.Quantity</div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-items-message" style="text-align: center; padding: 30px; color: #6c757d; font-style: italic;">
+                            Không có thông tin sản phẩm cho đơn hàng này.
                         </div>
                     }
                 </div>

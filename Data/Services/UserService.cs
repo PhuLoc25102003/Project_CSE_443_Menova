@@ -61,8 +61,8 @@ namespace Menova.Data.Services
 
             user.passwordHash = passwordHash;
             user.salt = salt;
-            user.CreateAt = DateTime.Now;
-            user.UpdateAt = DateTime.Now;
+            user.CreatedAt = DateTime.Now;
+            user.UpdatedAt = DateTime.Now;
 
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CompleteAsync();

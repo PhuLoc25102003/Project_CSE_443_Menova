@@ -33,22 +33,19 @@ namespace Menova.Models
         [StringLength(10, ErrorMessage = "Please enter 10 numbers")]
         public string PhoneNumber   { get; set; }
 
+        [Required]
+        [StringLength(50)]
+        public string Role { get; set; } = "Customer";
+
         public bool isActive { get; set; }
 
-        public DateTime CreateAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime UpdateAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; }
         public virtual Cart Cart { get; set; }
         public ICollection<Review> Reviews { get; set; }
         public virtual ICollection<WishList> WishLists { get; set; }
-
-
-
-
-
-
-
     }
 }
