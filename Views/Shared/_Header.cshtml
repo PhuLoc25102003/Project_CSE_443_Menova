@@ -8,7 +8,50 @@
     </nav>
     <div class="header-icons">
         <a asp-controller="Home" asp-action="Index"><i class="fas fa-search"></i></a>
-        <a asp-controller="Account" asp-action="Profile"><i class="fas fa-user"></i></a>
+        
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="user-dropdown">
+                <a class="user-dropdown-toggle">
+                    <i class="fas fa-user"></i>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <span class="admin-badge">Admin</span>
+                    }
+                </a>
+                <div class="user-dropdown-menu">
+                    <a asp-controller="Account" asp-action="Profile">My Profile</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin Dashboard</a>
+                    }
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="dropdown-logout-btn">Logout</button>
+                    </form>
+                </div>
+            </div>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login"><i class="fas fa-user"></i></a>
+        }
+        
         <a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-bag"></i></a>
     </div>
 </header>
+
+@section Scripts {
+    <script>
+        // Toggle user dropdown menu
+        document.addEventListener('DOMContentLoaded', function() {
+            const userDropdown = document.querySelector('.user-dropdown-toggle');
+            if (userDropdown) {
+                userDropdown.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const menu = document.querySelector('.user-dropdown-menu');
+                    menu.classList.toggle('show');
+                });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="auth-container">
+    <div class="access-denied">
+        <div class="access-denied__icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h2>Access Denied</h2>
+        <p>You do not have permission to access this resource.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn--primary">Go to Homepage</a>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" />
+} 

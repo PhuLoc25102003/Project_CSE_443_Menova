@@ -11,12 +11,12 @@ namespace Menova.Data.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<Order>> GetUserOrdersAsync(int userId)
+        public async Task<IEnumerable<Order>> GetUserOrdersAsync(string userId)
         {
             return await _unitOfWork.Orders.GetUserOrdersAsync(userId);
         }
 
-        public async Task<Order> GetOrderDetailsAsync(int orderId, int userId)
+        public async Task<Order> GetOrderDetailsAsync(int orderId, string userId)
         {
             return await _unitOfWork.Orders.GetOrderWithDetailsAsync(orderId, userId);
         }
@@ -26,7 +26,7 @@ namespace Menova.Data.Services
             return await _unitOfWork.Orders.GetOrderWithDetailsForAdminAsync(orderId);
         }
 
-        public async Task<Order> CreateOrderAsync(int userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes)
+        public async Task<Order> CreateOrderAsync(string userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes)
         {
             return await _unitOfWork.Orders.CreateOrderFromCartAsync(userId, shippingAddress, phoneNumber, paymentMethod, notes);
         }

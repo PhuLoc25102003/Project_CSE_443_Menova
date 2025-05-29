@@ -10,7 +10,7 @@ namespace Menova.Data.Repositories
         {
         }
 
-        public async Task<Cart> GetCartWithItemsAsync(int userId)
+        public async Task<Cart> GetCartWithItemsAsync(string userId)
         {
             return await _context.Carts
                 .Include(c => c.CartItems)
@@ -24,7 +24,7 @@ namespace Menova.Data.Repositories
                 .FirstOrDefaultAsync(c => c.UserId == userId);
         }
 
-        public async Task<CartViewModel> GetCartViewModelAsync(int userId)
+        public async Task<CartViewModel> GetCartViewModelAsync(string userId)
         {
             var cart = await GetCartWithItemsAsync(userId);
 
@@ -77,7 +77,7 @@ namespace Menova.Data.Repositories
             return viewModel;
         }
 
-        public async Task AddItemToCartAsync(int userId, int productId, int variantId, int quantity)
+        public async Task AddItemToCartAsync(string userId, int productId, int variantId, int quantity)
         {
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
@@ -168,7 +168,7 @@ namespace Menova.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task ClearCartAsync(int userId)
+        public async Task ClearCartAsync(string userId)
         {
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
@@ -182,5 +182,4 @@ namespace Menova.Data.Repositories
             }
         }
     }
-
 }

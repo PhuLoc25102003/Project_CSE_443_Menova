@@ -1,28 +1,43 @@
-﻿using Menova.Areas.Admin.Models;
-using Menova.Data.Services;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Menova.Models;
+using System.Threading.Tasks;
+using Menova.Areas.Admin.Models;
+using Menova.Data.Services;
 
 namespace Menova.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class DashboardController : Controller
     {
         private readonly IProductService _productService;
         private readonly IOrderService _orderService;
         private readonly IUserService _userService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public DashboardController(
             IProductService productService,
             IOrderService orderService,
-            IUserService userService)
+            IUserService userService,
+            UserManager<ApplicationUser> userManager)
         {
             _productService = productService;
             _orderService = orderService;
             _userService = userService;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(string dateRange = "week")
         {
+            // Get current authenticated user
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account", new { area = "" });
+            }
+
             // Tạo view model cho dashboard
             var viewModel = new DashboardViewModel
             {
@@ -38,6 +53,7 @@ namespace Menova.Areas.Admin.Controllers
             };
 
             ViewData["SelectedDateRange"] = dateRange;
+            ViewData["CurrentUser"] = currentUser;
             return View(viewModel);
         }
 

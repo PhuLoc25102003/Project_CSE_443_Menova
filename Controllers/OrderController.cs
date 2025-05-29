@@ -3,33 +3,45 @@ using Menova.Data;
 using Menova.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Menova.Models;
 
 namespace Menova.Controllers
 {
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, UserManager<ApplicationUser> userManager)
         {
             _orderService = orderService;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            // For demonstration purposes - normally would use user authentication
-            int userId = 1; // Placeholder for actual user ID from auth
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            var orders = await _orderService.GetUserOrdersAsync(userId);
+            var orders = await _orderService.GetUserOrdersAsync(user.Id);
             return View(orders);
         }
 
         public async Task<IActionResult> Detail(int id)
         {
-            // For demonstration purposes - normally would use user authentication
-            int userId = 1; // Placeholder for actual user ID from auth
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            var order = await _orderService.GetOrderDetailsAsync(id, userId);
+            var order = await _orderService.GetOrderDetailsAsync(id, user.Id);
 
             if (order == null)
             {
@@ -42,12 +54,15 @@ namespace Menova.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(string shippingAddress, string phoneNumber, string paymentMethod, string notes)
         {
-            // For demonstration purposes - normally would use user authentication
-            int userId = 1; // Placeholder for actual user ID from auth
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             try
             {
-                var order = await _orderService.CreateOrderAsync(userId, shippingAddress, phoneNumber, paymentMethod, notes);
+                var order = await _orderService.CreateOrderAsync(user.Id, shippingAddress, phoneNumber, paymentMethod, notes);
                 return RedirectToAction("Detail", new { id = order.OrderId });
             }
             catch (System.Exception ex)
@@ -59,12 +74,11 @@ namespace Menova.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateStatus(int id, string status)
         {
-            // This would typically be an admin function
             await _orderService.UpdateOrderStatusAsync(id, status);
             return RedirectToAction("Detail", new { id });
         }
-
     }
 }

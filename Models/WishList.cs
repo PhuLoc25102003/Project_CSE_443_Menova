@@ -8,7 +8,7 @@ namespace Menova.Models
         [Key]
         public int WishListId { get; set; }
 
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         public int ProductId { get; set; }
 
@@ -16,7 +16,7 @@ namespace Menova.Models
 
         // Navigation properties
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
         [ForeignKey("ProductId")]
         public virtual Product Product { get; set; }

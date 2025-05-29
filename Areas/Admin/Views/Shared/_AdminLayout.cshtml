@@ -26,10 +26,10 @@
 
             <div class="sidebar-user">
                 <div class="user-avatar">
-                    <img src="/images/admin/avatar.jpg" alt="Admin Avatar">
+                    <img src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=random" alt="Admin Avatar">
                 </div>
                 <div class="user-info">
-                    <h3>Admin User</h3>
+                    <h3>@User.Identity.Name</h3>
                     <p>Administrator</p>
                 </div>
             </div>
@@ -76,10 +76,12 @@
             </nav>
 
             <div class="sidebar-footer">
-                <a href="@Url.Action("Logout", "Account", new { area = "" })">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Đăng xuất</span>
-                </a>
+                <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
+                    <button type="submit" class="sidebar-logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -113,24 +115,22 @@
                     </div>
                     <div class="navbar-item dropdown">
                         <a href="#" class="dropdown-toggle">
-                            <img src="/images/admin/avatar.jpg" alt="User Avatar" class="avatar-small">
-                            <span>Admin</span>
+                            <img src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=random" alt="User Avatar" class="avatar-small">
+                            <span>@User.Identity.Name</span>
                             <i class="fas fa-chevron-down"></i>
                         </a>
                         <div class="dropdown-menu">
-                            <a href="@Url.Action("Profile", "Account", new { area = "Admin" })">
+                            <a asp-area="" asp-controller="Account" asp-action="Profile">
                                 <i class="fas fa-user"></i>
                                 <span>Hồ sơ</span>
                             </a>
-                            <a href="@Url.Action("Settings", "Account", new { area = "Admin" })">
-                                <i class="fas fa-cog"></i>
-                                <span>Cài đặt</span>
-                            </a>
                             <div class="dropdown-divider"></div>
-                            <a href="@Url.Action("Logout", "Account", new { area = "" })">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Đăng xuất</span>
-                            </a>
+                            <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
+                                <button type="submit" class="dropdown-logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Đăng xuất</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

@@ -9,7 +9,7 @@ namespace Menova.Models
         [Key]
         public int OrderId { get; set; }
 
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         public DateTime OrderDate { get; set; }
 
@@ -39,7 +39,7 @@ namespace Menova.Models
 
         // Navigation properties
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }

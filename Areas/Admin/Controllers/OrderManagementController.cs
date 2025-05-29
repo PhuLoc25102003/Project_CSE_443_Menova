@@ -8,10 +8,12 @@ using Menova.Models;
 using Menova.Areas.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Menova.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class OrderManagementController : Controller
     {
         private readonly IOrderService _orderService;

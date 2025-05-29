@@ -9,7 +9,7 @@ namespace Menova.Data.Repositories
         {
         }
 
-        public async Task<IEnumerable<Order>> GetUserOrdersAsync(int userId)
+        public async Task<IEnumerable<Order>> GetUserOrdersAsync(string userId)
         {
             return await _context.Orders
                 .Where(o => o.UserId == userId)
@@ -17,7 +17,7 @@ namespace Menova.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Order> GetOrderWithDetailsAsync(int orderId, int userId)
+        public async Task<Order> GetOrderWithDetailsAsync(int orderId, string userId)
         {
             return await _context.Orders
                 .Include(o => o.OrderDetails)
@@ -59,7 +59,7 @@ namespace Menova.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Order> CreateOrderFromCartAsync(int userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes)
+        public async Task<Order> CreateOrderFromCartAsync(string userId, string shippingAddress, string phoneNumber, string paymentMethod, string notes)
         {
             // Get user's cart
             var cart = await _context.Carts

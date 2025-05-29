@@ -29,6 +29,10 @@
         --icon-blue: #2196f3;
         --icon-green: #4caf50;
         --action-column-min-width: 220px;
+        --admin-color: #7928ca;
+        --admin-bg: rgba(121, 40, 202, 0.12);
+        --customer-color: #0070f3;
+        --customer-bg: rgba(0, 112, 243, 0.12);
     }
 
 /* Container styling cho cả hai bảng */
@@ -54,7 +58,7 @@
 }
 
 /* Grid Container - Đảm bảo hiển thị đúng */
-#productsGrid, #categoriesGrid {
+#productsGrid, #categoriesGrid, #usersGrid {
     width: 100% !important;
     height: 600px !important;
     display: block !important;
@@ -65,7 +69,7 @@
 
 /* Responsive grid container height điều chỉnh theo kích thước màn hình */
 @media (max-width: 768px) {
-    #productsGrid, #categoriesGrid {
+    #productsGrid, #categoriesGrid, #usersGrid {
         height: 500px !important;
     }
 }
@@ -513,4 +517,48 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: fit-content;
+}
+
+/* Status badges for user roles */
+.status-badge.status-admin {
+    background-color: var(--admin-bg);
+    color: var(--admin-color);
+    font-weight: 600;
+}
+
+.status-badge.status-customer {
+    background-color: var(--customer-bg);
+    color: var(--customer-color);
+    font-weight: 500;
+}
+
+.status-badge.status-active {
+    background-color: var(--success-bg);
+    color: var(--success-color);
+    font-weight: 500;
+}
+
+.status-badge.status-inactive {
+    background-color: rgba(108, 117, 125, 0.12);
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.status-badge-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    border-radius: 20px;
+    white-space: nowrap;
+    min-width: 80px;
+    text-align: center;
 } 

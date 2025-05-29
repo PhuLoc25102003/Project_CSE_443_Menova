@@ -1,35 +1,57 @@
 ﻿using Menova.Data;
 using Menova.Data.Services;
 using Menova.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Menova.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IUserService _userService;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AccountController(IUserService userService)
+        public AccountController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            RoleManager<IdentityRole> roleManager)
         {
-            _userService = userService;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         public IActionResult Login()
         {
+            // If user is already logged in, redirect to home
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(string email, string password, string returnUrl = null)
         {
-            var user = await _userService.AuthenticateAsync(username, password);
+            returnUrl ??= Url.Content("~/");
 
-            if (user != null)
+            // Check if user exists
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
             {
-                // In a real app, would use ASP.NET Core Identity or set auth cookie
-                // For demo, just redirect to home
-                return RedirectToAction("Index", "Home");
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return View();
+            }
+
+            // Sign in with password
+            var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: true, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                return LocalRedirect(returnUrl);
             }
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -38,38 +60,58 @@ namespace Menova.Controllers
 
         public IActionResult Register()
         {
+            // If user is already logged in, redirect to home
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(User user, string password)
+        public async Task<IActionResult> Register(string email, string password, string fullName)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                // Create the user
+                var user = new ApplicationUser
                 {
-                    var result = await _userService.RegisterUserAsync(user, password);
-                    if (result)
-                    {
-                        return RedirectToAction("Login");
-                    }
+                    UserName = email,
+                    Email = email,
+                    FullName = fullName
+                };
+
+                var result = await _userManager.CreateAsync(user, password);
+                if (result.Succeeded)
+                {
+                    // Add the User role by default
+                    await _userManager.AddToRoleAsync(user, "User");
+
+                    // Sign in the user
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Index", "Home");
                 }
-                return View(user);
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(user);
-            }
+
+            return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize]
         public async Task<IActionResult> Profile()
         {
-            // For demonstration purposes - normally would use user authentication
-            int userId = 1; // Placeholder for actual user ID from auth
-
-            var user = await _userService.GetUserByIdAsync(userId);
-
+            var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound();
@@ -78,34 +120,38 @@ namespace Menova.Controllers
             return View(user);
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> UpdateProfile(User userUpdates)
+        public async Task<IActionResult> UpdateProfile(string fullName, string phoneNumber)
         {
-            // For demonstration purposes - normally would use user authentication
-            int userId = 1; // Placeholder for actual user ID from auth
-
-            try
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
-                // Make sure we're updating the correct user
-                var user = await _userService.GetUserByIdAsync(userId);
-                if (user == null)
-                {
-                    return NotFound();
-                }
+                return NotFound();
+            }
 
-                user.FullName = userUpdates.FullName;
-                user.PhoneNumber = userUpdates.PhoneNumber;
+            user.FullName = fullName;
+            user.PhoneNumber = phoneNumber;
+            user.UpdatedAt = DateTime.UtcNow;
 
-                await _userService.UpdateUserProfileAsync(user);
-
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
                 return RedirectToAction("Profile");
             }
-            catch (Exception ex)
+
+            foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View("Profile", userUpdates);
+                ModelState.AddModelError(string.Empty, error.Description);
             }
+
+            return View("Profile", user);
         }
 
+        [Authorize]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

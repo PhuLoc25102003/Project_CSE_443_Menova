@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="auth-container">
+    <div class="auth-form">
+        <h2 class="auth-title">Login</h2>
+        
+        <form method="post" asp-action="Login" asp-controller="Account">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control" required />
+            </div>
+            
+            <button type="submit" class="btn btn--primary btn--full">Login</button>
+            
+            <div class="auth-links">
+                <p>Don't have an account? <a asp-action="Register" asp-controller="Account">Register</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" />
+} 
