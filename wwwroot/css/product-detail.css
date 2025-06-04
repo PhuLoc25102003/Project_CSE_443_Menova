@@ -67,21 +67,64 @@
     margin-bottom: 20px;
 }
 
+.original-price {
+    text-decoration: line-through;
+    color: #777;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.discount-price {
+    color: #e63946;
+}
+
+.alert {
+    padding: 12px 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+.alert--success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-left: 4px solid #2e7d32;
+}
+
+.alert--error {
+    background-color: #ffebee;
+    color: #c62828;
+    border-left: 4px solid #c62828;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .product-form {
     margin-bottom: 30px;
 }
 
 .product-sizes, .product-colors {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
-    .product-sizes label, .product-colors label {
-        display: block;
-        font-weight: 500;
-        margin-bottom: 10px;
-    }
+.option-label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
 
-.size-options, .color-options {
+.size-options {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
@@ -96,27 +139,71 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    background: white;
+    font-weight: 500;
+    border-radius: 4px;
 }
 
-    .size-option:hover, .size-option.active {
-        border-color: #0a2463;
-        background-color: #0a2463;
-        color: white;
-    }
+.size-option:hover, .size-option.active {
+    border-color: #0a2463;
+    background-color: #0a2463;
+    color: white;
+}
+
+.color-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
 
 .color-option {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 1px solid #ddd;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    border: 2px solid transparent;
 }
 
-    .color-option:hover, .color-option.active {
-        transform: scale(1.1);
-        box-shadow: 0 0 0 2px #0a2463;
-    }
+.color-option:hover, .color-option.active {
+    transform: scale(1.05);
+    border: 2px solid #0a2463;
+}
+
+.color-option.active::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.variant-info {
+    margin: 10px 0 15px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.variant-stock {
+    color: #2e7d32;
+    font-weight: 500;
+}
+
+.variant-stock.low {
+    color: #ff6d00;
+}
+
+.variant-price {
+    color: #0a2463;
+    font-weight: 500;
+    margin-top: 5px;
+}
 
 .product-quantity {
     margin-bottom: 20px;
@@ -158,21 +245,52 @@
         margin: 0;
     }
 
-.add-to-cart-btn {
-    width: 100%;
+.product-action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.add-to-cart-btn, .buy-now-btn {
+    flex: 1;
     padding: 12px 0;
-    background-color: #0a2463;
-    color: white;
-    border: none;
     font-size: 16px;
     font-weight: bold;
+    border: none;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.add-to-cart-btn {
+    background-color: #0a2463;
+    color: white;
 }
 
     .add-to-cart-btn:hover {
         background-color: #083370;
     }
+
+.buy-now-btn {
+    background-color: #e63946;
+    color: white;
+}
+
+    .buy-now-btn:hover {
+        background-color: #d32f2f;
+    }
+
+.product-error-message {
+    color: #c62828;
+    margin: 10px 0;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 5px 0;
+}
+
+.add-to-cart-btn:disabled, .buy-now-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
 
 .product-description {
     margin-top: 30px;
@@ -240,5 +358,9 @@
 
     .main-image {
         height: 350px;
+    }
+    
+    .product-action-buttons {
+        flex-direction: column;
     }
 }

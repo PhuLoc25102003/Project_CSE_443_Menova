@@ -1,0 +1,41 @@
+@model IEnumerable<Menova.Models.Category>
+
+@{
+    // Get the parent categories
+    var parentCategories = Model.Where(c => c.ParentCategoryId == null && c.IsActive).ToList();
+    
+    // Get all child categories grouped by parent
+    var childCategoriesByParent = Model
+        .Where(c => c.ParentCategoryId != null && c.IsActive)
+        .GroupBy(c => c.ParentCategoryId)
+        .ToDictionary(g => g.Key, g => g.ToList());
+}
+
+<div class="mega-menu-container">
+    <ul class="mega-menu">
+        <li class="mega-menu-item">
+            <a asp-controller="Product" asp-action="Index" class="mega-menu-link">Tất cả sản phẩm</a>
+        </li>
+        
+        @foreach (var category in parentCategories)
+        {
+            <li class="mega-menu-item">
+                <a asp-controller="Product" asp-action="Category" asp-route-id="@category.CategoryId" class="mega-menu-link">@category.Name</a>
+                
+                @if (childCategoriesByParent.ContainsKey(category.CategoryId))
+                {
+                    <div class="mega-menu-content">
+                        <ul class="mega-menu-column">
+                            @foreach (var childCategory in childCategoriesByParent[category.CategoryId])
+                            {
+                                <li>
+                                    <a asp-controller="Product" asp-action="Category" asp-route-id="@childCategory.CategoryId">@childCategory.Name</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </li>
+        }
+    </ul>
+</div> 

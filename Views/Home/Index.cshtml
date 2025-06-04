@@ -34,34 +34,12 @@
         </div>
     </div>
 
-    <!-- Danh Mục Sản Phẩm -->
-    <div class="product-categories">
-        <h2 class="section-title">Danh Mục Sản Phẩm</h2>
-        <div class="categories-container">
-            @foreach (var category in Model.Categories)
-            {
-                <div class="category-item">
-                    <div class="category-image">
-                        <a asp-controller="Product" asp-action="Category" asp-route-id="@category.CategoryId">
-                            <img src="/images/categories/@(category.CategoryId).jpg" alt="@category.Name">
-                            <div class="category-name">@category.Name</div>
-                        </a>
-                    </div>
-                </div>
-            }
-        </div>
-        <div class="category-navigation">
-            <button class="nav-button prev"><i class="fas fa-chevron-left"></i></button>
-            <button class="nav-button next"><i class="fas fa-chevron-right"></i></button>
-        </div>
-        <div class="section-divider"></div>
-    </div>
-
     <!-- Sản Phẩm Mới -->
     <div class="new-products">
         <div class="section-header">
             <h2 class="section-title">Sản Phẩm Mới</h2>
-            <a asp-controller="Product" asp-action="Index" class="view-all">Xem tất cả sản phẩm <i class="fas fa-arrow-right"></i></a>
+            <a asp-controller="Product" asp-action="Index" class="view-all">Xem tất cả sản phẩm <i
+                    class="fas fa-arrow-right"></i></a>
         </div>
         <div class="products-container">
             @foreach (var product in Model.FeturedProducts)
@@ -70,7 +48,79 @@
                     @if (DateTime.Now.Subtract(product.CreatedAt).TotalDays < 7)
                     {
                         <div class="product-tag">Mới nhập kho</div>
+                        <div class="product-image">
+                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@product.ProductId">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" alt="@product.Name">
+                                }
+                                else if (product.Images != null && product.Images.Any(i => i.IsPrimary))
+                                {
+                                    <img src="@product.Images.FirstOrDefault(i => i.IsPrimary)?.ImageUrl" alt="@product.Name">
+                                }
+                                else
+                                {
+                                    <img src="/images/placeholder.png" alt="@product.Name">
+                                }
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">
+                                <a asp-controller="Product" asp-action="Detail"
+                                    asp-route-id="@product.ProductId">@product.Name</a>
+                            </h3>
+                            <p class="product-price">
+                                <i class="fas fa-tag"></i>
+                                @if (product.DiscountPrice != 0)
+                                {
+                                    <span class="original-price">@String.Format("{0:N0}₫", product.Price)</span>
+                                    <span>@String.Format("{0:N0}₫", product.DiscountPrice)</span>
+                                }
+                                else
+                                {
+                                    <span>@String.Format("{0:N0}₫", product.Price)</span>
+                                }
+                            </p>
+                            @if (product.ProductVariants != null && product.ProductVariants.Any())
+                            {
+                                var colors = product.ProductVariants.Select(v => v.Color).Distinct().Take(4);
+                                if (colors.Any())
+                                {
+                                    <div class="product-colors">
+                                        @foreach (var color in colors)
+                                        {
+                                            <span class="color-option" style="background-color: @color.ColorCode;"
+                                                title="@color.Name"></span>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
                     }
+
+
+                </div>
+            }
+        </div>
+        <div class="product-navigation">
+            <button class="nav-button prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="nav-button next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="section-divider"></div>
+    </div>
+
+    <!-- Sản Phẩm Bán Chạy -->
+    <div class="best-selling-products">
+        <div class="section-header">
+            <h2 class="section-title">Sản Phẩm Bán Chạy</h2>
+            <a asp-controller="Product" asp-action="Index" class="view-all">Xem tất cả sản phẩm <i
+                    class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="products-container">
+            @foreach (var product in Model.BestSellingProducts)
+            {
+                <div class="product-item">
+                    <div class="product-tag best-seller-tag">Bán chạy</div>
                     <div class="product-image">
                         <a asp-controller="Product" asp-action="Detail" asp-route-id="@product.ProductId">
                             @if (!string.IsNullOrEmpty(product.ImageUrl))
@@ -89,7 +139,8 @@
                     </div>
                     <div class="product-info">
                         <h3 class="product-name">
-                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@product.ProductId">@product.Name</a>
+                            <a asp-controller="Product" asp-action="Detail"
+                                asp-route-id="@product.ProductId">@product.Name</a>
                         </h3>
                         <p class="product-price">
                             <i class="fas fa-tag"></i>
@@ -111,7 +162,8 @@
                                 <div class="product-colors">
                                     @foreach (var color in colors)
                                     {
-                                        <span class="color-option" style="background-color: @color.ColorCode;" title="@color.Name"></span>
+                                        <span class="color-option" style="background-color: @color.ColorCode;"
+                                            title="@color.Name"></span>
                                     }
                                 </div>
                             }
@@ -120,11 +172,10 @@
                 </div>
             }
         </div>
-        <div class="product-navigation">
+        <div class="product-navigation best-seller-nav">
             <button class="nav-button prev"><i class="fas fa-chevron-left"></i></button>
             <button class="nav-button next"><i class="fas fa-chevron-right"></i></button>
         </div>
-        <div class="section-divider"></div>
     </div>
 </div>
 

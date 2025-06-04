@@ -12,8 +12,10 @@ namespace Menova.Data.Services
         Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId, int page, int pageSize);
         Task<ProductViewModel> GetProductDetailsAsync(int id);
         Task<CategoryViewModel> GetProductsListAsync(int? categoryId, string sortOrder, int page, int pageSize);
+        Task<CategoryViewModel> GetProductsListAsync(int? categoryId, string sortOrder, int page, int pageSize, bool inStockOnly, decimal? priceFrom, decimal? priceTo, bool newArrivals);
         Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm, int page, int pageSize);
         Task<int> GetSearchProductsCountAsync(string searchTerm);
+        Task<Dictionary<int, int>> GetProductCountByCategories();
         
         // Thêm các phương thức mới cho Dashboard
         Task<int> GetTotalProductCountAsync();

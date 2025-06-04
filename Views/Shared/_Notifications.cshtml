@@ -1,0 +1,69 @@
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Thành công!',
+                text: '@Html.Raw(TempData["SuccessMessage"])',
+                icon: 'success',
+                confirmButtonText: 'Đóng',
+                confirmButtonColor: '#3B82F6'
+            });
+        });
+    </script>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: '@Html.Raw(TempData["ErrorMessage"])',
+                icon: 'error',
+                confirmButtonText: 'Đóng',
+                confirmButtonColor: '#EF4444'
+            });
+        });
+    </script>
+}
+
+@if (TempData["CartMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const isError = @(TempData["CartError"] != null ? "true" : "false");
+            Swal.fire({
+                title: isError ? 'Thông báo' : 'Thành công!',
+                text: '@Html.Raw(TempData["CartMessage"])',
+                icon: isError ? 'warning' : 'success',
+                confirmButtonText: 'Đóng',
+                confirmButtonColor: isError ? '#F59E0B' : '#3B82F6'
+            });
+        });
+    </script>
+}
+
+@if (TempData["OrderSuccess"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Đặt hàng thành công!',
+                text: '@Html.Raw(TempData["OrderSuccess"])',
+                icon: 'success',
+                confirmButtonText: 'Xem đơn hàng',
+                confirmButtonColor: '#3B82F6',
+                showCancelButton: true,
+                cancelButtonText: 'Tiếp tục mua sắm',
+                cancelButtonColor: '#6B7280'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Index", "Order")';
+                }
+            });
+        });
+    </script>
+} 

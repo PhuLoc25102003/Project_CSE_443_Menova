@@ -1,0 +1,119 @@
+@model IEnumerable<Menova.Models.Order>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4 page-title">Đơn hàng của tôi</h1>
+            
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">
+                    <p class="mb-0">Bạn chưa có đơn hàng nào. <a href="@Url.Action("Index", "Home")">Tiếp tục mua sắm</a></p>
+                </div>
+            }
+            else
+            {
+                <div class="order-list">
+                    <div class="order-header d-none d-md-flex">
+                        <div class="col-2">Đơn hàng</div>
+                        <div class="col-2">Ngày</div>
+                        <div class="col-3">Trạng thái thanh toán</div>
+                        <div class="col-3">Tình trạng đơn hàng</div>
+                        <div class="col-2">Tổng</div>
+                    </div>
+
+                    @foreach (var order in Model)
+                    {
+                        <div class="order-item" 
+                             onclick="window.location.href='@Url.Action("Detail", "Order", new { id = order.OrderId })';"
+                             data-order-id="@order.OrderId">
+                            <div class="order-row">
+                                <div class="col-2 fw-bold">
+                                    #@order.OrderId
+                                </div>
+                                <div class="col-2">
+                                    @order.OrderDate.ToString("d MMMM yyyy")
+                                </div>
+                                <div class="col-3">
+                                    @{
+                                        string paymentStatusClass = order.PaymentStatus?.ToLower() switch
+                                        {
+                                            "paid" => "badge bg-success",
+                                            "pending" => "badge bg-warning text-dark",
+                                            "failed" => "badge bg-danger",
+                                            _ => "badge bg-secondary"
+                                        };
+
+                                        string paymentStatusText = order.PaymentStatus?.ToLower() switch
+                                        {
+                                            "paid" => "Đã thanh toán",
+                                            "pending" => "Chờ thanh toán",
+                                            "failed" => "Thanh toán thất bại",
+                                            _ => order.PaymentStatus
+                                        };
+                                    }
+                                    <span class="@paymentStatusClass">@paymentStatusText</span>
+                                </div>
+                                <div class="col-3">
+                                    @{
+                                        string orderStatusClass = order.OrderStatus?.ToLower() switch
+                                        {
+                                            "pending" => "badge bg-info text-dark",
+                                            "processing" => "badge bg-primary",
+                                            "shipping" => "badge bg-info",
+                                            "delivered" => "badge bg-success",
+                                            "received" => "badge bg-success",
+                                            "cancelled" => "badge bg-danger",
+                                            _ => "badge bg-secondary"
+                                        };
+
+                                        string orderStatusText = order.OrderStatus?.ToLower() switch
+                                        {
+                                            "pending" => "Chờ xác nhận",
+                                            "processing" => "Đang xử lý",
+                                            "shipping" => "Đang giao hàng",
+                                            "delivered" => "Đã giao hàng",
+                                            "received" => "Đã nhận hàng",
+                                            "cancelled" => "Đã hủy",
+                                            _ => order.OrderStatus
+                                        };
+                                    }
+                                    <span class="@orderStatusClass">@orderStatusText</span>
+                                </div>
+                                <div class="col-2 text-end">
+                                    @order.TotalAmount.ToString("N0")₫
+                                </div>
+                            </div>
+                            <div class="order-item-feedback"></div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/order-list.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script>
+        // Thêm hiệu ứng khi click vào đơn hàng
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderItems = document.querySelectorAll('.order-item');
+            orderItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.add('clicked');
+                    setTimeout(() => {
+                        this.classList.remove('clicked');
+                    }, 300);
+                });
+            });
+        });
+    </script>
+} 

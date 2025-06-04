@@ -17,11 +17,87 @@
     var nextStatuses = allowedNextStatuses.ContainsKey(currentStatus) 
         ? allowedNextStatuses[currentStatus] 
         : new List<string>();
+
+    var orderDetailsCount = Model.Order.OrderDetails?.Count() ?? 0;
+    
+    // Function to convert status to proper case for controller
+    string GetProperCaseStatus(string status) 
+    {
+        if (string.IsNullOrEmpty(status)) return status;
+        return char.ToUpper(status[0]) + status.Substring(1).ToLower();
+    }
+}
+
+@* Thêm anti-forgery token để AJAX request *@
+@Html.AntiForgeryToken()
+
+@functions {
+    string GetStatusText(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "pending" => "Chờ xác nhận",
+            "processing" => "Đang xử lý",
+            "shipping" => "Đang giao hàng",
+            "delivered" => "Đã giao hàng",
+            "received" => "Đã nhận hàng",
+            "cancelled" => "Đã hủy",
+            _ => status
+        };
+    }
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/admin/order-detail.css" asp-append-version="true" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Đảm bảo CSS cho timeline được áp dụng đúng */
+        .timeline-item.current-status::before {
+            background: #4facfe !important;
+            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.3) !important;
+            animation: pulseCurrent 2s infinite !important;
+        }
+
+        .timeline-item.current-status .timeline-content {
+            border-top-color: #4facfe !important;
+            background: rgba(79, 172, 254, 0.12) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .timeline-item.current-status .timeline-title {
+            color: #4facfe !important;
+            font-weight: 700 !important;
+        }
+
+        .timeline-item.current-status .timeline-date {
+            color: #4facfe !important;
+            font-weight: 600 !important;
+        }
+
+        /* Trạng thái đã qua - màu xanh lá */
+        .timeline-item--active::before {
+            background: #38ef7d !important;
+            box-shadow: 0 0 0 4px rgba(56, 239, 125, 0.2) !important;
+        }
+
+        .timeline-item--active .timeline-content {
+            border-top-color: #38ef7d !important;
+            background: rgba(56, 239, 125, 0.12) !important;
+        }
+
+        /* Trạng thái tương lai - màu trắng */
+        .timeline-item--disabled::before {
+            background: #e9ecef !important;
+            opacity: 0.8 !important;
+        }
+
+        .timeline-item--disabled .timeline-content {
+            border-top-color: #e9ecef !important;
+            background: #ffffff !important;
+            opacity: 0.9 !important;
+        }
+        
+    </style>
 }
 
 <div class="order-container">
@@ -68,34 +144,50 @@
                     <div class="action-buttons status-action-buttons">
                         @foreach (var nextStatus in nextStatuses)
                         {
-                            if (nextStatus == "processing" || nextStatus == "shipping")
+                            if (nextStatus == "processing" || nextStatus == "shipping" || nextStatus == "delivered")
                             {
                                 string buttonText = nextStatus.ToLower() switch {
                                     "processing" => "Xác nhận đơn hàng",
                                     "shipping" => "Đã giao cho đơn vị vận chuyển",
+                                    "delivered" => "Xác nhận đã giao hàng",
                                     _ => $"Chuyển sang {GetStatusText(nextStatus)}"
                                 };
                                 
                                 string statusTitle = nextStatus.ToLower() switch {
                                     "processing" => "Xác nhận đơn hàng",
                                     "shipping" => "Xác nhận giao cho đơn vị vận chuyển",
+                                    "delivered" => "Xác nhận đã giao hàng",
                                     _ => $"Chuyển trạng thái đơn hàng"
                                 };
                                 
                                 string statusMessage = nextStatus.ToLower() switch {
                                     "processing" => "Bạn có chắc chắn muốn xác nhận đơn hàng này? Đơn hàng sẽ được chuyển sang trạng thái \"Đang xử lý\".",
                                     "shipping" => "Bạn có chắc chắn muốn xác nhận đơn hàng đã được giao cho đơn vị vận chuyển? Đơn hàng sẽ được chuyển sang trạng thái \"Đang giao hàng\".",
+                                    "delivered" => "Bạn có chắc chắn muốn xác nhận đơn hàng đã được giao đến khách hàng? Đơn hàng sẽ được chuyển sang trạng thái \"Đã giao hàng\".",
                                     _ => $"Bạn có chắc chắn muốn {buttonText}?"
                                 };
                                 
                                 <form id="form-@nextStatus" asp-area="Admin" asp-controller="OrderManagement" asp-action="UpdateStatus" 
                                       method="post" style="display: inline-block;">
                                     <input type="hidden" name="id" value="@Model.Order.OrderId" />
-                                    <input type="hidden" name="status" value="@nextStatus" />
+                                    <input type="hidden" name="status" value="@GetProperCaseStatus(nextStatus)" />
                                     <button type="button" class="btn btn--primary" 
                                             onclick="confirmStatusChange('@statusTitle', '@statusMessage', '@nextStatus')">
-                                        <i class="fas @(nextStatus == "processing" ? "fa-check" : "fa-truck")"></i>
+                                        <i class="fas @(nextStatus == "processing" ? "fa-check" : nextStatus == "shipping" ? "fa-truck" : "fa-box")"></i>
                                         @buttonText
+                                    </button>
+                                </form>
+                            }
+                            else if (nextStatus == "cancelled")
+                            {
+                                <form id="form-@nextStatus" asp-area="Admin" asp-controller="OrderManagement" asp-action="UpdateStatus" 
+                                      method="post" style="display: inline-block;">
+                                    <input type="hidden" name="id" value="@Model.Order.OrderId" />
+                                    <input type="hidden" name="status" value="@GetProperCaseStatus(nextStatus)" />
+                                    <button type="button" class="btn btn--danger" 
+                                            onclick="confirmStatusChange('Hủy đơn hàng', 'Bạn có chắc chắn muốn hủy đơn hàng này?', '@nextStatus')">
+                                        <i class="fas fa-times"></i>
+                                        Hủy đơn hàng
                                     </button>
                                 </form>
                             }
@@ -104,10 +196,6 @@
                 }
                 
                 <div class="action-buttons">
-                    <button class="btn btn--outline" onclick="printOrder()">
-                        <i class="fas fa-print"></i>
-                        In đơn hàng
-                    </button>
                     <a asp-area="Admin" asp-controller="OrderManagement" asp-action="Index" class="btn btn--outline">
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
@@ -126,37 +214,64 @@
             </div>
             <div class="card-body">
                 <div class="order-items">
-                    @foreach (var item in Model.Order.OrderDetails)
+                    @if (orderDetailsCount > 0)
                     {
-                        <div class="item">
-                            <img src="@(item.Product?.ImageUrl ?? "https://via.placeholder.com/80")" 
-                                 alt="@item.Product?.Name" 
-                                 class="item-image">
-                            <div class="item-info">
-                                <div class="item-name">@item.Product?.Name</div>
-                                <div class="item-variant">
-                                    @if (item.ProductVariant != null)
-                                    {
-                                        <span>
-                                            Màu: @item.ProductVariant.Color?.Name | 
-                                            Size: @item.ProductVariant.Size?.Name
-                                        </span>
-                                    }
+                        @foreach (var item in Model.Order.OrderDetails)
+                        {
+                            <div class="item">
+                                @{
+                                    // Ensure Product is loaded with Include() in the controller
+                                    var product = item.Product;
+                                    var productName = product?.Name ?? "Sản phẩm không tồn tại";
+                                    var imageUrl = !string.IsNullOrEmpty(product?.ImageUrl) 
+                                        ? product.ImageUrl 
+                                        : "https://via.placeholder.com/80";
+                                }
+                                <img src="@imageUrl" 
+                                     alt="@productName" 
+                                     class="item-image">
+                                <div class="item-info">
+                                    <div class="item-name">@productName</div>
+                                    <div class="item-variant">
+                                        @if (item.ProductVariant != null)
+                                        {
+                                            <span>
+                                                @if (item.ProductVariant.Color != null)
+                                                {
+                                                    <text>Màu: @item.ProductVariant.Color.Name</text>
+                                                }
+                                                @if (item.ProductVariant.Size != null)
+                                                {
+                                                    if (item.ProductVariant.Color != null)
+                                                    {
+                                                        <text> | </text>
+                                                    }
+                                                    <text>Size: @item.ProductVariant.Size.Name</text>
+                                                }
+                                            </span>
+                                        }
+                                    </div>
+                                    <div class="item-price">
+                                        @{
+                                            decimal originalPrice = item.UnitPrice;
+                                            decimal salePrice = item.UnitPrice - item.Discount;
+                                        }
+                                        
+                                        @if (item.Discount > 0)
+                                        {
+                                            <span class="original-price">@originalPrice.ToString("N0")₫</span>
+                                        }
+                                        <span class="sale-price">@salePrice.ToString("N0")₫</span>
+                                    </div>
                                 </div>
-                                <div class="item-price">
-                                    @{
-                                        decimal originalPrice = item.UnitPrice;
-                                        decimal salePrice = item.UnitPrice - item.Discount;
-                                    }
-                                    
-                                    @if (item.Discount > 0)
-                                    {
-                                        <span class="original-price">@originalPrice.ToString("N0")₫</span>
-                                    }
-                                    <span class="sale-price">@salePrice.ToString("N0")₫</span>
-                                </div>
+                                <div class="item-quantity">x @item.Quantity</div>
                             </div>
-                            <div class="item-quantity">x@item.Quantity</div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-items-message" style="text-align: center; padding: 30px; color: #6c757d; font-style: italic;">
+                            Không có thông tin sản phẩm cho đơn hàng này.
                         </div>
                     }
                 </div>
@@ -271,10 +386,9 @@
                             @foreach (var nextStatus in nextStatuses)
                             {
                                 // Skip buttons we already added to the header
-                                if (nextStatus != "processing" && nextStatus != "shipping")
+                                if (nextStatus != "processing" && nextStatus != "shipping" && nextStatus != "delivered")
                                 {
                                     string buttonText = nextStatus.ToLower() switch {
-                                        "delivered" => "Đánh dấu đã giao hàng",
                                         "received" => "Đánh dấu đã nhận hàng",
                                         "cancelled" => "Hủy đơn hàng",
                                         _ => $"Chuyển sang {GetStatusText(nextStatus)}"
@@ -285,7 +399,7 @@
                                     <form asp-area="Admin" asp-controller="OrderManagement" asp-action="UpdateStatus" 
                                         method="post" style="display: inline-block; margin-right: 10px; margin-bottom: 10px;">
                                         <input type="hidden" name="id" value="@Model.Order.OrderId" />
-                                        <input type="hidden" name="status" value="@nextStatus" />
+                                        <input type="hidden" name="status" value="@GetProperCaseStatus(nextStatus)" />
                                         <button type="submit" class="btn @buttonClass" 
                                                 onclick="return confirm('Bạn có chắc chắn muốn @buttonText?')">
                                             @buttonText
@@ -313,42 +427,6 @@
                             }
                         </div>
                     </div>
-
-                    <!-- Automatic status simulation -->
-                    @if (currentStatus == "shipping")
-                    {
-                        <div class="auto-status-info" style="margin-top: 15px; padding: 10px; background-color: var(--info-bg); border-radius: 8px; color: var(--info-color);">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Hệ thống sẽ tự động chuyển trạng thái sang "Đã giao hàng" sau 5 phút.</span>
-                        </div>
-                        
-                        <script>
-                            // Simulate auto status update after 5 minutes
-                            setTimeout(function() {
-                                if (confirm('Đơn hàng đã được giao đến khách hàng. Cập nhật trạng thái?')) {
-                                    // Create form and submit
-                                    var form = document.createElement('form');
-                                    form.method = 'post';
-                                    form.action = '@Url.Action("UpdateStatus", "OrderManagement", new { area = "Admin" })';
-                                    
-                                    var idInput = document.createElement('input');
-                                    idInput.type = 'hidden';
-                                    idInput.name = 'id';
-                                    idInput.value = '@Model.Order.OrderId';
-                                    
-                                    var statusInput = document.createElement('input');
-                                    statusInput.type = 'hidden';
-                                    statusInput.name = 'status';
-                                    statusInput.value = 'Delivered';
-                                    
-                                    form.appendChild(idInput);
-                                    form.appendChild(statusInput);
-                                    document.body.appendChild(form);
-                                    form.submit();
-                                }
-                            }, 5 * 60 * 1000); // 5 minutes
-                        </script>
-                    }
                 </div>
             </div>
 
@@ -389,10 +467,17 @@
                             for (int i = 0; i < orderStatusList.Count; i++)
                             {
                                 var status = orderStatusList[i];
-                                bool isActive = !isCancelled && i <= statusIndex;
+                                bool isCurrent = !isCancelled && i == statusIndex;
+                                bool isPast = !isCancelled && i < statusIndex;
                                 bool isFuture = !isCancelled && i > statusIndex;
                                 
-                                <div class="timeline-item @(isActive ? "timeline-item--active" : "")" data-status="@status.Status">
+                                // Chỉ áp dụng một class duy nhất để tránh xung đột
+                                string timelineClass = "";
+                                if (isCurrent) timelineClass = "current-status";
+                                else if (isPast) timelineClass = "timeline-item--active";
+                                else timelineClass = "timeline-item--disabled";
+                                
+                                <div class="timeline-item @timelineClass" data-status="@status.Status">
                                     <div class="timeline-content">
                                         <i class="fas @status.Icon" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
                                         <div class="timeline-title">@status.Label</div>
@@ -401,7 +486,7 @@
                                             {
                                                 <span>Dự kiến: @status.Date?.ToString("dd/MM/yyyy")</span>
                                             }
-                                            else if (isActive)
+                                            else if (isCurrent || isPast)
                                             {
                                                 <span>@status.Date?.ToString("dd/MM/yyyy - HH:mm")</span>
                                             }
@@ -432,20 +517,6 @@
 </div>
 
 @functions {
-    string GetStatusText(string status)
-    {
-        return status?.ToLower() switch
-        {
-            "pending" => "Chờ xử lý",
-            "processing" => "Đang xử lý",
-            "shipping" => "Đang giao hàng",
-            "delivered" => "Đã giao hàng",
-            "received" => "Đã nhận hàng",
-            "cancelled" => "Đã hủy",
-            _ => status
-        };
-    }
-
     string GetPaymentMethodText(string method)
     {
         return method?.ToLower() switch
@@ -462,4 +533,37 @@
 
 @section Scripts {
     <script src="~/js/admin/order-detail.js" asp-append-version="true"></script>
+    <script>
+        // Debug script
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Debug timeline styling:');
+            
+            // Lấy trạng thái hiện tại
+            const currentStatus = '@currentStatus';
+            console.log('Current status from server:', currentStatus);
+            
+            // Kiểm tra các timeline items
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach((item, index) => {
+                const itemStatus = item.getAttribute('data-status');
+                const classList = Array.from(item.classList);
+                const hasCurrentClass = classList.includes('current-status');
+                const hasActiveClass = classList.includes('timeline-item--active');
+                const hasDisabledClass = classList.includes('timeline-item--disabled');
+                
+                console.log(`Timeline item ${index} (${itemStatus}):`);
+                console.log(`  - Classes: ${classList.join(', ')}`);
+                console.log(`  - Has current class: ${hasCurrentClass}`);
+                console.log(`  - Has active class: ${hasActiveClass}`);
+                console.log(`  - Has disabled class: ${hasDisabledClass}`);
+                
+                // Force correct class if needed - emergency fix
+                if (itemStatus === currentStatus && !hasCurrentClass) {
+                    console.log(`  - FIXING: Adding current-status class to ${itemStatus}`);
+                    item.classList.remove('timeline-item--active', 'timeline-item--disabled');
+                    item.classList.add('current-status');
+                }
+            });
+        });
+    </script>
 } 

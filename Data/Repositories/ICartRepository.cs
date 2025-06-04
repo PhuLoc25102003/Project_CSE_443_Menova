@@ -11,6 +11,8 @@ namespace Menova.Data.Repositories
         Task UpdateCartItemAsync(int cartItemId, int quantity);
         Task RemoveCartItemAsync(int cartItemId);
         Task ClearCartAsync(string userId);
+        Task MergeCartsAsync(string sessionCartId, string userId);
+        Task<CartItem> GetCartItemAsync(int cartItemId);
+        Task<int> GetTotalReservedQuantityForVariantAsync(int variantId, int? excludeCartItemId = null);
     }
-
 }

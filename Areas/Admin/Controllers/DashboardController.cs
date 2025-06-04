@@ -93,6 +93,7 @@ namespace Menova.Areas.Admin.Controllers
                         
                         var hourOrders = todayOrders
                             .Where(o => o.OrderDate.Hour == hour)
+                            .Where(o => o.OrderStatus.ToLower() == "delivered" || o.OrderStatus.ToLower() == "received")
                             .ToList();
                         
                         labels.Add($"{hour}h");
@@ -114,6 +115,7 @@ namespace Menova.Areas.Admin.Controllers
                         
                         var dayOrders = weekOrders
                             .Where(o => o.OrderDate.Date == dayDate.Date)
+                            .Where(o => o.OrderStatus.ToLower() == "delivered" || o.OrderStatus.ToLower() == "received")
                             .ToList();
                         
                         labels.Add(dayDate.ToString("dd/MM"));
@@ -137,6 +139,7 @@ namespace Menova.Areas.Admin.Controllers
                         
                         var dayOrders = monthOrders
                             .Where(o => o.OrderDate.Date == dayDate.Date)
+                            .Where(o => o.OrderStatus.ToLower() == "delivered" || o.OrderStatus.ToLower() == "received")
                             .ToList();
                         
                         labels.Add(dayDate.ToString("dd"));
@@ -161,6 +164,7 @@ namespace Menova.Areas.Admin.Controllers
                         
                         var monthOrdersData = yearOrders
                             .Where(o => o.OrderDate.Month == month)
+                            .Where(o => o.OrderStatus.ToLower() == "delivered" || o.OrderStatus.ToLower() == "received")
                             .ToList();
                         
                         labels.Add($"T{month}");

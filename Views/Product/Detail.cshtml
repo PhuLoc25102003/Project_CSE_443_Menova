@@ -52,18 +52,25 @@
                         <span>@String.Format("{0:N0}₫", Model.Product.Price)</span>
                     }
                 </div>
+                
+                @if (TempData["CartMessage"] != null)
+                {
+                    <div class="alert @(TempData["CartError"] != null ? "alert--error" : "alert--success")">
+                        @TempData["CartMessage"]
+                    </div>
+                }
 
-                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="product-form">
+                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="product-form" id="add-to-cart-form">
                     <input type="hidden" name="productId" value="@Model.Product.ProductId">
 
                     @if (Model.AvailableSizes.Any())
                     {
                         <div class="product-sizes">
-                            <label>Kích cỡ:</label>
+                            <label class="option-label">Kích cỡ: @(Model.AvailableSizes.FirstOrDefault()?.Name)</label>
                             <div class="size-options">
                                 @foreach (var size in Model.AvailableSizes.OrderBy(s => s.SortOrder))
                                 {
-                                    <div class="size-option" data-size-id="@size.SizeId">@size.Name</div>
+                                    <button type="button" class="size-option" data-size-id="@size.SizeId">@size.Name</button>
                                 }
                             </div>
                         </div>
@@ -72,17 +79,37 @@
                     @if (Model.AvailableColors.Any())
                     {
                         <div class="product-colors">
-                            <label>Màu sắc:</label>
+                            <label class="option-label">Màu Sắc: @(Model.AvailableColors.FirstOrDefault()?.Name)</label>
                             <div class="color-options">
                                 @foreach (var color in Model.AvailableColors)
                                 {
-                                    <div class="color-option" data-color-id="@color.ColorId" style="background-color: @color.ColorCode;" title="@color.Name"></div>
+                                    <div class="color-option @(color == Model.AvailableColors.FirstOrDefault() ? "active" : "")" 
+                                         data-color-id="@color.ColorId" 
+                                         style="background-color: @color.ColorCode;" 
+                                         title="@color.Name">
+                                    </div>
                                 }
                             </div>
                         </div>
                     }
 
                     <input type="hidden" id="selected-variant-id" name="variantId" value="">
+                    
+                    <!-- Hidden select for available variants -->
+                    <select id="variants-data" style="display: none;">
+                        @foreach (var variant in Model.Variants)
+                        {
+                            <option 
+                                value="@variant.ProductVariantId" 
+                                data-size-id="@variant.SizeId" 
+                                data-color-id="@variant.ColorId" 
+                                data-stock="@variant.StockQuantity"
+                                data-additional-price="@variant.AdditionalPrice">
+                            </option>
+                        }
+                    </select>
+
+                    <div id="variant-info" class="variant-info"></div>
 
                     <div class="product-quantity">
                         <label>Số lượng:</label>
@@ -93,7 +120,10 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="add-to-cart-btn">Thêm vào giỏ hàng</button>
+                    <div class="product-action-buttons">
+                        <button type="submit" class="add-to-cart-btn">Thêm vào giỏ hàng</button>
+                        <button type="button" class="buy-now-btn" id="buy-now-btn">Mua ngay</button>
+                    </div>
                 </form>
 
                 <div class="product-description">
@@ -104,19 +134,6 @@
                 </div>
             </div>
         </div>
-
-        @if (Model.RelatedProducts.Any())
-        {
-            <div class="related-products">
-                <h2 class="section-title">Sản phẩm liên quan</h2>
-                <div class="products-container">
-                    @foreach (var product in Model.RelatedProducts)
-                    {
-                        <partial name="_ProductCard" model="product" />
-                    }
-                </div>
-            </div>
-        }
 
         @if (Model.Reviews.Any())
         {

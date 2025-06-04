@@ -9,5 +9,7 @@ namespace Menova.Data.Services
         Task UpdateCartItemAsync(int cartItemId, int quantity);
         Task RemoveCartItemAsync(int cartItemId);
         Task ClearCartAsync(string userId);
+        Task MergeCartsAsync(string sessionCartId, string userId);
+        Task<bool> CheckStockAvailabilityAsync(int variantId, int requestedQuantity);
     }
 }

@@ -203,6 +203,8 @@
 
 .order-items {
     margin-bottom: 20px;
+    display: block;
+    width: 100%;
 }
 
 .item {
@@ -212,6 +214,9 @@
     padding: 20px 0;
     border-bottom: 1px solid var(--border-color);
     transition: background 0.3s ease;
+    min-height: 100px;
+    opacity: 1;
+    visibility: visible;
 }
 
 .item:hover {
@@ -596,6 +601,22 @@
         flex-direction: column;
         text-align: center;
         gap: 15px;
+        padding: 15px;
+        margin-bottom: 10px;
+        background-color: var(--hover-color);
+        border-radius: 8px;
+        min-height: auto;
+    }
+    
+    .item-image {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+    }
+    
+    .item-info {
+        width: 100%;
+        text-align: center;
     }
     
     .info-row {
@@ -740,6 +761,44 @@
 
 .timeline-item.current-status[data-status="shipping"]::before {
     animation: pulseCurrent 2s infinite;
+}
+
+@keyframes pulseCurrent {
+    0% {
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.5);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(79, 172, 254, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0);
+    }
+}
+
+/* Overrides for timeline with higher specificity - Thêm vào cuối file */
+.timeline .timeline-item.current-status::before {
+    background: var(--timeline-current-color) !important;
+    box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.3) !important;
+    animation: pulseCurrent 2s infinite !important;
+}
+
+.timeline .timeline-item.current-status .timeline-content {
+    border-top-color: var(--timeline-current-color) !important;
+    background: var(--timeline-current-bg) !important;
+}
+
+.timeline .timeline-item.current-status .timeline-title {
+    color: var(--timeline-current-color) !important;
+    font-weight: 700 !important;
+}
+
+.timeline .timeline-item.timeline-item--active::before {
+    background: var(--timeline-done-color) !important;
+}
+
+.timeline .timeline-item.timeline-item--active .timeline-content {
+    border-top-color: var(--timeline-done-color) !important;
+    background: var(--timeline-done-bg) !important;
 }
 
 @keyframes pulseCurrent {

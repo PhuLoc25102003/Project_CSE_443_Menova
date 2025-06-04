@@ -12,6 +12,11 @@ namespace Menova.Data.Repositories
 
         public async Task<Cart> GetCartWithItemsAsync(string userId)
         {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return null;
+            }
+            
             return await _context.Carts
                 .Include(c => c.CartItems)
                     .ThenInclude(ci => ci.Product)
@@ -128,11 +133,19 @@ namespace Menova.Data.Repositories
 
         public async Task UpdateCartItemAsync(int cartItemId, int quantity)
         {
-            var cartItem = await _context.CartItems.FindAsync(cartItemId);
+            var cartItem = await _context.CartItems
+                .Include(ci => ci.ProductVariant)
+                .FirstOrDefaultAsync(ci => ci.CartItemId == cartItemId);
 
             if (cartItem == null)
             {
                 throw new Exception("Cart item not found");
+            }
+
+            // Check stock availability when increasing quantity
+            if (quantity > cartItem.Quantity)
+            {
+                // We will handle this at the service layer
             }
 
             if (quantity <= 0)
@@ -180,6 +193,98 @@ namespace Menova.Data.Repositories
                 cart.UpdatedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task MergeCartsAsync(string sessionCartId, string userId)
+        {
+            // Get session cart
+            var sessionCart = await GetCartWithItemsAsync(sessionCartId);
+            if (sessionCart == null || !sessionCart.CartItems.Any())
+            {
+                return; // No session cart or it's empty
+            }
+
+            // Get user cart
+            var userCart = await GetCartWithItemsAsync(userId);
+            if (userCart == null)
+            {
+                // Create new cart for user if none exists
+                userCart = new Cart
+                {
+                    UserId = userId,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    CartItems = new List<CartItem>()
+                };
+                await _context.Carts.AddAsync(userCart);
+                await _context.SaveChangesAsync();
+            }
+
+            // Merge cart items
+            foreach (var sessionItem in sessionCart.CartItems)
+            {
+                var existingItem = userCart.CartItems
+                    .FirstOrDefault(ci => ci.ProductId == sessionItem.ProductId && ci.VariantId == sessionItem.VariantId);
+
+                if (existingItem != null)
+                {
+                    // Update quantity if item already exists in user cart
+                    existingItem.Quantity += sessionItem.Quantity;
+                    existingItem.UpdatedAt = DateTime.Now;
+                }
+                else
+                {
+                    // Add session item to user cart
+                    var newItem = new CartItem
+                    {
+                        CartId = userCart.CartId,
+                        ProductId = sessionItem.ProductId,
+                        VariantId = sessionItem.VariantId,
+                        Quantity = sessionItem.Quantity,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+                    await _context.CartItems.AddAsync(newItem);
+                }
+            }
+
+            // Remove session cart
+            _context.CartItems.RemoveRange(sessionCart.CartItems);
+            _context.Carts.Remove(sessionCart);
+
+            userCart.UpdatedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<CartItem> GetCartItemAsync(int cartItemId)
+        {
+            return await _context.CartItems
+                .Include(ci => ci.Product)
+                .Include(ci => ci.ProductVariant)
+                .FirstOrDefaultAsync(ci => ci.CartItemId == cartItemId);
+        }
+
+        public async Task<int> GetTotalReservedQuantityForVariantAsync(int variantId, int? excludeCartItemId = null)
+        {
+            var query = _context.CartItems.Where(ci => ci.VariantId == variantId);
+            
+            // Exclude a specific cart item if needed (e.g., when updating quantity)
+            if (excludeCartItemId.HasValue)
+            {
+                query = query.Where(ci => ci.CartItemId != excludeCartItemId.Value);
+            }
+            
+            // Sum up quantities from active carts (created/updated within the last 60 minutes)
+            var cutoffTime = DateTime.UtcNow.AddMinutes(-60);
+            
+            // Sum up quantities from all recent and active cart items containing this variant
+            return await query
+                .Join(_context.Carts,
+                      ci => ci.CartId,
+                      c => c.CartId,
+                      (ci, c) => new { CartItem = ci, Cart = c })
+                .Where(x => x.Cart.UpdatedAt >= cutoffTime) // Only consider recently active carts
+                .SumAsync(x => x.CartItem.Quantity);
         }
     }
 }

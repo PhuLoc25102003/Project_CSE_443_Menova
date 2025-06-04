@@ -135,5 +135,16 @@ namespace Menova.Data.Repositories
                 .Include(p => p.Images)
                 .ToListAsync();
         }
+
+        public IQueryable<Product> GetQueryableProductsWithDetails()
+        {
+            return _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Images)
+                .Include(p => p.ProductVariants)
+                    .ThenInclude(v => v.Size)
+                .Include(p => p.ProductVariants)
+                    .ThenInclude(v => v.Color);
+        }
     }
 }
