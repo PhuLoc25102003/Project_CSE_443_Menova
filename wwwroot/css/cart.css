@@ -3,6 +3,37 @@
     padding: 30px 0;
 }
 
+.alert {
+    padding: 12px 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+.alert--success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-left: 4px solid #2e7d32;
+}
+
+.alert--error {
+    background-color: #ffebee;
+    color: #c62828;
+    border-left: 4px solid #c62828;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .empty-cart {
     text-align: center;
     padding: 50px 0;
@@ -103,6 +134,35 @@
 .quantity-form {
     display: flex;
     align-items: center;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.quantity-selector input {
+    width: 50px;
+    height: 30px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 14px;
+    -moz-appearance: textfield;
+}
+
+.quantity-selector input::-webkit-outer-spin-button,
+.quantity-selector input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .remove-item-btn {

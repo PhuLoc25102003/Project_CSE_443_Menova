@@ -1,18 +1,28 @@
 ﻿<header>
-    <div class="logo">POLOMANOR</div>
-    <nav class="nav-menu">
-        <a asp-controller="Home" asp-action="Index">New-in</a>
-        <a asp-controller="Product" asp-action="Index" class="dropdown">Sản phẩm</a>
-        <a href="#" class="dropdown">Bộ sưu tập</a>
-        <a asp-controller="Home" asp-action="About">Liên hệ</a>
+    <div class="logo">
+        <a asp-controller="Home" asp-action="Index">MENOVA</a>
+    </div>
+    <button class="mobile-menu-toggle d-md-none">
+        <i class="fas fa-bars"></i>
+    </button>
+    <nav class="main-nav">
+        <a asp-controller="Home" asp-action="Index" class="nav-link">Trang chủ</a>
+        <a asp-controller="Product" asp-action="Index" asp-route-newArrivals="true" class="nav-link">Sản phẩm mới</a>
+        <div class="nav-dropdown">
+            <a asp-controller="Product" asp-action="Index" class="nav-link">Sản phẩm <i class="fas fa-chevron-down"></i></a>
+            <div class="nav-dropdown-menu">
+                @await Component.InvokeAsync("CategoryNavigation")
+            </div>
+        </div>
+        <a asp-controller="Home" asp-action="Contact" class="nav-link">Liên hệ</a>
     </nav>
     <div class="header-icons">
-        <a asp-controller="Home" asp-action="Index"><i class="fas fa-search"></i></a>
-        
+        <button id="search-icon-btn" class="search-icon" title="Tìm kiếm"><i class="fas fa-search"></i></button>
+
         @if (User.Identity.IsAuthenticated)
         {
             <div class="user-dropdown">
-                <a class="user-dropdown-toggle">
+                <a href="#" class="user-dropdown-toggle" title="Account">
                     <i class="fas fa-user"></i>
                     @if (User.IsInRole("Admin"))
                     {
@@ -20,38 +30,130 @@
                     }
                 </a>
                 <div class="user-dropdown-menu">
-                    <a asp-controller="Account" asp-action="Profile">My Profile</a>
+                    <a asp-controller="Account" asp-action="Profile">
+                        <i class="fas fa-user-circle"></i> Tài khoản
+                    </a>
                     @if (User.IsInRole("Admin"))
                     {
-                        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin Dashboard</a>
+                        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                            <i class="fas fa-tachometer-alt"></i> Quản trị
+                        </a>
                     }
-                    <form asp-controller="Account" asp-action="Logout" method="post">
-                        <button type="submit" class="dropdown-logout-btn">Logout</button>
+                    <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm">
+                        <button type="submit" class="dropdown-logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                        </button>
                     </form>
                 </div>
             </div>
         }
         else
         {
-            <a asp-controller="Account" asp-action="Login"><i class="fas fa-user"></i></a>
+            <a asp-controller="Account" asp-action="ForceLogout" title="Login">
+                <i class="fas fa-user"></i>
+            </a>
         }
-        
-        <a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-bag"></i></a>
+
+        <a asp-controller="Cart" asp-action="Index" title="Giỏ hàng"><i class="fas fa-shopping-bag"></i></a>
     </div>
 </header>
 
-@section Scripts {
-    <script>
-        // Toggle user dropdown menu
-        document.addEventListener('DOMContentLoaded', function() {
-            const userDropdown = document.querySelector('.user-dropdown-toggle');
-            if (userDropdown) {
-                userDropdown.addEventListener('click', function(e) {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Search icon functionality 
+        const searchIconBtn = document.getElementById('search-icon-btn');
+        const searchOverlay = document.querySelector('.search-overlay');
+        
+        if (searchIconBtn && searchOverlay) {
+            searchIconBtn.addEventListener('click', function() {
+                console.log('Search button clicked');
+                searchOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+                // Focus search input
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) {
+                    setTimeout(() => {
+                        searchInput.focus();
+                    }, 100);
+                }
+            });
+        }
+    
+        // User dropdown functionality
+        const userDropdownContainer = document.querySelector('.user-dropdown');
+        const userDropdown = document.querySelector('.user-dropdown-toggle');
+        const menu = document.querySelector('.user-dropdown-menu');
+
+        if (userDropdownContainer && menu) {
+            // Show menu on hover
+            userDropdownContainer.addEventListener('mouseenter', function () {
+                menu.classList.add('show');
+            });
+
+            // Hide menu when mouse leaves the dropdown container
+            userDropdownContainer.addEventListener('mouseleave', function () {
+                menu.classList.remove('show');
+            });
+
+            // Toggle menu when clicking the user icon (for mobile)
+            userDropdown.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                menu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!userDropdownContainer.contains(e.target)) {
+                    menu.classList.remove('show');
+                }
+            });
+
+            // Close dropdown on Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    menu.classList.remove('show');
+                }
+            });
+        }
+
+        // Navigation dropdown functionality
+        const navDropdownContainer = document.querySelector('.nav-dropdown');
+        const navDropdownMenu = document.querySelector('.nav-dropdown-menu');
+
+        if (navDropdownContainer && navDropdownMenu) {
+            // Show menu on hover for desktop
+            navDropdownContainer.addEventListener('mouseenter', function () {
+                if (window.innerWidth >= 768) {
+                    navDropdownMenu.classList.add('show');
+                }
+            });
+
+            // Hide menu when mouse leaves the container for desktop
+            navDropdownContainer.addEventListener('mouseleave', function () {
+                if (window.innerWidth >= 768) {
+                    navDropdownMenu.classList.remove('show');
+                }
+            });
+
+            // Toggle menu when clicking (for mobile)
+            navDropdownContainer.querySelector('a').addEventListener('click', function (e) {
+                if (window.innerWidth < 768) {
                     e.preventDefault();
-                    const menu = document.querySelector('.user-dropdown-menu');
-                    menu.classList.toggle('show');
-                });
-            }
-        });
-    </script>
-}
+                    navDropdownMenu.classList.toggle('show');
+                }
+            });
+        }
+
+        // Mobile menu toggle
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const mainNav = document.querySelector('.main-nav');
+
+        if (mobileMenuToggle && mainNav) {
+            mobileMenuToggle.addEventListener('click', function () {
+                mainNav.classList.toggle('show');
+            });
+        }
+    });
+</script>

@@ -123,3 +123,4 @@ function standardizeActionButtons() {
 
 // Expose the function globally
 window.standardizeActionButtons = standardizeActionButtons; 
+

@@ -1,0 +1,261 @@
+@model Menova.Models.Order
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.OrderId;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    var orderDetailsCount = Model.OrderDetails?.Count() ?? 0;
+}
+
+<div class="container-fluid my-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-0">Chi tiết đơn hàng</h1>
+                    <p class="text-muted mb-0">Mã đơn: #@Model.OrderId</p>
+                </div>
+                <div class="d-flex align-items-center">
+                    @{
+                        string statusBadgeClass = Model.OrderStatus?.ToLower() switch
+                        {
+                            "pending" => "bg-info text-dark",
+                            "processing" => "bg-primary",
+                            "shipping" => "bg-info",
+                            "delivered" => "bg-success",
+                            "received" => "bg-success",
+                            "cancelled" => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+                        
+                        string orderStatusText = Model.OrderStatus?.ToLower() switch
+                        {
+                            "pending" => "Chờ xác nhận",
+                            "processing" => "Đang xử lý",
+                            "shipping" => "Đang giao hàng",
+                            "delivered" => "Đã giao hàng",
+                            "received" => "Đã nhận hàng",
+                            "cancelled" => "Đã hủy",
+                            _ => Model.OrderStatus
+                        };
+                    }
+                    <span class="badge @statusBadgeClass fs-6 py-2 px-3">@orderStatusText</span>
+                </div>
+            </div>
+        </div>
+        
+        @if (Model.OrderStatus?.ToLower() == "cancelled")
+        {
+            <div class="alert alert-danger border-0 rounded-0 m-0">
+                <i class="fas fa-exclamation-circle"></i>
+                Đã bị hủy vào ngày @DateTime.Now.ToString("dd/MM/yyyy"). Lí do hủy: Khách hàng đã thay đổi/hủy đơn hàng
+            </div>
+        }
+        
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <!-- Sản phẩm đã đặt -->
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom">
+                            <h5 class="mb-0 fs-4">Sản phẩm đã đặt</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 order-products-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Sản phẩm</th>
+                                            <th>Số lượng</th>
+                                            <th>Đơn giá</th>
+                                            <th>Tổng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (orderDetailsCount > 0)
+                                        {
+                                            @foreach (var item in Model.OrderDetails)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            @{
+                                                                var product = item.Product;
+                                                                var productName = product?.Name ?? "Sản phẩm không tồn tại";
+                                                                var imageUrl = !string.IsNullOrEmpty(product?.ImageUrl) 
+                                                                    ? product.ImageUrl 
+                                                                    : "/images/placeholder.jpg";
+                                                            }
+                                                            <img src="@imageUrl" alt="@productName" 
+                                                                class="img-fluid me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                            <div>
+                                                                <h6 class="mb-0 product-name">@productName</h6>
+                                                                <small class="text-muted product-variant">
+                                                                    @if (item.ProductVariant != null)
+                                                                    {
+                                                                        @if (item.ProductVariant.Size != null)
+                                                                        {
+                                                                            <span>Size: @item.ProductVariant.Size.Name | </span>
+                                                                        }
+                                                                        @if (item.ProductVariant.Color != null)
+                                                                        {
+                                                                            <span>Màu: @item.ProductVariant.Color.Name</span>
+                                                                        }
+                                                                    }
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">@item.Quantity</td>
+                                                    <td class="text-end">@item.UnitPrice.ToString("N0")₫</td>
+                                                    <td class="text-end">@item.Subtotal.ToString("N0")₫</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="4" class="text-center py-4 text-muted">
+                                                    Không có thông tin sản phẩm cho đơn hàng này
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" class="text-end">Tạm tính:</td>
+                                            <td class="text-end">@((Model.TotalAmount - Model.ShippingFee).ToString("N0"))₫</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end">Phí vận chuyển:</td>
+                                            <td class="text-end">@Model.ShippingFee.ToString("N0")₫</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end">Tổng thanh toán:</td>
+                                            <td class="text-end fs-5 fw-bold text-primary">@Model.TotalAmount.ToString("N0")₫</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Thông tin đơn hàng -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-bottom">
+                            <h5 class="mb-0 fs-4">Thông tin đơn hàng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3 pb-3 border-bottom order-info-item">
+                                <div class="small text-muted">Ngày đặt hàng</div>
+                                <div>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                            </div>
+                            <div class="mb-3 pb-3 border-bottom order-info-item">
+                                <div class="small text-muted">Phương thức thanh toán</div>
+                                <div>@(Model.PaymentMethod == "COD" ? "Thanh toán khi nhận hàng (COD)" : Model.PaymentMethod)</div>
+                            </div>
+                            <div class="order-info-item">
+                                <div class="small text-muted">Trạng thái thanh toán</div>
+                                @{
+                                    string paymentStatusBadgeClass = Model.PaymentStatus?.ToLower() switch
+                                    {
+                                        "paid" => "bg-success",
+                                        "pending" => "bg-warning text-dark",
+                                        "failed" => "bg-danger",
+                                        _ => "bg-secondary"
+                                    };
+                                    
+                                    string paymentStatusText = Model.PaymentStatus?.ToLower() switch
+                                    {
+                                        "paid" => "Đã thanh toán",
+                                        "pending" => "Chờ thanh toán",
+                                        "failed" => "Thanh toán thất bại",
+                                        _ => Model.PaymentStatus
+                                    };
+                                }
+                                <div><span class="badge @paymentStatusBadgeClass">@paymentStatusText</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin giao hàng -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-bottom">
+                            <h5 class="mb-0 fs-4">Địa chỉ giao hàng</h5>
+                        </div>
+                        <div class="card-body">
+                            <address class="mb-0">
+                                <strong>@(Model.User?.FullName)</strong><br>
+                                <span>@Model.ShippingAddress</span><br>
+                                <abbr title="Số điện thoại">SĐT:</abbr> @Model.PhoneNumber
+                            </address>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer bg-white text-end border-top p-3">
+            @if (Model.OrderStatus?.ToLower() == "pending" || Model.OrderStatus?.ToLower() == "processing")
+            {
+                <form asp-action="CancelOrder" asp-route-id="@Model.OrderId" method="post" id="cancelOrderForm" style="display: inline-block;">
+                    @Html.AntiForgeryToken()
+                    <button type="button" class="btn btn-danger me-2" id="cancelOrderBtn">
+                        <i class="fas fa-times-circle me-2"></i>Hủy đơn hàng
+                    </button>
+                </form>
+            }
+            
+            @if (Model.OrderStatus?.ToLower() == "delivered")
+            {
+                <form asp-action="ConfirmReceived" asp-route-id="@Model.OrderId" method="post" style="display: inline-block;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success me-2">
+                        <i class="fas fa-check-circle me-2"></i>Xác nhận đã nhận hàng
+                    </button>
+                </form>
+            }
+            
+            <a href="@Url.Action("Index", "Order")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách đơn hàng
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/pages/order-detail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css">
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cancelOrderBtn = document.getElementById('cancelOrderBtn');
+            if (cancelOrderBtn) {
+                cancelOrderBtn.addEventListener('click', function() {
+                    Swal.fire({
+                        title: 'Xác nhận hủy đơn hàng',
+                        text: 'Bạn có chắc chắn muốn hủy đơn hàng này không?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Có, hủy đơn hàng',
+                        cancelButtonText: 'Không, giữ lại',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Submit the form to cancel the order
+                            document.getElementById('cancelOrderForm').submit();
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+} 
+

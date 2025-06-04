@@ -1,0 +1,78 @@
+@{
+    var searchTerm = ViewData["SearchTerm"] as string ?? string.Empty;
+}
+
+<div class="search-overlay hidden">
+    <div class="search-popup">
+        <div class="search-header">
+            <h2 class="search-title">Tìm kiếm</h2>
+            <button type="button" class="search-close" aria-label="Đóng" title="Đóng">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="search-form">
+            <form class="search-input-container">
+                <input 
+                    type="search" 
+                    id="search-input"
+                    name="q" 
+                    class="search-input" 
+                    placeholder="Tìm kiếm sản phẩm..." 
+                    value="@searchTerm" 
+                    autocomplete="off">
+                <button type="button" class="search-clear-btn" aria-label="Xóa" title="Xóa">
+                    <i class="fas fa-times"></i>
+                </button>
+                <button type="button" class="search-submit-btn" aria-label="Tìm kiếm" title="Tìm kiếm">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+        
+        <div class="search-tabs">
+            <ul class="tabs-nav">
+                <li class="tab-item active">
+                    <button type="button" class="tab-button" data-tab="san-pham">Sản phẩm</button>
+                </li>
+                
+            </ul>
+            
+            <div class="tab-content active" id="san-pham">
+                <div class="search-results-loading" style="display: none;">
+                    <div class="loader"></div>
+                    <p>Đang tìm kiếm...</p>
+                </div>
+                <div id="product-results" class="search-results">
+                    <div class="search-empty-state">
+                        <div class="search-empty-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <p>Nhập từ khóa để tìm kiếm sản phẩm</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="bo-suu-tap">
+                <div id="collection-results" class="search-results">
+                    <!-- Collection results will be loaded here via AJAX -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize search close button
+        const searchCloseBtn = document.querySelector('.search-close');
+        const searchOverlay = document.querySelector('.search-overlay');
+        
+        if (searchCloseBtn && searchOverlay) {
+            searchCloseBtn.addEventListener('click', function() {
+                searchOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+        }
+    });
+</script> 

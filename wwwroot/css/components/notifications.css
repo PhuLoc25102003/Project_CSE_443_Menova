@@ -1,0 +1,87 @@
+/* Notification Components */
+
+/* Session Timeout Dialog */
+.session-timeout {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: var(--border-radius, 0.5rem);
+    padding: 1.25rem;
+    z-index: 1000;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.session-timeout.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.session-timeout__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.session-timeout__icon {
+    color: var(--warning-color, #d97706);
+    font-size: 1.25rem;
+}
+
+.session-timeout__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-gray-900, #111827);
+    margin: 0;
+}
+
+.session-timeout__message {
+    color: var(--color-gray-500, #6b7280);
+    margin: 0;
+}
+
+.session-timeout__timer {
+    font-weight: 700;
+    color: var(--error-color, #dc2626);
+}
+
+.session-timeout__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.session-timeout__btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius, 0.5rem);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.session-timeout__btn--secondary {
+    background-color: var(--color-gray-100, #f3f4f6);
+    color: var(--color-gray-700, #374151);
+}
+
+.session-timeout__btn--secondary:hover {
+    background-color: var(--color-gray-200, #e5e7eb);
+}
+
+.session-timeout__btn--primary {
+    background-color: var(--primary-color, #2563eb);
+    color: white;
+}
+
+.session-timeout__btn--primary:hover {
+    background-color: var(--primary-color-dark, #1d4ed8);
+} 

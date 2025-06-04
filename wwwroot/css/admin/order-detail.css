@@ -773,4 +773,42 @@
     100% {
         box-shadow: 0 0 0 0 rgba(79, 172, 254, 0);
     }
+}
+
+/* Overrides for timeline with higher specificity - Thêm vào cuối file */
+.timeline .timeline-item.current-status::before {
+    background: var(--timeline-current-color) !important;
+    box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.3) !important;
+    animation: pulseCurrent 2s infinite !important;
+}
+
+.timeline .timeline-item.current-status .timeline-content {
+    border-top-color: var(--timeline-current-color) !important;
+    background: var(--timeline-current-bg) !important;
+}
+
+.timeline .timeline-item.current-status .timeline-title {
+    color: var(--timeline-current-color) !important;
+    font-weight: 700 !important;
+}
+
+.timeline .timeline-item.timeline-item--active::before {
+    background: var(--timeline-done-color) !important;
+}
+
+.timeline .timeline-item.timeline-item--active .timeline-content {
+    border-top-color: var(--timeline-done-color) !important;
+    background: var(--timeline-done-bg) !important;
+}
+
+@keyframes pulseCurrent {
+    0% {
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.5);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(79, 172, 254, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0);
+    }
 } 

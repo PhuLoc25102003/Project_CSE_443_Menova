@@ -1,0 +1,85 @@
+@model Menova.Models.Product
+
+<div id="quick-add-modal" class="quick-add-modal show">
+    <div class="quick-add-overlay"></div>
+    <div class="quick-add-content">
+        <button class="quick-add-close">&times;</button>
+        
+        <div class="quick-add-product">
+            <div class="quick-add-image">
+                @if (Model != null)
+                {
+                    if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" alt="@Model.Name" id="quick-add-product-image" data-product-id="@Model.ProductId">
+                    }
+                    else if (Model.Images != null && Model.Images.Any(i => i.IsPrimary))
+                    {
+                        <img src="@Model.Images.FirstOrDefault(i => i.IsPrimary)?.ImageUrl" alt="@Model.Name" id="quick-add-product-image" data-product-id="@Model.ProductId">
+                    }
+                    else
+                    {
+                        <img src="/images/placeholder.png" alt="@Model.Name" id="quick-add-product-image" data-product-id="@Model.ProductId">
+                    }
+                }
+            </div>
+            
+            <div class="quick-add-info">
+                <h3 class="quick-add-title" id="quick-add-product-name">@(Model?.Name ?? "")</h3>
+                <div class="quick-add-price">
+                    <span class="current-price" id="quick-add-current-price">
+                        @(Model != null ? String.Format("{0:N0}đ", Model.DiscountPrice > 0 ? Model.DiscountPrice : Model.Price) : "")
+                    </span>
+                    @if (Model?.DiscountPrice > 0)
+                    {
+                        <span class="original-price" id="quick-add-original-price">@String.Format("{0:N0}đ", Model.Price)</span>
+                    }
+                </div>
+                
+                @if (Model?.ProductVariants != null && Model.ProductVariants.Any())
+                {
+                    var colors = Model.ProductVariants.Select(v => v.Color).Distinct().ToList();
+                    if (colors.Any())
+                    {
+                        <div class="quick-add-colors">
+                            <div class="quick-add-option-label">Màu Sắc:</div>
+                            <div class="color-options">
+                                @foreach (var color in colors)
+                                {
+                                    <div class="color-option @(color == colors.First() ? "selected" : "")" 
+                                         data-color-id="@color.ColorId"
+                                         data-color-code="@color.ColorCode"
+                                         style="background-color: @color.ColorCode;" 
+                                         title="@color.Name">
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    
+                    var sizes = Model.ProductVariants
+                        .Where(v => v.IsActive && v.StockQuantity > 0)
+                        .Select(v => v.Size)
+                        .Distinct()
+                        .OrderBy(s => s.SortOrder)
+                        .ToList();
+                        
+                    if (sizes.Any())
+                    {
+                        <div class="quick-add-sizes">
+                            <div class="quick-add-option-label">Cỡ:</div>
+                            <div class="size-options">
+                                @foreach (var size in sizes)
+                                {
+                                    <button class="size-option" data-size-id="@size.SizeId">@size.Name</button>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        
+        <button class="add-to-cart-btn" id="quick-add-to-cart">Thêm vào giỏ hàng</button>
+    </div>
+</div> 

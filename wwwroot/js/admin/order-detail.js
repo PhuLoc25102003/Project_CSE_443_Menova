@@ -4,7 +4,6 @@
 
 // Initialize page functionality
 document.addEventListener('DOMContentLoaded', function() {
-    setupPrintButton();
     setupPhoneButton();
     
     // Debug logging for order items
@@ -69,6 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Highlight current status in timeline - cải tiến để làm đúng theo yêu cầu màu sắc
 function highlightCurrentStatus() {
+    // Không cần làm gì cả vì đã xử lý trong HTML
+    // Chỉ để cho debug và hiển thị thông tin
+    
     // Lấy trạng thái hiện tại từ badge
     const statusBadge = document.querySelector('.status-badge');
     if (!statusBadge) return;
@@ -87,72 +89,13 @@ function highlightCurrentStatus() {
     
     console.log("Mapped current status:", currentStatus);
     
-    // Lấy tất cả các item trong timeline
+    // Kiểm tra các phần tử timeline hiện tại để debug
     const timelineItems = document.querySelectorAll('.timeline-item');
-    
-    // Status map theo thứ tự trạng thái
-    const statusMap = {
-        "pending": 0,
-        "processing": 1,
-        "shipping": 2,
-        "delivered": 3,
-        "received": 4
-    };
-    
-    // Xác định index của trạng thái hiện tại
-    const currentIndex = statusMap[currentStatus] || -1;
-    console.log("Current index:", currentIndex);
-    
-    // Áp dụng class đúng cho từng item trong timeline
     timelineItems.forEach((item, index) => {
-        // Reset các class trước khi thêm class mới
-        item.classList.remove('timeline-item--active', 'current-status', 'timeline-item--disabled');
-        
-        // Lấy data-status của item
         const itemStatus = item.getAttribute('data-status');
-        const itemIndex = statusMap[itemStatus] || -1;
-        
-        if (itemStatus === currentStatus) {
-            // Nếu là trạng thái hiện tại - màu xanh dương
-            item.classList.add('current-status');
-            console.log(`Item ${index} (${itemStatus}): Added current-status - THIS IS CURRENT`);
-        } else if (itemIndex < currentIndex) {
-            // Trạng thái đã qua - màu xanh lá
-            item.classList.add('timeline-item--active');
-            console.log(`Item ${index} (${itemStatus}): Added timeline-item--active - COMPLETED`);
-        } else {
-            // Trạng thái tương lai - màu trắng
-            item.classList.add('timeline-item--disabled');
-            console.log(`Item ${index} (${itemStatus}): Added timeline-item--disabled - FUTURE`);
-        }
+        const currentClasses = Array.from(item.classList).join(', ');
+        console.log(`Timeline item ${index} (${itemStatus}): Classes = ${currentClasses}`);
     });
-}
-
-// Print order details
-function setupPrintButton() {
-    const printButton = document.querySelector('button[onclick="printOrder()"]');
-    if (printButton) {
-        printButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Hide elements not needed in print
-            const elementsToHide = document.querySelectorAll('.status-action-buttons, .action-buttons, .floating-actions');
-            elementsToHide.forEach(el => {
-                el.dataset.initialDisplay = el.style.display;
-                el.style.display = 'none';
-            });
-            
-            // Print the window
-            window.print();
-            
-            // Restore hidden elements
-            setTimeout(() => {
-                elementsToHide.forEach(el => {
-                    el.style.display = el.dataset.initialDisplay || '';
-                });
-            }, 1000);
-        });
-    }
 }
 
 // Handle phone button
@@ -210,12 +153,6 @@ function contactCustomer(phoneNumber) {
     
     // Optional: implement actual phone call functionality here
     // Example: window.location.href = `tel:${phoneNumber}`;
-}
-
-// Print order function
-function printOrder() {
-    // This function is now handled by setupPrintButton
-    window.print();
 }
 
 // Form validation to prevent accidental submissions

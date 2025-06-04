@@ -16,6 +16,12 @@ namespace Menova.Models
 
         public int StockQuantity { get; set; }
 
+        [NotMapped]
+        public int ReservedQuantity { get; set; }
+
+        [NotMapped]
+        public int AvailableQuantity => StockQuantity - ReservedQuantity;
+
         [Required]
         [StringLength(50)]
         public string SKU { get; set; }

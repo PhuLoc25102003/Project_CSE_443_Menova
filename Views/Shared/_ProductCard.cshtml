@@ -1,10 +1,21 @@
 ﻿@model Product
-<div class="product-item">
-    @if (DateTime.Now.Subtract(Model.CreatedAt).TotalDays < 7)
-    {
-        <div class="product-tag">Mới nhập kho</div>
-    }
+@{
+    bool isOutOfStock = Model.ProductVariants == null || !Model.ProductVariants.Any(v => v.IsActive && v.StockQuantity > 0);
+}
+<div class="product-card">
     <div class="product-image">
+        @if (Model.DiscountPrice != 0)
+        {
+            <div class="discount-badge">Tiết kiệm @String.Format("{0:N0}đ", Model.Price - Model.DiscountPrice)</div>
+        }
+        @if (DateTime.Now.Subtract(Model.CreatedAt).TotalDays < 7)
+        {
+            <div class="discount-badge hot-badge">Mới</div>
+        }
+        @if (isOutOfStock)
+        {
+            <div class="discount-badge out-of-stock-badge">Hết hàng</div>
+        }
         <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.ProductId">
             @if (!string.IsNullOrEmpty(Model.ImageUrl))
             {
@@ -19,32 +30,38 @@
                 <img src="/images/placeholder.png" alt="@Model.Name">
             }
         </a>
+        @if (!isOutOfStock)
+        {
+            <button class="quick-add">+ Thêm nhanh</button>
+        }
     </div>
     <div class="product-info">
         <h3 class="product-name">
             <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.ProductId">@Model.Name</a>
         </h3>
-        <p class="product-price">
-            <i class="fas fa-tag"></i>
+        <div class="product-price">
             @if (Model.DiscountPrice != 0)
             {
-                <span class="original-price">@String.Format("{0:N0}₫", Model.Price)</span>
-                <span>@String.Format("{0:N0}₫", Model.DiscountPrice)</span>
+                <span class="current-price">@String.Format("{0:N0}đ", Model.DiscountPrice)</span>
+                <span class="original-price">@String.Format("{0:N0}đ", Model.Price)</span>
             }
             else
             {
-                <span>@String.Format("{0:N0}₫", Model.Price)</span>
+                <span class="current-price">@String.Format("{0:N0}đ", Model.Price)</span>
             }
-        </p>
+        </div>
         @if (Model.ProductVariants != null && Model.ProductVariants.Any())
         {
             var colors = Model.ProductVariants.Select(v => v.Color).Distinct().Take(4);
             if (colors.Any())
             {
-                <div class="product-colors">
+                <div class="color-options">
                     @foreach (var color in colors)
                     {
-                        <span class="color-option" style="background-color: @color.ColorCode;" title="@color.Name"></span>
+                        <div class="color-option @(color == colors.First() ? "selected" : "")" 
+                            style="background-color: @color.ColorCode;" 
+                            title="@color.Name">
+                        </div>
                     }
                 </div>
             }

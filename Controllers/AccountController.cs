@@ -24,13 +24,15 @@ namespace Menova.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl = null)
         {
             // If user is already logged in, redirect to home
-            if (User.Identity.IsAuthenticated)
+            if (_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction("Index", "Home");
             }
+            
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -56,6 +58,13 @@ namespace Menova.Controllers
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return View();
+        }
+
+        // Force logout and redirect to login page
+        public async Task<IActionResult> ForceLogout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
         }
 
         public IActionResult Register()

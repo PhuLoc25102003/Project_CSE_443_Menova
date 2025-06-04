@@ -25,9 +25,15 @@ namespace Menova.Controllers
 
         public async Task<IActionResult> Index()
         {
+            // Get top selling products
+            var topSellingProducts = await _productService.GetTopSellingProductsAsync(8);
+            
             var viewModel = new HomeViewModel
             {
                 FeturedProducts = (await _productService.GetFeaturedProductsAsync(8)).ToList(),
+                
+                // Convert ProductSalesSummary to Product list
+                BestSellingProducts = topSellingProducts.Select(p => p.Product).ToList(),
 
                 Categories = (await _categoryService.GetTopLevelCategoriesAsync()).ToList(),
                 
@@ -72,6 +78,35 @@ namespace Menova.Controllers
         public IActionResult About()
         {
             return View();
+        }
+
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Contact(ContactViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // TODO: Process contact form submission
+                // Send email, store in database, etc.
+                
+                TempData["SuccessMessage"] = "Cảm ơn! Tin nhắn của bạn đã được gửi thành công.";
+                return RedirectToAction(nameof(Contact));
+            }
+            
+            return View(model);
+        }
+        
+        [HttpGet]
+        public IActionResult Search(string q)
+        {
+            // Since we're using the overlay for search, just redirect to home
+            TempData["OpenSearchOverlay"] = true;
+            TempData["SearchQuery"] = q;
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Privacy()

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Menova.Data.Services
 {
@@ -67,37 +68,8 @@ namespace Menova.Data.Services
 
         public async Task<CategoryViewModel> GetProductsListAsync(int? categoryId, string sortOrder, int page, int pageSize)
         {
-            var products = await _unitOfWork.Products.GetProductsWithSortingAsync(categoryId, sortOrder, page, pageSize);
-
-            var totalItems = 0;
-            Category currentCategory = null;
-            List<Category> subCategories = null;
-
-            if (categoryId.HasValue)
-            {
-                totalItems = await _unitOfWork.Products.GetProductsCountByCategoryAsync(categoryId.Value);
-                currentCategory = await _unitOfWork.Categories.GetByIdAsync(categoryId.Value);
-                subCategories = (await _unitOfWork.Categories.GetSubCategoriesByParentIdAsync(categoryId.Value)).ToList();
-            }
-            else
-            {
-                totalItems = (await _unitOfWork.Products.FindAsync(p => p.IsActive)).Count();
-            }
-
-            var viewModel = new CategoryViewModel
-            {
-                CurrentCategory = currentCategory,
-                SubCategories = subCategories,
-                Products = products.ToList(),
-                Pagination = new Menova.Models.ViewModels.PaginationInfo
-                {
-                    CurrentPage = page,
-                    ItemsPerPage = pageSize,
-                    TotalItems = totalItems
-                }
-            };
-
-            return viewModel;
+            // Call the extended version with default values for the new parameters
+            return await GetProductsListAsync(categoryId, sortOrder, page, pageSize, false, null, null, false);
         }
 
         public async Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm, int page, int pageSize)
@@ -122,8 +94,13 @@ namespace Menova.Data.Services
             // Lấy tất cả đơn hàng và chi tiết đơn hàng
             var orders = await _unitOfWork.Orders.GetAllWithDetailsAsync();
             
+            // Chỉ xét đơn hàng có trạng thái "Đã giao hàng" hoặc "Đã nhận hàng"
+            var completedOrders = orders
+                .Where(o => o.OrderStatus.ToLower() == "delivered" || o.OrderStatus.ToLower() == "received")
+                .ToList();
+                
             // Nhóm các chi tiết đơn hàng theo sản phẩm và tính tổng số lượng bán và doanh thu
-            var productSummaries = orders
+            var productSummaries = completedOrders
                 .SelectMany(o => o.OrderDetails)
                 .GroupBy(od => od.ProductId)
                 .Select(g => new
@@ -377,6 +354,102 @@ namespace Menova.Data.Services
 
             // Phân trang
             return products.Skip((page - 1) * pageSize).Take(pageSize);
+        }
+
+        public async Task<Dictionary<int, int>> GetProductCountByCategories()
+        {
+            var products = await _unitOfWork.Products.FindAsync(p => p.IsActive);
+            return products
+                .GroupBy(p => p.CategoryId)
+                .ToDictionary(g => g.Key, g => g.Count());
+        }
+
+        public async Task<CategoryViewModel> GetProductsListAsync(int? categoryId, string sortOrder, int page, int pageSize, bool inStockOnly, decimal? priceFrom, decimal? priceTo, bool newArrivals)
+        {
+            // Get queryable products with details
+            var productsQuery = _unitOfWork.Products.GetQueryableProductsWithDetails()
+                .Where(p => p.IsActive);
+
+            Category currentCategory = null;
+            if (categoryId.HasValue)
+            {
+                currentCategory = await _unitOfWork.Categories.GetByIdAsync(categoryId.Value);
+                productsQuery = productsQuery.Where(p => p.CategoryId == categoryId.Value);
+            }
+
+            // Apply in-stock filter if requested
+            if (inStockOnly)
+            {
+                productsQuery = productsQuery.Where(p => p.ProductVariants.Any(pv => pv.IsActive && pv.StockQuantity > 0));
+            }
+            
+            // Apply New Arrivals filter
+            if (newArrivals)
+            {
+                var sevenDaysAgo = DateTime.Now.AddDays(-7);
+                productsQuery = productsQuery.Where(p => p.CreatedAt >= sevenDaysAgo);
+            }
+
+            // Apply price filters if provided
+            if (priceFrom.HasValue)
+            {
+                productsQuery = productsQuery.Where(p => 
+                    (p.DiscountPrice > 0 && p.DiscountPrice >= priceFrom.Value) || 
+                    (p.DiscountPrice == 0 && p.Price >= priceFrom.Value));
+            }
+
+            if (priceTo.HasValue)
+            {
+                productsQuery = productsQuery.Where(p => 
+                    (p.DiscountPrice > 0 && p.DiscountPrice <= priceTo.Value) || 
+                    (p.DiscountPrice == 0 && p.Price <= priceTo.Value));
+            }
+
+            // Apply sorting
+            switch (sortOrder)
+            {
+                case "price_asc":
+                    productsQuery = productsQuery.OrderBy(p => p.DiscountPrice > 0 ? p.DiscountPrice : p.Price);
+                    break;
+                case "price_desc":
+                    productsQuery = productsQuery.OrderByDescending(p => p.DiscountPrice > 0 ? p.DiscountPrice : p.Price);
+                    break;
+                case "name_asc":
+                    productsQuery = productsQuery.OrderBy(p => p.Name);
+                    break;
+                case "name_desc":
+                    productsQuery = productsQuery.OrderByDescending(p => p.Name);
+                    break;
+                default:
+                    productsQuery = productsQuery.OrderByDescending(p => p.CreatedAt);
+                    break;
+            }
+
+            var totalItems = await productsQuery.CountAsync();
+            var products = await productsQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var model = new CategoryViewModel
+            {
+                CurrentCategory = currentCategory,
+                Products = products,
+                Pagination = new Menova.Models.ViewModels.PaginationInfo
+                {
+                    CurrentPage = page,
+                    ItemsPerPage = pageSize,
+                    TotalItems = totalItems
+                }
+            };
+
+            // Get subcategories if we're viewing a category
+            if (categoryId.HasValue)
+            {
+                model.SubCategories = (await _unitOfWork.Categories.GetSubCategoriesByParentIdAsync(categoryId.Value)).ToList();
+            }
+
+            return model;
         }
 
     }

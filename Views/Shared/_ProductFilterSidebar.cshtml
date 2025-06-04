@@ -1,0 +1,59 @@
+@using Menova.Models.ViewModels
+@using Menova.Models
+@model CategoryViewModel
+@{
+    var allCategories = ViewBag.AllCategories as List<Category> ?? new List<Category>();
+}
+
+<aside class="sidebar">
+    <div class="filter-section">
+        <h3 class="filter-section-title">
+            Phân loại
+        </h3>
+        <ul class="filter-list">
+            @foreach (var category in allCategories)
+            {
+                var isSelected = Model.CurrentCategory?.CategoryId == category.CategoryId;
+                var productCount = ViewBag.CategoryCounts != null ? ViewBag.CategoryCounts.ContainsKey(category.CategoryId)
+                ? ViewBag.CategoryCounts[category.CategoryId] : 0 : 0;
+                if (category.ParentCategoryId != null)
+                {
+                    <li class="filter-item"
+                        onclick="window.location.href='@Url.Action("Index", "Product", new { categoryId = category.CategoryId })'">
+                        <div class="filter-checkbox @(isSelected ? "checked" : "")">@(isSelected ? "✓" : "")</div>
+                        <span>@category.Name</span>
+                        <span class="filter-count">(@productCount)</span>
+                    </li>
+                }
+
+            }
+        </ul>
+    </div>
+
+    <div class="filter-section">
+        <h3 class="filter-section-title">
+            Sẳn hàng
+        </h3>
+        <div class="stock-filter">
+            <input type="checkbox" class="stock-checkbox" id="in-stock-filter" @(ViewBag.InStockOnly == true ? "checked"
+                                                                                               : "")>
+            <label for="in-stock-filter">Còn hàng</label>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <h3 class="filter-section-title">
+            Giá
+        </h3>
+        <div class="price-filter">
+            <div class="price-inputs">
+                <input type="number" id="price-from" placeholder="Từ" class="price-input" value="@ViewBag.PriceFrom">
+                <span class="price-separator">-</span>
+                <input type="number" id="price-to" placeholder="Đến" class="price-input" value="@ViewBag.PriceTo">
+            </div>
+            <button id="apply-price-filter" class="apply-price-btn">
+                Áp dụng
+            </button>
+        </div>
+    </div>
+</aside>

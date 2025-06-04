@@ -144,6 +144,46 @@ namespace Menova.Data.Repositories
                 throw new Exception("Cart is empty");
             }
 
+            // Lock all needed product variants to prevent race conditions with concurrent checkouts
+            var variantIds = cart.CartItems.Select(ci => ci.VariantId).ToList();
+            var lockedVariants = await _context.ProductVariants
+                .Where(pv => variantIds.Contains(pv.ProductVariantId))
+                .ToListAsync();
+
+            // Dictionary to store current stock for quick lookup
+            var variantStockDict = lockedVariants.ToDictionary(v => v.ProductVariantId, v => v.StockQuantity);
+
+            // Check if any other users have reserved quantities of these products
+            var reservedQuantities = new Dictionary<int, int>();
+            foreach (var variantId in variantIds)
+            {
+                // Exclude current user's cart from reservations
+                // We're using a new method to calculate reserved quantities by other users
+                int reservedByOthers = await GetReservedQuantityByOtherUsersAsync(variantId, userId);
+                reservedQuantities[variantId] = reservedByOthers;
+            }
+
+            // Check stock availability for all items before processing
+            foreach (var item in cart.CartItems)
+            {
+                if (!variantStockDict.TryGetValue(item.VariantId, out int currentStock))
+                {
+                    throw new Exception($"Variant with ID {item.VariantId} not found");
+                }
+
+                int reservedByOthers = reservedQuantities.GetValueOrDefault(item.VariantId, 0);
+                int availableStock = currentStock - reservedByOthers;
+                
+                // Check if enough stock is available
+                if (availableStock < item.Quantity)
+                {
+                    string message = availableStock <= 0 
+                        ? $"Sản phẩm '{item.Product.Name}' đã hết hàng hoặc đã được đặt hết bởi người dùng khác" 
+                        : $"Sản phẩm '{item.Product.Name}' chỉ còn {availableStock} trong kho";
+                    throw new Exception(message);
+                }
+            }
+
             // Calculate total
              decimal subtotal = cart.CartItems.Sum(ci =>
                 (ci.Product.DiscountPrice > 0 ? ci.Product.DiscountPrice : ci.Product.Price + (ci.ProductVariant?.AdditionalPrice ?? 0)) * ci.Quantity);
@@ -166,7 +206,7 @@ namespace Menova.Data.Repositories
                 OrderDetails = new List<OrderDetail>()
             };
 
-            // Create order details
+            // Create order details and decrease stock
             foreach (var item in cart.CartItems)
             {
                 var unitPrice = item.Product.DiscountPrice > 0 
@@ -185,6 +225,17 @@ namespace Menova.Data.Repositories
                 };
 
                 order.OrderDetails.Add(orderDetail);
+                
+                // Decrease the stock quantity
+                var variant = lockedVariants.First(v => v.ProductVariantId == item.VariantId);
+                variant.StockQuantity -= item.Quantity;
+                
+                // If stock is depleted, mark variant as inactive
+                if (variant.StockQuantity <= 0)
+                {
+                    variant.StockQuantity = 0;
+                    variant.IsActive = false; // Deactivate if no stock to prevent new orders
+                }
             }
 
             await _context.Orders.AddAsync(order);
@@ -195,6 +246,20 @@ namespace Menova.Data.Repositories
             await _context.SaveChangesAsync();
 
             return order;
+        }
+
+        private async Task<int> GetReservedQuantityByOtherUsersAsync(int variantId, string excludeUserId)
+        {
+            var cutoffTime = DateTime.UtcNow.AddMinutes(-60);
+
+            return await _context.CartItems
+                .Where(ci => ci.VariantId == variantId)
+                .Join(_context.Carts,
+                    ci => ci.CartId,
+                    c => c.CartId,
+                    (ci, c) => new { CartItem = ci, Cart = c })
+                .Where(x => x.Cart.UserId != excludeUserId && x.Cart.UpdatedAt >= cutoffTime)
+                .SumAsync(x => x.CartItem.Quantity);
         }
 
         public async Task UpdateOrderStatusAsync(int orderId, string status)

@@ -1,0 +1,143 @@
+/* Product Card Component */
+.product-card {
+    background: white;
+    border-radius: 0;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.product-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.product-image {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; /* Square aspect ratio */
+    position: relative;
+    overflow: hidden;
+    background: #f8f8f8;
+}
+
+.product-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #2c3e50;
+    color: white;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.hot-badge {
+    background: #e74c3c;
+    top: 40px; /* Position below other badges */
+}
+
+.out-of-stock-badge {
+    background: #777;
+    right: 10px;
+    left: auto;
+}
+
+.product-info {
+    padding: 1rem 0;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #333;
+    text-decoration: none;
+    line-height: 1.4;
+}
+
+.product-name a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.product-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.current-price {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.original-price {
+    font-size: 0.9rem;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.color-options {
+    display: flex;
+    gap: 0.35rem;
+    margin-top: auto;
+}
+
+.color-option {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.selected {
+    border: 2px solid #333;
+}
+
+.quick-add {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #1a2530;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.product-card:hover .quick-add {
+    opacity: 1;
+} 

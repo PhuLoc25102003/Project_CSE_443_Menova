@@ -4,6 +4,7 @@ namespace Menova.Models.ViewModels
     public class HomeViewModel
     {
         public List<Product> FeturedProducts { get; set; }
+        public List<Product> BestSellingProducts { get; set; }
         public List<Category> Categories { get; set; }
         public List<SlideModel> Slides { get; set; } 
     }

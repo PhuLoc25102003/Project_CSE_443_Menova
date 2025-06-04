@@ -13,6 +13,7 @@ namespace Menova.Data.Services
         Task<int> GetTotalOrderCountAsync();
         Task<List<Order>> GetRecentOrdersAsync(int count);
         Task<decimal> GetTotalRevenueAsync();
+        Task<decimal> GetTotalRevenueWithoutShippingAsync();
         Task<List<Order>> GetOrdersInDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<Dictionary<string, int>> GetOrderCountsByStatusAsync();
     }

@@ -14,5 +14,6 @@ namespace Menova.Data.Repositories
         Task<int> GetSearchProductsCountAsync(string searchTerm);
         Task<IEnumerable<Product>> GetProductsWithSortingAsync(int? categoryId, string sortOrder, int page, int pageSize);
         Task<IEnumerable<Product>> GetAllWithIncludeAsync(params Expression<Func<Product, object>>[] includeProperties);
+        IQueryable<Product> GetQueryableProductsWithDetails();
     }
 }

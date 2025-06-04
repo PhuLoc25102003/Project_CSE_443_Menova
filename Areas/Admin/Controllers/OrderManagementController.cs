@@ -13,6 +13,7 @@ namespace Menova.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Admin")]
+    [Route("Admin/OrderManagement")]
     public class OrderManagementController : Controller
     {
         private readonly IOrderService _orderService;
@@ -24,21 +25,26 @@ namespace Menova.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
+        [Route("")]
+        [Route("Index")]
         public async Task<IActionResult> Index(string statusFilter = "", string searchQuery = "", 
             DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 20)
         {
             try
             {
-                // Get total order count by status
+                if (!User.IsInRole("Admin"))
+                {
+                    _logger.LogWarning("Unauthorized access attempt to OrderManagementController.Index");
+                    return RedirectToAction("AccessDenied", "Account");
+                }
+                
                 var statusCounts = await _orderService.GetOrderCountsByStatusAsync();
                 
-                // Get total revenue
                 var totalRevenue = await _orderService.GetTotalRevenueAsync();
                 
-                // Get orders for the current page based on filters
                 var orders = await GetFilteredOrdersAsync(statusFilter, searchQuery, startDate, endDate);
                 
-                // Apply pagination
                 var totalItems = orders.Count;
                 var paginatedOrders = orders
                     .Skip((page - 1) * pageSize)
@@ -69,7 +75,6 @@ namespace Menova.Areas.Admin.Controllers
                 _logger.LogError(ex, "Error in OrderManagementController.Index");
                 ModelState.AddModelError(string.Empty, "Đã xảy ra lỗi khi tải dữ liệu đơn hàng.");
                 
-                // Return a minimal view model to avoid null reference exceptions
                 var emptyViewModel = new OrderManagementViewModel
                 {
                     Orders = new List<Order>(),
@@ -89,10 +94,18 @@ namespace Menova.Areas.Admin.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Details/{id:int}")]
         public async Task<IActionResult> Details(int id)
         {
             try
             {
+                if (!User.IsInRole("Admin"))
+                {
+                    _logger.LogWarning($"Unauthorized access attempt to OrderManagementController.Details for order {id}");
+                    return RedirectToAction("AccessDenied", "Account");
+                }
+                
                 var order = await _orderService.GetOrderDetailsForAdminAsync(id);
                 
                 if (order == null)
@@ -110,42 +123,103 @@ namespace Menova.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in OrderManagementController.Details");
+                _logger.LogError(ex, $"Error in OrderManagementController.Details for order {id}");
                 TempData["ErrorMessage"] = "Đã xảy ra lỗi khi tải thông tin chi tiết đơn hàng.";
                 return RedirectToAction(nameof(Index));
             }
         }
 
         [HttpPost]
+        [Route("UpdateStatus")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(int id, string status)
         {
             try
             {
+                if (!User.IsInRole("Admin"))
+                {
+                    _logger.LogWarning($"Unauthorized access attempt to OrderManagementController.UpdateStatus for order {id}");
+                    return RedirectToAction("AccessDenied", "Account");
+                }
+                
+                var validStatuses = new[] { "Pending", "Processing", "Shipping", "Delivered", "Received", "Cancelled" };
+                if (!validStatuses.Contains(status))
+                {
+                    _logger.LogWarning($"Invalid status {status} in OrderManagementController.UpdateStatus for order {id}");
+                    TempData["ErrorMessage"] = "Trạng thái không hợp lệ.";
+                    return RedirectToAction("Details", new { id });
+                }
+                
                 await _orderService.UpdateOrderStatusAsync(id, status);
+                _logger.LogInformation($"Order {id} status updated to {status} by admin {User.Identity.Name}");
                 TempData["SuccessMessage"] = "Trạng thái đơn hàng đã được cập nhật thành công.";
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in OrderManagementController.UpdateStatus");
+                _logger.LogError(ex, $"Error in OrderManagementController.UpdateStatus for order {id}");
                 TempData["ErrorMessage"] = "Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng.";
             }
             return RedirectToAction("Details", new { id });
         }
 
         [HttpPost]
+        [Route("api/UpdateStatusAjax")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatusAjax(int id, string status)
+        {
+            try
+            {
+                if (!User.IsInRole("Admin"))
+                {
+                    _logger.LogWarning($"Unauthorized AJAX access attempt to update order {id} status");
+                    return Json(new { success = false, message = "Không có quyền thực hiện thao tác này" });
+                }
+                
+                var validStatuses = new[] { "Pending", "Processing", "Shipping", "Delivered", "Received", "Cancelled" };
+                if (!validStatuses.Contains(status))
+                {
+                    _logger.LogWarning($"Invalid status {status} in AJAX update for order {id}");
+                    return Json(new { success = false, message = "Trạng thái không hợp lệ" });
+                }
+                
+                await _orderService.UpdateOrderStatusAsync(id, status);
+                _logger.LogInformation($"Order {id} status updated to {status} automatically by system");
+                
+                return Json(new { 
+                    success = true, 
+                    message = $"Đơn hàng đã được cập nhật thành trạng thái {status} thành công",
+                    newStatus = status
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error in AJAX status update for order {id}");
+                return Json(new { success = false, message = "Lỗi cập nhật: " + ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Route("Delete/{id:int}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            // Orders cannot be deleted as per business requirements
-            // We keep this method to prevent errors but redirect with a message
+            _logger.LogWarning($"Attempt to delete order {id} was rejected as per business requirements");
             TempData["ErrorMessage"] = "Không được phép xóa đơn hàng.";
             return RedirectToAction("Index");
         }
         
-        // Diagnostic action to troubleshoot order details
+        [HttpGet]
+        [Route("DiagnosticDetails/{id:int}")]
         public async Task<IActionResult> DiagnosticDetails(int id)
         {
             try
             {
+                if (!User.IsInRole("Admin"))
+                {
+                    _logger.LogWarning($"Unauthorized access attempt to OrderManagementController.DiagnosticDetails for order {id}");
+                    return RedirectToAction("AccessDenied", "Account");
+                }
+                
                 var order = await _orderService.GetOrderDetailsForAdminAsync(id);
                 
                 if (order == null)
@@ -179,7 +253,35 @@ namespace Menova.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, $"Error in OrderManagementController.DiagnosticDetails for order {id}");
                 return Content($"Error: {ex.Message}\n{ex.StackTrace}", "text/plain");
+            }
+        }
+
+        [HttpGet]
+        [Route("Export")]
+        public async Task<IActionResult> ExportOrders(string statusFilter = "", string searchQuery = "", 
+            DateTime? startDate = null, DateTime? endDate = null)
+        {
+            try
+            {
+                if (!User.IsInRole("Admin"))
+                {
+                    _logger.LogWarning("Unauthorized access attempt to OrderManagementController.ExportOrders");
+                    return RedirectToAction("AccessDenied", "Account");
+                }
+                
+                var orders = await GetFilteredOrdersAsync(statusFilter, searchQuery, startDate, endDate);
+                
+                _logger.LogInformation($"Admin {User.Identity.Name} exported orders with filters: status={statusFilter}, query={searchQuery}");
+                
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in OrderManagementController.ExportOrders");
+                TempData["ErrorMessage"] = "Đã xảy ra lỗi khi xuất đơn hàng.";
+                return RedirectToAction("Index");
             }
         }
 
@@ -188,19 +290,15 @@ namespace Menova.Areas.Admin.Controllers
         {
             try
             {
-                // Get all orders
                 var allOrders = (await _orderService.GetRecentOrdersAsync(1000))?.ToList() ?? new List<Order>();
                 
-                // Apply filters
                 var filteredOrders = allOrders;
                 
-                // Filter by status
                 if (!string.IsNullOrEmpty(statusFilter))
                 {
                     filteredOrders = filteredOrders.Where(o => o.OrderStatus?.ToLower() == statusFilter.ToLower()).ToList();
                 }
                 
-                // Filter by date range
                 if (startDate.HasValue)
                 {
                     filteredOrders = filteredOrders.Where(o => o.OrderDate >= startDate.Value).ToList();
@@ -211,7 +309,6 @@ namespace Menova.Areas.Admin.Controllers
                     filteredOrders = filteredOrders.Where(o => o.OrderDate <= endDate.Value.AddDays(1)).ToList();
                 }
                 
-                // Filter by search query (order ID, customer name, phone, etc.)
                 if (!string.IsNullOrEmpty(searchQuery))
                 {
                     filteredOrders = filteredOrders.Where(o => 

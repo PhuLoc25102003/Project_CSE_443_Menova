@@ -53,8 +53,16 @@ namespace Menova.Data.Services
 
         public async Task<decimal> GetTotalRevenueAsync()
         {
+            // Get revenue without shipping fees
+            return await GetTotalRevenueWithoutShippingAsync();
+        }
+
+        public async Task<decimal> GetTotalRevenueWithoutShippingAsync()
+        {
             var orders = await _unitOfWork.Orders.GetAllAsync();
-            return orders.Sum(o => o.TotalAmount);
+            return orders
+                .Where(o => o.OrderStatus.ToLower() == "delivered" || o.OrderStatus.ToLower() == "received")
+                .Sum(o => o.TotalAmount - o.ShippingFee);
         }
 
         public async Task<List<Order>> GetOrdersInDateRangeAsync(DateTime startDate, DateTime endDate)
